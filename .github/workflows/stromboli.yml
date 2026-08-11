@@ -14,7 +14,7 @@ on:
         required: false
         default: "DW"
       univers:
-        description: "tout, us, euronext, paris, amsterdam, bruxelles"
+        description: "tout, us, euronext, paris, amsterdam, bruxelles, indices, crypto"
         required: false
         default: "tout"
       dry_run:
@@ -22,6 +22,14 @@ on:
         type: boolean
         required: false
         default: false
+      backtest_annees:
+        description: "Backtest Fernanda : nombre d'annees (0 = scan normal)"
+        required: false
+        default: "0"
+      diagnostic_ticker:
+        description: "Diagnostic detaille pour un ticker (ex: ELI.BR), vide = desactive"
+        required: false
+        default: ""
 
 jobs:
   scan:
@@ -51,6 +59,7 @@ jobs:
           fi
 
       - name: Scan Stromboli
+        if: (github.event.inputs.backtest_annees == '0' || github.event.inputs.backtest_annees == '') && (github.event.inputs.diagnostic_ticker == '' || github.event.inputs.diagnostic_ticker == null)
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -62,3 +71,33 @@ jobs:
             --tf ${{ steps.params.outputs.tf }} \
             --univers ${{ github.event.inputs.univers || 'tout' }} \
             ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
+
+      - name: Backtest Fernanda
+        if: github.event.inputs.backtest_annees != '0' && github.event.inputs.backtest_annees != ''
+        env:
+          STROMBOLI_MIN_BOUGIES: "3"
+          STROMBOLI_SEUIL_DOJI: "0.05"
+          STROMBOLI_TOLERANCE: "0.0"
+        run: |
+          python stromboli.py \
+            --backtest ${{ github.event.inputs.backtest_annees }} \
+            --univers ${{ github.event.inputs.univers || 'tout' }}
+
+      - name: Publier le detail du backtest
+        if: github.event.inputs.backtest_annees != '0' && github.event.inputs.backtest_annees != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: backtest-fernanda
+          path: backtest_fernanda.csv
+          if-no-files-found: ignore
+
+      - name: Diagnostic ticker
+        if: github.event.inputs.diagnostic_ticker != '' && github.event.inputs.diagnostic_ticker != null
+        env:
+          STROMBOLI_MIN_BOUGIES: "3"
+          STROMBOLI_SEUIL_DOJI: "0.05"
+          STROMBOLI_TOLERANCE: "0.0"
+        run: |
+          python stromboli.py \
+            --tf ${{ steps.params.outputs.tf }} \
+            --diagnostic ${{ github.event.inputs.diagnostic_ticker }}
