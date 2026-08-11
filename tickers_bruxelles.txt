@@ -1,0 +1,33 @@
+# Euronext Bruxelles — BEL 20 + principales BEL Mid
+# Verifier avec : python stromboli.py --univers bruxelles --valider-univers
+ABI.BR
+ACKB.BR
+AED.BR
+AGS.BR
+ARGX.BR
+AZE.BR
+BAR.BR
+BEKB.BR
+COFB.BR
+DEME.BR
+DIE.BR
+ELI.BR
+EXM.BR
+GBLB.BR
+IMMO.BR
+KBC.BR
+KIN.BR
+LOTB.BR
+MELE.BR
+ONTEX.BR
+PROX.BR
+SHUR.BR
+SOF.BR
+SOLB.BR
+SYENS.BR
+TESB.BR
+UCB.BR
+UMI.BR
+VGP.BR
+WDP.BR
+XIOR.BR
