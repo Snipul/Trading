@@ -90,6 +90,7 @@ FICHIERS_EURONEXT = {
 }
 
 UA = {"User-Agent": "Mozilla/5.0 (compatible; stromboli-bot/1.0)"}
+KRAKEN_API = "https://api.kraken.com/0/public"
 
 
 # ---------------------------------------------------------------------------
@@ -235,8 +236,52 @@ def univers_stockanalysis(slug, suffixe, max_pages=5):
     return sorted(set(tickers))
 
 
+def univers_indices():
+    """
+    Petite liste curee d'indices/futures, pas de decouverte automatique
+    (volume trop faible pour justifier une source dynamique).
+
+    US : futures continus (bien couverts par Yahoo, roulement automatique).
+    Europe : indices CASH plutot que futures. Les futures Euronext/Eurex
+    (FCE, FDAX, FESX) n'ont pas de serie continue fiable sur Yahoo Finance
+    car les contrats expirent chaque trimestre avec un nouveau code. L'indice
+    cash suit le future de tres pres (arbitrage), donc c'est un proxy fiable
+    pour la detection Stromboli/Fernanda.
+    """
+    return [
+        "ES=F", "NQ=F", "YM=F", "RTY=F",   # US : S&P500, Nasdaq, Dow, Russell2000
+        "^GDAXI", "^FCHI", "^STOXX50E",     # Europe : DAX, CAC40, Euro Stoxx 50
+    ]
+
+
+def univers_kraken_usd():
+    """
+    Toutes les paires cotees en USD (fiat, ZUSD) actives sur Kraken.
+    Les paires USDT/USDC sont exclues pour eviter de tripler chaque crypto
+    avec des paires quasi identiques.
+    """
+    try:
+        reponse = requests.get(f"{KRAKEN_API}/AssetPairs", timeout=30)
+        reponse.raise_for_status()
+        data = reponse.json()
+    except Exception as erreur:
+        print(f"  echec AssetPairs Kraken : {erreur}")
+        return []
+
+    if data.get("error"):
+        print(f"  erreur API Kraken : {data['error']}")
+        return []
+
+    paires = []
+    for cle, info in data.get("result", {}).items():
+        if info.get("quote") == "ZUSD" and info.get("status") == "online":
+            paires.append(info.get("altname", cle))
+
+    return sorted(set(paires))
+
+
 def construire_univers(selection):
-    """selection : 'tout', 'us', 'euronext', 'paris', 'amsterdam', 'bruxelles'."""
+    """selection : 'tout', 'us', 'euronext', 'paris', 'amsterdam', 'bruxelles', 'indices', 'crypto'."""
     univers = {}
 
     if selection in ("tout", "us"):
@@ -259,6 +304,19 @@ def construire_univers(selection):
             if tickers:
                 print(f"Univers {place.capitalize()} : {len(tickers)} tickers")
                 univers[place.capitalize()] = tickers
+
+    if selection in ("tout", "indices"):
+        tickers = univers_indices()
+        print(f"Univers Indices : {len(tickers)} tickers")
+        univers["Indices"] = tickers
+
+    if selection in ("tout", "crypto"):
+        tickers = univers_kraken_usd()
+        if tickers:
+            print(f"Univers Crypto (Kraken USD) : {len(tickers)} tickers")
+            univers["Crypto"] = tickers
+        else:
+            print("  aucune paire crypto recuperee (Crypto absent de ce scan)")
 
     total = sum(len(v) for v in univers.values())
     print(f"Total : {total} tickers\n")
@@ -499,6 +557,153 @@ def detecter_fernanda_series(ha):
     return occurrences
 
 
+# ---------------------------------------------------------------------------
+# Backtest — probabilite de reussite des Fernanda
+# ---------------------------------------------------------------------------
+#
+# Pour chaque Fernanda detectee dans l'historique, mesure le rendement REEL
+# (prix de cloture reel, pas HA - c'est ce qu'on trade concretement) a
+# plusieurs horizons apres l'entree. Le taux de reussite est la proportion
+# de signaux dont le rendement est positif a cet horizon.
+
+HORIZONS_BACKTEST = (1, 3, 5, 10, 20)
+
+
+def backtest_fernanda(univers, annees, horizons=HORIZONS_BACKTEST):
+    """
+    Parcourt l'historique Daily de tout l'univers et releve, pour chaque
+    Fernanda, le rendement reel a chaque horizon (en jours de bourse).
+    Retourne un DataFrame, une ligne par signal.
+    """
+    periode = f"{annees}y"
+    lignes = []
+
+    for place, tickers in univers.items():
+        print(f"\n[{place}] telechargement de {len(tickers)} tickers ({periode})")
+        donnees = telecharger_pour_place(place, tickers, periode)
+        print(f"  {len(donnees)} tickers exploitables")
+
+        for ticker, cadre in donnees.items():
+            if len(cadre) < MIN_BOUGIES + 30:
+                continue
+
+            ha = heikin_ashi(cadre)
+            occurrences = detecter_fernanda_series(ha)
+            if not occurrences:
+                continue
+
+            closes_reels = cadre["Close"].to_numpy(dtype=float)
+            n = len(closes_reels)
+
+            for occ in occurrences:
+                i = occ["index"]
+                prix_entree = closes_reels[i]
+                ligne = {
+                    "ticker": ticker,
+                    "place": place,
+                    "date": occ["date"],
+                    "prix_entree": prix_entree,
+                }
+                for h in horizons:
+                    j = i + h
+                    if j < n and prix_entree > 0:
+                        ligne[f"rendement_{h}j"] = (closes_reels[j] - prix_entree) / prix_entree * 100
+                    else:
+                        ligne[f"rendement_{h}j"] = None
+                lignes.append(ligne)
+
+    return pd.DataFrame(lignes)
+
+
+def resume_backtest(df, annees, horizons=HORIZONS_BACKTEST):
+    if df.empty:
+        return "Aucune Fernanda sur la periode."
+
+    sortie = [f"Backtest Fernanda — {len(df)} signaux sur {annees} ans", ""]
+
+    for h in horizons:
+        col = f"rendement_{h}j"
+        valides = df[col].dropna()
+        if len(valides) == 0:
+            continue
+        taux_reussite = (valides > 0).mean() * 100
+        sortie.append(
+            f"  {h:>2}j : {len(valides):>4} signaux exploitables · "
+            f"reussite {taux_reussite:5.1f}% · "
+            f"rendement moyen {valides.mean():+6.2f}% · "
+            f"median {valides.median():+6.2f}%"
+        )
+
+    sortie.append("")
+    sortie.append("Par place :")
+    sortie.append(str(df.groupby("place").size().rename("signaux")))
+
+    return "\n".join(sortie)
+
+
+def diagnostiquer(ticker, tf, nb_bougies=25):
+    """
+    Affiche, bougie par bougie, les valeurs HA exactes calculees par le bot
+    pour un ticker donne, avec le statut de chaque bougie (rouge pleine,
+    doji, stromboli detecte, invalidation). Sert a comparer chiffre par
+    chiffre avec un autre graphique (TradingView etc.) plutot qu'a l'oeil.
+    """
+    print(f"Telechargement de {ticker}...")
+    donnees = telecharger([ticker], PERIODE_DAILY)
+    if ticker not in donnees:
+        print(f"Aucune donnee recuperee pour {ticker}.")
+        return
+
+    cadre = donnees[ticker] if tf == "D" else to_weekly(donnees[ticker])
+    if len(cadre) < MIN_BOUGIES + 2:
+        print("Pas assez de bougies.")
+        return
+
+    ha = heikin_ashi(cadre)
+    m7 = calcul_m7(ha)
+    tenkan = calcul_tenkan(ha)
+
+    actif_haussier = None
+    statuts = {}
+
+    for i in range(len(ha)):
+        trouve = detecter_stromboli(ha, i)
+        if trouve:
+            actif_haussier = i
+            statuts[i] = "STROMBOLI (doji)"
+
+        if actif_haussier is not None and i > actif_haussier:
+            valide = (
+                ha["close"].iloc[i] > m7[i]
+                and m7[i] > m7[i - 1]
+                and ha["close"].iloc[i] > tenkan[i]
+            )
+            if valide:
+                statuts[i] = f"FERNANDA (stromboli du {ha.index[actif_haussier].date()})"
+                actif_haussier = None
+            elif ha["low"].iloc[i] < ha["low"].iloc[i - 1]:
+                statuts[i] = "invalidation (cassure du plus bas de la bougie precedente)"
+                actif_haussier = None
+
+    debut = max(0, len(ha) - nb_bougies)
+    print(
+        f"\n{'Date':<12}{'O':>9}{'H':>9}{'L':>9}{'C':>9}"
+        f"{'M7':>9}{'Tenkan':>9}  Statut"
+    )
+    print("-" * 90)
+    for i in range(debut, len(ha)):
+        rouge = est_rouge_pleine(ha, i)
+        doji = est_doji(ha, i)
+        marque = "R" if rouge else ("D" if doji else " ")
+        m7_str = f"{m7[i]:.2f}" if not np.isnan(m7[i]) else "  n/a"
+        tenkan_str = f"{tenkan[i]:.2f}" if not np.isnan(tenkan[i]) else "  n/a"
+        print(
+            f"{ha.index[i].date()!s:<12}"
+            f"{ha['open'].iloc[i]:>9.2f}{ha['high'].iloc[i]:>9.2f}"
+            f"{ha['low'].iloc[i]:>9.2f}{ha['close'].iloc[i]:>9.2f}"
+            f"{m7_str:>9}{tenkan_str:>9}  [{marque}] {statuts.get(i, '')}"
+        )
+    print("\n[R] = rouge pleine (HA_high == HA_open)   [D] = doji")
 
 
 def telecharger(tickers, periode):
@@ -541,6 +746,63 @@ def telecharger(tickers, periode):
     return donnees
 
 
+def telecharger_kraken(tickers, periode):
+    """
+    Telecharge l'historique daily de plusieurs paires Kraken (une requete
+    par paire, l'API Kraken n'a pas de mode batch). Retourne un dict
+    {ticker: DataFrame} au MEME format (colonnes Open/High/Low/Close/Volume,
+    index datetime) que telecharger(), pour rester compatible avec toute
+    la chaine de traitement en aval (heikin_ashi, detection, backtest...).
+    """
+    annees = int(periode.rstrip("y")) if periode.endswith("y") else 2
+    depuis = int((datetime.now(timezone.utc) - pd.Timedelta(days=annees * 365)).timestamp())
+
+    donnees = {}
+    for i, ticker in enumerate(tickers, 1):
+        if i % 25 == 0:
+            print(f"  {i}/{len(tickers)} paires Kraken...", flush=True)
+        try:
+            reponse = requests.get(
+                f"{KRAKEN_API}/OHLC",
+                params={"pair": ticker, "interval": 1440, "since": depuis},
+                timeout=15,
+            )
+            reponse.raise_for_status()
+            data = reponse.json()
+            if data.get("error"):
+                continue
+
+            resultat = data.get("result", {})
+            cles = [c for c in resultat if c != "last"]
+            if not cles:
+                continue
+
+            lignes = resultat[cles[0]]
+            if len(lignes) < MIN_BOUGIES + 25:
+                continue
+
+            cadre = pd.DataFrame(
+                lignes,
+                columns=["time", "Open", "High", "Low", "Close", "vwap", "Volume", "count"],
+            )
+            cadre["time"] = pd.to_datetime(cadre["time"], unit="s")
+            cadre = cadre.set_index("time")[["Open", "High", "Low", "Close", "Volume"]].astype(float)
+            donnees[ticker] = cadre
+        except Exception:
+            continue
+
+        time.sleep(0.3)
+
+    return donnees
+
+
+def telecharger_pour_place(place, tickers, periode):
+    """Aiguille vers le bon telechargeur selon la place (Kraken pour Crypto)."""
+    if place == "Crypto":
+        return telecharger_kraken(tickers, periode)
+    return telecharger(tickers, periode)
+
+
 # ---------------------------------------------------------------------------
 # Scan
 # ---------------------------------------------------------------------------
@@ -551,7 +813,7 @@ def scanner(univers, timeframes, periode=PERIODE_DAILY):
 
     for place, tickers in univers.items():
         print(f"\n[{place}] telechargement de {len(tickers)} tickers")
-        donnees = telecharger(tickers, periode)
+        donnees = telecharger_pour_place(place, tickers, periode)
         print(f"  {len(donnees)} tickers exploitables")
 
         for ticker, ohlc in donnees.items():
@@ -601,7 +863,7 @@ def scanner_historique(univers, timeframes, annees):
 
     for place, tickers in univers.items():
         print(f"\n[{place}] telechargement de {len(tickers)} tickers ({periode})")
-        donnees = telecharger(tickers, periode)
+        donnees = telecharger_pour_place(place, tickers, periode)
         print(f"  {len(donnees)} tickers exploitables")
 
         for ticker, ohlc in donnees.items():
@@ -626,7 +888,7 @@ def valider_univers(univers):
     morts = {}
     for place, tickers in univers.items():
         print(f"\n[{place}] validation de {len(tickers)} tickers")
-        donnees = telecharger(tickers, "3mo")
+        donnees = telecharger_pour_place(place, tickers, "3mo")
         absents = sorted(set(tickers) - set(donnees.keys()))
         morts[place] = absents
         print(f"  {len(donnees)} OK, {len(absents)} sans donnees")
@@ -783,17 +1045,31 @@ def main():
     parseur.add_argument(
         "--univers",
         default="tout",
-        choices=["tout", "us", "euronext", "paris", "amsterdam", "bruxelles"],
+        choices=["tout", "us", "euronext", "paris", "amsterdam", "bruxelles", "indices", "crypto"],
     )
     parseur.add_argument("--dry-run", action="store_true", help="pas d'envoi Telegram")
     parseur.add_argument("--valider-univers", action="store_true")
     parseur.add_argument("--historique", type=int, metavar="ANNEES")
+    parseur.add_argument(
+        "--backtest", type=int, metavar="ANNEES",
+        help="probabilite de reussite des Fernanda (rendement reel, plusieurs horizons)",
+    )
+    parseur.add_argument(
+        "--diagnostic", metavar="TICKER",
+        help="affiche les valeurs HA/M7/Tenkan bougie par bougie pour un ticker (ex: ELI.BR)",
+    )
     args = parseur.parse_args()
 
     timeframes = [c for c in "DW" if c in args.tf.upper()]
     if not timeframes:
         print("--tf doit contenir D et/ou W")
         return 1
+
+    if args.diagnostic:
+        for tf in timeframes:
+            print(f"\n{'=' * 20} {args.diagnostic} — {tf} {'=' * 20}")
+            diagnostiquer(args.diagnostic, tf)
+        return 0
 
     print("=" * 60)
     print("BOT STROMBOLI — methode Inchi")
@@ -819,6 +1095,16 @@ def main():
         chemin = RACINE / "historique_stromboli.csv"
         if lignes:
             pd.DataFrame(lignes).to_csv(chemin, index=False)
+            print(f"\nDetail ecrit dans {chemin.name}")
+        return 0
+
+    if args.backtest:
+        df = backtest_fernanda(univers, args.backtest)
+        rapport = resume_backtest(df, args.backtest)
+        print("\n" + rapport)
+        chemin = RACINE / "backtest_fernanda.csv"
+        if not df.empty:
+            df.to_csv(chemin, index=False)
             print(f"\nDetail ecrit dans {chemin.name}")
         return 0
 
