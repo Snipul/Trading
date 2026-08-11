@@ -172,6 +172,56 @@ def charger_fichier(chemin):
     return tickers
 
 
+SLUGS_EURONEXT = {
+    "paris": ("euronext-paris", ".PA"),
+    "amsterdam": ("euronext-amsterdam", ".AS"),
+    "bruxelles": ("euronext-brussels", ".BR"),
+}
+
+
+def _stockanalysis_page(slug, page):
+    """Recupere une page de la liste stockanalysis.com (table complete)."""
+    url = f"https://stockanalysis.com/list/{slug}/"
+    if page > 1:
+        url += f"?page={page}"
+    reponse = requests.get(url, headers=UA, timeout=30)
+    reponse.raise_for_status()
+    tables = pd.read_html(io.StringIO(reponse.text))
+    for table in tables:
+        if "Symbol" in table.columns:
+            return table
+    return None
+
+
+def univers_stockanalysis(slug, suffixe, max_pages=5):
+    """
+    Liste complete des valeurs cotees sur une place Euronext, via
+    stockanalysis.com (triee par capitalisation, mise a jour quotidienne).
+    Pagine automatiquement (500 lignes/page) jusqu'a la derniere page.
+    Aucun filtre de capitalisation : tout ce qui est cote est inclus.
+    """
+    bruts = []
+    for page in range(1, max_pages + 1):
+        table = _stockanalysis_page(slug, page)
+        if table is None or table.empty:
+            break
+        symboles = table["Symbol"].dropna().astype(str).tolist()
+        if not symboles:
+            break
+        bruts.extend(symboles)
+        if len(table) < 500:
+            break
+
+    tickers = []
+    for symbole in bruts:
+        symbole = symbole.strip().upper()
+        if not symbole or symbole in ("-", "N/A"):
+            continue
+        tickers.append(f"{symbole}{suffixe}")
+
+    return sorted(set(tickers))
+
+
 def construire_univers(selection):
     """selection : 'tout', 'us', 'euronext', 'paris', 'amsterdam', 'bruxelles'."""
     univers = {}
@@ -180,9 +230,19 @@ def construire_univers(selection):
         print("Univers US :")
         univers["US"] = univers_us()
 
-    for place, fichier in FICHIERS_EURONEXT.items():
+    for place, (slug, suffixe) in SLUGS_EURONEXT.items():
         if selection in ("tout", "euronext", place):
-            tickers = charger_fichier(RACINE / fichier)
+            try:
+                tickers = univers_stockanalysis(slug, suffixe)
+            except Exception as erreur:
+                print(f"  echec stockanalysis.com pour {place}: {erreur}")
+                tickers = []
+
+            if not tickers:
+                fichier = FICHIERS_EURONEXT[place]
+                print(f"  bascule sur le fichier de secours {fichier}")
+                tickers = charger_fichier(RACINE / fichier)
+
             if tickers:
                 print(f"Univers {place.capitalize()} : {len(tickers)} tickers")
                 univers[place.capitalize()] = tickers
