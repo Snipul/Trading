@@ -9,18 +9,20 @@ Daily et Weekly, sur les actions US (Nasdaq 100 + S&P 500) et Euronext
 
 Definition du Stromboli
 -----------------------
-Haussier  : >= 3 bougies HA rouges PLEINES consecutives (aucune meche haute,
-            HA_high == HA_open) suivies IMMEDIATEMENT d'un doji.
-Baissier  : >= 3 bougies HA vertes PLEINES consecutives (aucune meche basse,
-            HA_low == HA_open) suivies IMMEDIATEMENT d'un doji.
+Haussier (long, seul cote actif) : >= 3 bougies HA rouges PLEINES
+            consecutives (aucune meche haute, HA_high == HA_open) suivies
+            IMMEDIATEMENT d'un doji.
+Le cote baissier (vert plein + doji) n'est pas detecte pour le moment,
+retire volontairement (pas utilise cote trading). La fonction
+est_verte_pleine() reste dans le code pour pouvoir le reactiver facilement.
 
 Doji : corps <= SEUIL_DOJI % du range de la bougie, avec des meches des deux cotes.
 
-Definition de Fernanda / Fernando
-----------------------------------
-Fernanda (long)  : apres un Stromboli haussier, cloture au-dessus de la M7
-                    (ascendante) et de la Tenkan (9 periodes), sur HA.
-Fernando (short) : miroir, apres un Stromboli baissier.
+Definition de Fernanda
+-----------------------
+Fernanda (long, seul cote actif) : apres un Stromboli haussier, cloture
+            au-dessus de la M7 (ascendante) et de la Tenkan (9 periodes),
+            sur HA. Fernando/short n'est pas detecte pour le meme motif.
 
 Le Stromboli reste surveille tant qu'aucune bougie ne fait un plus bas (resp.
 plus haut) HA inferieur (resp. superieur) a celui de la bougie precedente.
@@ -387,8 +389,11 @@ def compter_serie(ha, fin, test):
 
 def detecter_stromboli(ha, i):
     """
-    Teste si la bougie d'indice i est le doji d'un Stromboli.
-    Retourne un dict ou None.
+    Teste si la bougie d'indice i est le doji d'un Stromboli haussier.
+
+    Seul le sens haussier est detecte pour le moment (le baissier/short
+    n'est pas utilise cote trading, donc retire pour alleger calcul et
+    alertes).
     """
     if i < MIN_BOUGIES:
         return None
@@ -396,16 +401,11 @@ def detecter_stromboli(ha, i):
         return None
 
     serie_rouge = compter_serie(ha, i - 1, est_rouge_pleine)
-    if serie_rouge >= MIN_BOUGIES:
-        sens = "haussier"
-        longueur = serie_rouge
-    else:
-        serie_verte = compter_serie(ha, i - 1, est_verte_pleine)
-        if serie_verte >= MIN_BOUGIES:
-            sens = "baissier"
-            longueur = serie_verte
-        else:
-            return None
+    if serie_rouge < MIN_BOUGIES:
+        return None
+
+    sens = "haussier"
+    longueur = serie_rouge
 
     etendue = _range(ha, i)
     corps = abs(float(ha["close"].iloc[i]) - float(ha["open"].iloc[i]))
@@ -429,17 +429,17 @@ def detecter_stromboli(ha, i):
 
 
 # ---------------------------------------------------------------------------
-# Fernanda / Fernando
+# Fernanda
 # ---------------------------------------------------------------------------
 #
-# Fernanda (long)  : apres un Stromboli haussier, la bougie cloture au-dessus
-#                     de la M7 (ascendante) et au-dessus de la Tenkan.
-# Fernando (short) : miroir, apres un Stromboli baissier.
+# Fernanda (long) : apres un Stromboli haussier, la bougie cloture au-dessus
+#                    de la M7 (ascendante) et au-dessus de la Tenkan.
+# Fernando/short retire pour le moment (non utilise cote trading).
 #
 # Le Stromboli sous-jacent reste "surveille" tant qu'aucune bougie ne fait
-# un plus bas (resp. plus haut) HA inferieur (resp. superieur) a celui de la
-# bougie precedente. Des qu'une Fernanda/Fernando se declenche, la surveillance
-# de ce Stromboli s'arrete (pas de re-signal sur le meme setup).
+# un plus bas HA inferieur a celui de la bougie precedente. Des qu'une
+# Fernanda se declenche, la surveillance de ce Stromboli s'arrete (pas de
+# re-signal sur le meme setup).
 #
 # Comme 2 ans d'historique sont deja telecharges a chaque scan, tout se
 # recalcule en une seule passe chronologique : aucun etat a stocker entre
@@ -460,26 +460,24 @@ def calcul_tenkan(ha):
 def detecter_fernanda_series(ha):
     """
     Parcourt toute la serie HA et retourne la liste chronologique des
-    occurrences Fernanda/Fernando, chacune liee au Stromboli qui l'a
+    occurrences Fernanda, chacune liee au Stromboli haussier qui l'a
     declenchee.
+
+    Seul le cote long (Fernanda) est detecte : Fernando/baissier est
+    retire pour le moment, non utilise cote trading.
     """
     m7 = calcul_m7(ha)
     tenkan = calcul_tenkan(ha)
     ha_low = ha["low"].to_numpy()
-    ha_high = ha["high"].to_numpy()
     ha_close = ha["close"].to_numpy()
 
     occurrences = []
     actif_haussier = None
-    actif_baissier = None
 
     for i in range(len(ha)):
         trouve = detecter_stromboli(ha, i)
         if trouve:
-            if trouve["sens"] == "haussier":
-                actif_haussier = i
-            else:
-                actif_baissier = i
+            actif_haussier = i
 
         if actif_haussier is not None and i > actif_haussier:
             valide = (
@@ -497,23 +495,6 @@ def detecter_fernanda_series(ha):
                 actif_haussier = None
             elif ha_low[i] < ha_low[i - 1]:
                 actif_haussier = None
-
-        if actif_baissier is not None and i > actif_baissier:
-            valide = (
-                ha_close[i] < m7[i]
-                and m7[i] < m7[i - 1]
-                and ha_close[i] < tenkan[i]
-            )
-            if valide:
-                occurrences.append({
-                    "type": "fernando",
-                    "index": i,
-                    "date": ha.index[i],
-                    "stromboli_date": ha.index[actif_baissier],
-                })
-                actif_baissier = None
-            elif ha_high[i] > ha_high[i - 1]:
-                actif_baissier = None
 
     return occurrences
 
@@ -725,51 +706,47 @@ def formater(signaux, timeframes):
     lignes = [f"<b>STROMBOLI</b> — {horodatage}", ""]
 
     for tf in timeframes:
-        for sens in ("haussier", "baissier"):
-            groupe = [s for s in stromboli if s["tf"] == tf and s["sens"] == sens]
-            if not groupe:
-                continue
+        groupe = [s for s in stromboli if s["tf"] == tf]
+        if not groupe:
+            continue
 
-            etiquette = "DAILY" if tf == "D" else "WEEKLY"
-            fleche = "▲" if sens == "haussier" else "▼"
-            lignes.append(f"<b>{fleche} {etiquette} {sens.upper()}</b> ({len(groupe)})")
+        etiquette = "DAILY" if tf == "D" else "WEEKLY"
+        lignes.append(f"<b>▲ {etiquette} HAUSSIER</b> ({len(groupe)})")
 
-            for signal in sorted(groupe, key=lambda s: s["ticker"]):
-                date = signal["date"].strftime("%d/%m")
-                detail = (
-                    f"corps {signal['ratio_corps'] * 100:.1f}% · "
-                    f"{signal['bougies']} bougies"
-                )
-                ratio = signal.get("volume_ratio")
-                if ratio:
-                    detail += f" · vol x{ratio:.1f}"
-                lignes.append(
-                    f"  <code>{signal['ticker']}</code> — {signal['ha_close']:.2f} "
-                    f"({date})\n     {detail}"
-                )
-            lignes.append("")
+        for signal in sorted(groupe, key=lambda s: s["ticker"]):
+            date = signal["date"].strftime("%d/%m")
+            detail = (
+                f"corps {signal['ratio_corps'] * 100:.1f}% · "
+                f"{signal['bougies']} bougies"
+            )
+            ratio = signal.get("volume_ratio")
+            if ratio:
+                detail += f" · vol x{ratio:.1f}"
+            lignes.append(
+                f"  <code>{signal['ticker']}</code> — {signal['ha_close']:.2f} "
+                f"({date})\n     {detail}"
+            )
+        lignes.append("")
 
     for tf in timeframes:
-        for type_signal in ("fernanda", "fernando"):
-            groupe = [s for s in fernanda if s["tf"] == tf and s["type"] == type_signal]
-            if not groupe:
-                continue
+        groupe = [s for s in fernanda if s["tf"] == tf]
+        if not groupe:
+            continue
 
-            etiquette = "DAILY" if tf == "D" else "WEEKLY"
-            fleche = "▲" if type_signal == "fernanda" else "▼"
-            lignes.append(f"<b>{fleche} {etiquette} {type_signal.upper()}</b> ({len(groupe)})")
+        etiquette = "DAILY" if tf == "D" else "WEEKLY"
+        lignes.append(f"<b>▲ {etiquette} FERNANDA</b> ({len(groupe)})")
 
-            for signal in sorted(groupe, key=lambda s: s["ticker"]):
-                date_strom = signal["stromboli_date"].strftime("%d/%m")
-                detail = f"stromboli du {date_strom}"
-                ratio = signal.get("volume_ratio")
-                if ratio:
-                    detail += f" · vol x{ratio:.1f}"
-                lignes.append(
-                    f"  <code>{signal['ticker']}</code> — {signal['ha_close']:.2f}\n"
-                    f"     {detail}"
-                )
-            lignes.append("")
+        for signal in sorted(groupe, key=lambda s: s["ticker"]):
+            date_strom = signal["stromboli_date"].strftime("%d/%m")
+            detail = f"stromboli du {date_strom}"
+            ratio = signal.get("volume_ratio")
+            if ratio:
+                detail += f" · vol x{ratio:.1f}"
+            lignes.append(
+                f"  <code>{signal['ticker']}</code> — {signal['ha_close']:.2f}\n"
+                f"     {detail}"
+            )
+        lignes.append("")
 
     lignes.append(f"<i>Invalidations et TP a gerer manuellement.</i>")
     return "\n".join(lignes)
