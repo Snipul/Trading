@@ -1,0 +1,63 @@
+name: Stromboli
+
+on:
+  schedule:
+    # Daily du lundi au jeudi, 22h30 UTC (apres cloture US)
+    - cron: "30 22 * * 1-4"
+    # Vendredi 22h30 UTC : Daily + Weekly
+    - cron: "30 22 * * 5"
+  workflow_dispatch:
+    inputs:
+      tf:
+        description: "Unites de temps (D, W ou DW)"
+        required: false
+        default: "DW"
+      univers:
+        description: "tout, us, euronext, paris, amsterdam, bruxelles"
+        required: false
+        default: "tout"
+      dry_run:
+        description: "Ne pas envoyer sur Telegram"
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Installer les dependances
+        run: pip install yfinance pandas numpy requests lxml
+
+      - name: Determiner les unites de temps
+        id: params
+        run: |
+          if [ -n "${{ github.event.inputs.tf }}" ]; then
+            echo "tf=${{ github.event.inputs.tf }}" >> $GITHUB_OUTPUT
+          elif [ "$(date -u +%u)" = "5" ]; then
+            echo "tf=DW" >> $GITHUB_OUTPUT
+          else
+            echo "tf=D" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Scan Stromboli
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          STROMBOLI_MIN_BOUGIES: "3"
+          STROMBOLI_SEUIL_DOJI: "0.05"
+          STROMBOLI_TOLERANCE: "0.0"
+        run: |
+          python stromboli.py \
+            --tf ${{ steps.params.outputs.tf }} \
+            --univers ${{ github.event.inputs.univers || 'tout' }} \
+            ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
