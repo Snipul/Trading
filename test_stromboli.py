@@ -86,8 +86,7 @@ baissier = cadre_ha([
     [110.0, 112.0, 108.0, 110.05],
 ])
 resultat = S.detecter_stromboli(baissier, 3)
-verifier("3 vertes + doji -> stromboli", resultat is not None)
-verifier("sens baissier", resultat and resultat["sens"] == "baissier")
+verifier("3 vertes + doji -> aucun signal (baissier desactive)", resultat is None)
 
 # seulement 2 rouges -> rien
 deux_rouges = cadre_ha([
@@ -168,10 +167,9 @@ verifier(
 
 ha_baissier = scenario_fernanda(sens="baissier")
 occurrences_b = S.detecter_fernanda_series(ha_baissier)
-verifier("fernando detecte apres stromboli baissier", len(occurrences_b) >= 1)
 verifier(
-    "fernando posterieur au doji (index 12)",
-    occurrences_b and occurrences_b[0]["type"] == "fernando" and occurrences_b[0]["index"] > 12,
+    "aucun fernando (baissier desactive, pas de stromboli baissier source)",
+    len(occurrences_b) == 0,
 )
 
 # calcul_m7 / calcul_tenkan : verification directe sur une serie simple
