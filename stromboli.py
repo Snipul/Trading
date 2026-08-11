@@ -83,8 +83,19 @@ UA = {"User-Agent": "Mozilla/5.0 (compatible; stromboli-bot/1.0)"}
 # Univers
 # ---------------------------------------------------------------------------
 
+def _csv_colonne(url, colonne):
+    """Recupere une colonne de tickers depuis un CSV distant."""
+    reponse = requests.get(url, headers=UA, timeout=30)
+    reponse.raise_for_status()
+    table = pd.read_csv(io.StringIO(reponse.text))
+    if colonne not in table.columns:
+        return []
+    valeurs = table[colonne].dropna().astype(str).tolist()
+    return [v.strip().replace(".", "-").upper() for v in valeurs if v.strip()]
+
+
 def _wikipedia_table(url, colonne):
-    """Recupere une colonne de tickers depuis une table Wikipedia."""
+    """Recupere une colonne de tickers depuis une table Wikipedia (repli)."""
     reponse = requests.get(url, headers=UA, timeout=30)
     reponse.raise_for_status()
     tables = pd.read_html(io.StringIO(reponse.text))
@@ -96,21 +107,46 @@ def _wikipedia_table(url, colonne):
 
 
 def univers_us():
-    """Nasdaq 100 + S&P 500 depuis Wikipedia, dedoublonne."""
+    """
+    Nasdaq 100 + S&P 500, dedoublonne.
+
+    Source principale : yfiua/index-constituents (CSV statique, mis a jour
+    mensuellement, tickers deja au format Yahoo Finance). Wikipedia sert de
+    repli si ce service est indisponible : format HTML plus fragile, mais
+    en cas de double echec on tombe sur tickers_us.txt en dernier recours.
+    """
     tickers = []
-    sources = [
-        ("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies", "Symbol"),
-        ("https://en.wikipedia.org/wiki/Nasdaq-100", "Ticker"),
-        ("https://en.wikipedia.org/wiki/Nasdaq-100", "Symbol"),
+
+    sources_csv = [
+        ("https://yfiua.github.io/index-constituents/constituents-sp500.csv", "Symbol"),
+        ("https://yfiua.github.io/index-constituents/constituents-nasdaq100.csv", "Symbol"),
     ]
-    for url, colonne in sources:
+    for url, colonne in sources_csv:
         try:
-            trouves = _wikipedia_table(url, colonne)
+            trouves = _csv_colonne(url, colonne)
             if trouves:
                 tickers.extend(trouves)
-                print(f"  {len(trouves)} tickers depuis {url.split('/')[-1]} [{colonne}]")
+                print(f"  {len(trouves)} tickers depuis {url.split('/')[-1]}")
+            else:
+                print(f"  0 ticker depuis {url.split('/')[-1]} (colonne absente)")
         except Exception as erreur:
             print(f"  echec {url.split('/')[-1]}: {erreur}")
+
+    if not tickers:
+        print("  sources CSV indisponibles, repli sur Wikipedia")
+        sources_wiki = [
+            ("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies", "Symbol"),
+            ("https://en.wikipedia.org/wiki/List_of_NASDAQ-100_companies", "Ticker"),
+            ("https://en.wikipedia.org/wiki/List_of_NASDAQ-100_companies", "Symbol"),
+        ]
+        for url, colonne in sources_wiki:
+            try:
+                trouves = _wikipedia_table(url, colonne)
+                if trouves:
+                    tickers.extend(trouves)
+                    print(f"  {len(trouves)} tickers depuis {url.split('/')[-1]} [{colonne}]")
+            except Exception as erreur:
+                print(f"  echec {url.split('/')[-1]}: {erreur}")
 
     if not tickers:
         secours = RACINE / "tickers_us.txt"
