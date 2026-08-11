@@ -123,8 +123,105 @@ verifier("doji non contigu -> aucun signal",
          S.detecter_stromboli(non_contigu, 4) is None)
 
 
-# --- 4. Agregation hebdomadaire --------------------------------------------
-print("\n4. Agregation hebdomadaire")
+# --- 6. Fernanda / Fernando -------------------------------------------------
+print("\n4. Fernanda / Fernando")
+
+
+def scenario_fernanda(corps_doji=0.1, sens="haussier"):
+    """Filler (9) + 3 bougies pleines + doji + reprise franche dans le sens oppose."""
+    index = pd.date_range("2024-01-01", periods=25, freq="D")
+    lignes = [[100.0, 101.0, 99.0, 100.0] for _ in range(9)]
+
+    if sens == "haussier":
+        lignes += [
+            [100.0, 100.0, 96.0, 97.0],
+            [97.0, 97.0, 93.0, 94.0],
+            [94.0, 94.0, 90.0, 91.0],
+        ]
+        lignes.append([91.0, 93.0, 89.0, 91.0 + corps_doji])
+        for k in range(12):
+            base = 92 + k * 4
+            lignes.append([base, base + 6, base - 1, base + 5])
+    else:
+        lignes += [
+            [100.0, 104.0, 100.0, 103.0],
+            [103.0, 107.0, 103.0, 106.0],
+            [106.0, 110.0, 106.0, 109.0],
+        ]
+        lignes.append([109.0, 111.0, 107.0, 109.0 - corps_doji])
+        for k in range(12):
+            base = 108 - k * 4
+            lignes.append([base, base + 1, base - 6, base - 5])
+
+    ha = pd.DataFrame(lignes, columns=["open", "high", "low", "close"], index=index[: len(lignes)])
+    ha["volume"] = 1_000_000.0
+    return ha
+
+
+ha_haussier = scenario_fernanda(sens="haussier")
+occurrences = S.detecter_fernanda_series(ha_haussier)
+verifier("fernanda detectee apres stromboli haussier", len(occurrences) >= 1)
+verifier(
+    "fernanda posterieure au doji (index 12)",
+    occurrences and occurrences[0]["type"] == "fernanda" and occurrences[0]["index"] > 12,
+)
+
+ha_baissier = scenario_fernanda(sens="baissier")
+occurrences_b = S.detecter_fernanda_series(ha_baissier)
+verifier("fernando detecte apres stromboli baissier", len(occurrences_b) >= 1)
+verifier(
+    "fernando posterieur au doji (index 12)",
+    occurrences_b and occurrences_b[0]["type"] == "fernando" and occurrences_b[0]["index"] > 12,
+)
+
+# calcul_m7 / calcul_tenkan : verification directe sur une serie simple
+serie_simple = cadre_ha([[100.0, 101.0, 99.0, 100.0 + i] for i in range(10)])
+m7 = S.calcul_m7(serie_simple)
+verifier("m7 = NaN avant 7 bougies", np.isnan(m7[5]))
+verifier(
+    "m7 correcte a l'indice 6",
+    np.isclose(m7[6], serie_simple["close"].iloc[0:7].mean()),
+)
+
+tenkan = S.calcul_tenkan(serie_simple)
+verifier("tenkan = NaN avant 9 bougies", np.isnan(tenkan[7]))
+verifier(
+    "tenkan correcte a l'indice 9",
+    np.isclose(
+        tenkan[9],
+        (serie_simple["high"].iloc[1:10].max() + serie_simple["low"].iloc[1:10].min()) / 2,
+    ),
+)
+
+# Pas de re-signal : une fois la Fernanda declenchee, le meme Stromboli
+# ne doit pas re-emettre tant qu'aucun nouveau Stromboli n'apparait.
+dates_fernanda = [o["stromboli_date"] for o in occurrences if o["type"] == "fernanda"]
+verifier(
+    "un seul stromboli source pour la fernanda detectee",
+    len(set(dates_fernanda)) == len(dates_fernanda),
+)
+
+# Invalidation : une bougie qui fait un nouveau plus bas HA juste apres le
+# doji doit desactiver la surveillance sans emettre de fernanda.
+index_inv = pd.date_range("2024-02-01", periods=14, freq="D")
+lignes_inv = [[100.0, 101.0, 99.0, 100.0] for _ in range(9)]
+lignes_inv += [
+    [100.0, 100.0, 96.0, 97.0],
+    [97.0, 97.0, 93.0, 94.0],
+    [94.0, 94.0, 90.0, 91.0],
+]
+lignes_inv.append([91.0, 93.0, 89.0, 91.1])  # doji, low=89
+lignes_inv.append([91.0, 92.0, 87.0, 88.0])  # nouveau plus bas -> invalidation
+ha_inv = pd.DataFrame(
+    lignes_inv, columns=["open", "high", "low", "close"], index=index_inv[: len(lignes_inv)]
+)
+ha_inv["volume"] = 1_000_000.0
+occ_inv = S.detecter_fernanda_series(ha_inv)
+verifier("invalidation : aucune fernanda apres cassure du plus bas", len(occ_inv) == 0)
+
+
+
+print("\n5. Agregation hebdomadaire")
 jours = pd.date_range("2024-01-01", periods=15, freq="B")
 quotidien = pd.DataFrame(
     {
@@ -148,10 +245,10 @@ verifier("semaine en cours incomplete retiree",
          hebdo.index[-1] <= quotidien.index[-1])
 
 
-# --- 5. Formatage du message -----------------------------------------------
-print("\n5. Formatage du message")
+# --- 6. Formatage du message -----------------------------------------------
+print("\n6. Formatage du message")
 signaux = [{
-    "ticker": "AAPL", "place": "US", "tf": "D", "sens": "haussier",
+    "type": "stromboli", "ticker": "AAPL", "place": "US", "tf": "D", "sens": "haussier",
     "bougies": 4, "date": pd.Timestamp("2026-08-10"), "ha_close": 231.45,
     "ratio_corps": 0.021, "volume": 5e7, "volume_ratio": 1.8,
 }]
@@ -160,6 +257,16 @@ verifier("ticker present", "AAPL" in message)
 verifier("sens present", "HAUSSIER" in message)
 verifier("volume present", "x1.8" in message)
 verifier("message vide gere", "Aucun signal" in S.formater([], ["D"]))
+
+signaux_fern = [{
+    "type": "fernanda", "ticker": "MSFT", "place": "US", "tf": "D",
+    "date": pd.Timestamp("2026-08-10"), "ha_close": 420.0,
+    "stromboli_date": pd.Timestamp("2026-08-05"), "volume_ratio": 1.3,
+}]
+message_fern = S.formater(signaux_fern, ["D"])
+verifier("fernanda : ticker present", "MSFT" in message_fern)
+verifier("fernanda : libelle present", "FERNANDA" in message_fern)
+verifier("fernanda : date stromboli reference", "05/08" in message_fern)
 
 
 print("\n" + "=" * 50)
