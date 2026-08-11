@@ -2,10 +2,11 @@ name: Stromboli
 
 on:
   schedule:
-    # Daily du lundi au jeudi, 22h30 UTC (apres cloture US)
-    - cron: "30 22 * * 1-4"
-    # Vendredi 22h30 UTC : Daily + Weekly
-    - cron: "30 22 * * 5"
+    # Daily du lundi au jeudi, 21h30 UTC = 23h30 heure d'ete / 22h30 heure d'hiver
+    # (marge confortable apres cloture US toute l'annee, sans ajustement DST)
+    - cron: "30 21 * * 1-4"
+    # Vendredi, meme horaire : Daily + Weekly
+    - cron: "30 21 * * 5"
   workflow_dispatch:
     inputs:
       tf:
