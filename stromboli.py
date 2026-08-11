@@ -551,22 +551,27 @@ def envoyer_telegram(texte, dry_run=False):
 
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     for morceau in decouper(texte, 3800):
-        try:
-            reponse = requests.post(
-                url,
-                data={
-                    "chat_id": TELEGRAM_CHAT_ID,
-                    "text": morceau,
-                    "parse_mode": "HTML",
-                    "disable_web_page_preview": True,
-                },
-                timeout=30,
-            )
-            if reponse.status_code != 200:
+        envoye = False
+        for tentative in range(3):
+            try:
+                reponse = requests.post(
+                    url,
+                    data={
+                        "chat_id": TELEGRAM_CHAT_ID,
+                        "text": morceau,
+                        "parse_mode": "HTML",
+                        "disable_web_page_preview": True,
+                    },
+                    timeout=30,
+                )
+                if reponse.status_code == 200:
+                    envoye = True
+                    break
                 print(f"Telegram HTTP {reponse.status_code} : {reponse.text[:200]}")
-                return False
-        except Exception as erreur:
-            print(f"Telegram erreur : {erreur}")
+            except Exception as erreur:
+                print(f"Telegram erreur (tentative {tentative + 1}/3) : {erreur}")
+                time.sleep(3 * (tentative + 1))
+        if not envoye:
             return False
         time.sleep(0.5)
     return True
