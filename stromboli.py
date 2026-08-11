@@ -16,6 +16,17 @@ Baissier  : >= 3 bougies HA vertes PLEINES consecutives (aucune meche basse,
 
 Doji : corps <= SEUIL_DOJI % du range de la bougie, avec des meches des deux cotes.
 
+Definition de Fernanda / Fernando
+----------------------------------
+Fernanda (long)  : apres un Stromboli haussier, cloture au-dessus de la M7
+                    (ascendante) et de la Tenkan (9 periodes), sur HA.
+Fernando (short) : miroir, apres un Stromboli baissier.
+
+Le Stromboli reste surveille tant qu'aucune bougie ne fait un plus bas (resp.
+plus haut) HA inferieur (resp. superieur) a celui de la bougie precedente.
+Recalcule integralement a chaque scan a partir des 2 ans d'historique
+telecharges : aucun etat n'est stocke entre deux executions.
+
 Le bot signale la figure. Les invalidations et les take-profit sont geres
 manuellement par l'operateur.
 
@@ -418,8 +429,96 @@ def detecter_stromboli(ha, i):
 
 
 # ---------------------------------------------------------------------------
-# Telechargement
+# Fernanda / Fernando
 # ---------------------------------------------------------------------------
+#
+# Fernanda (long)  : apres un Stromboli haussier, la bougie cloture au-dessus
+#                     de la M7 (ascendante) et au-dessus de la Tenkan.
+# Fernando (short) : miroir, apres un Stromboli baissier.
+#
+# Le Stromboli sous-jacent reste "surveille" tant qu'aucune bougie ne fait
+# un plus bas (resp. plus haut) HA inferieur (resp. superieur) a celui de la
+# bougie precedente. Des qu'une Fernanda/Fernando se declenche, la surveillance
+# de ce Stromboli s'arrete (pas de re-signal sur le meme setup).
+#
+# Comme 2 ans d'historique sont deja telecharges a chaque scan, tout se
+# recalcule en une seule passe chronologique : aucun etat a stocker entre
+# deux executions du bot.
+
+def calcul_m7(ha):
+    """Moyenne mobile simple 7 periodes sur la cloture HA."""
+    return ha["close"].rolling(7).mean().to_numpy()
+
+
+def calcul_tenkan(ha):
+    """Tenkan-sen Ichimoku standard : (plus haut 9 + plus bas 9) / 2, sur HA."""
+    haut9 = ha["high"].rolling(9).max()
+    bas9 = ha["low"].rolling(9).min()
+    return ((haut9 + bas9) / 2.0).to_numpy()
+
+
+def detecter_fernanda_series(ha):
+    """
+    Parcourt toute la serie HA et retourne la liste chronologique des
+    occurrences Fernanda/Fernando, chacune liee au Stromboli qui l'a
+    declenchee.
+    """
+    m7 = calcul_m7(ha)
+    tenkan = calcul_tenkan(ha)
+    ha_low = ha["low"].to_numpy()
+    ha_high = ha["high"].to_numpy()
+    ha_close = ha["close"].to_numpy()
+
+    occurrences = []
+    actif_haussier = None
+    actif_baissier = None
+
+    for i in range(len(ha)):
+        trouve = detecter_stromboli(ha, i)
+        if trouve:
+            if trouve["sens"] == "haussier":
+                actif_haussier = i
+            else:
+                actif_baissier = i
+
+        if actif_haussier is not None and i > actif_haussier:
+            valide = (
+                ha_close[i] > m7[i]
+                and m7[i] > m7[i - 1]
+                and ha_close[i] > tenkan[i]
+            )
+            if valide:
+                occurrences.append({
+                    "type": "fernanda",
+                    "index": i,
+                    "date": ha.index[i],
+                    "stromboli_date": ha.index[actif_haussier],
+                })
+                actif_haussier = None
+            elif ha_low[i] < ha_low[i - 1]:
+                actif_haussier = None
+
+        if actif_baissier is not None and i > actif_baissier:
+            valide = (
+                ha_close[i] < m7[i]
+                and m7[i] < m7[i - 1]
+                and ha_close[i] < tenkan[i]
+            )
+            if valide:
+                occurrences.append({
+                    "type": "fernando",
+                    "index": i,
+                    "date": ha.index[i],
+                    "stromboli_date": ha.index[actif_baissier],
+                })
+                actif_baissier = None
+            elif ha_high[i] > ha_high[i - 1]:
+                actif_baissier = None
+
+    return occurrences
+
+
+
 
 def telecharger(tickers, periode):
     """Telecharge en lots. Retourne {ticker: DataFrame OHLCV}."""
@@ -486,8 +585,30 @@ def scanner(univers, timeframes, periode=PERIODE_DAILY):
                     trouve["ticker"] = ticker
                     trouve["place"] = place
                     trouve["tf"] = tf
+                    trouve["type"] = "stromboli"
                     signaux.append(trouve)
                     print(f"  >> STROMBOLI {tf} {trouve['sens']} : {ticker}")
+
+                occurrences = detecter_fernanda_series(ha)
+                if occurrences and occurrences[-1]["index"] == len(ha) - 1:
+                    fern = occurrences[-1]
+                    signal_fern = {
+                        "type": fern["type"],
+                        "ticker": ticker,
+                        "place": place,
+                        "tf": tf,
+                        "date": fern["date"],
+                        "ha_close": float(ha["close"].iloc[-1]),
+                        "stromboli_date": fern["stromboli_date"],
+                    }
+                    if "volume" in ha.columns:
+                        i = len(ha) - 1
+                        volume = float(ha["volume"].iloc[i])
+                        debut = max(0, i - 20)
+                        moyenne = float(ha["volume"].iloc[debut:i].mean()) if i > debut else 0.0
+                        signal_fern["volume_ratio"] = volume / moyenne if moyenne > 0 else None
+                    signaux.append(signal_fern)
+                    print(f"  >> {fern['type'].upper()} {tf} : {ticker}")
 
     return signaux
 
@@ -595,6 +716,9 @@ def decouper(texte, taille):
 def formater(signaux, timeframes):
     horodatage = datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M UTC")
 
+    stromboli = [s for s in signaux if s.get("type") == "stromboli"]
+    fernanda = [s for s in signaux if s.get("type") in ("fernanda", "fernando")]
+
     if not signaux:
         return f"<b>STROMBOLI</b> — {horodatage}\n\nAucun signal sur {', '.join(timeframes)}."
 
@@ -602,7 +726,7 @@ def formater(signaux, timeframes):
 
     for tf in timeframes:
         for sens in ("haussier", "baissier"):
-            groupe = [s for s in signaux if s["tf"] == tf and s["sens"] == sens]
+            groupe = [s for s in stromboli if s["tf"] == tf and s["sens"] == sens]
             if not groupe:
                 continue
 
@@ -622,6 +746,28 @@ def formater(signaux, timeframes):
                 lignes.append(
                     f"  <code>{signal['ticker']}</code> — {signal['ha_close']:.2f} "
                     f"({date})\n     {detail}"
+                )
+            lignes.append("")
+
+    for tf in timeframes:
+        for type_signal in ("fernanda", "fernando"):
+            groupe = [s for s in fernanda if s["tf"] == tf and s["type"] == type_signal]
+            if not groupe:
+                continue
+
+            etiquette = "DAILY" if tf == "D" else "WEEKLY"
+            fleche = "▲" if type_signal == "fernanda" else "▼"
+            lignes.append(f"<b>{fleche} {etiquette} {type_signal.upper()}</b> ({len(groupe)})")
+
+            for signal in sorted(groupe, key=lambda s: s["ticker"]):
+                date_strom = signal["stromboli_date"].strftime("%d/%m")
+                detail = f"stromboli du {date_strom}"
+                ratio = signal.get("volume_ratio")
+                if ratio:
+                    detail += f" · vol x{ratio:.1f}"
+                lignes.append(
+                    f"  <code>{signal['ticker']}</code> — {signal['ha_close']:.2f}\n"
+                    f"     {detail}"
                 )
             lignes.append("")
 
@@ -709,10 +855,15 @@ def main():
         with open(resume, "a", encoding="utf-8") as fichier:
             fichier.write(f"## Stromboli — {len(signaux)} signal(aux)\n\n")
             for signal in signaux:
-                fichier.write(
-                    f"- `{signal['ticker']}` {signal['tf']} {signal['sens']} "
-                    f"({signal['bougies']} bougies)\n"
-                )
+                if signal["type"] == "stromboli":
+                    fichier.write(
+                        f"- `{signal['ticker']}` {signal['tf']} stromboli {signal['sens']} "
+                        f"({signal['bougies']} bougies)\n"
+                    )
+                else:
+                    fichier.write(
+                        f"- `{signal['ticker']}` {signal['tf']} {signal['type']}\n"
+                    )
 
     return 0
 
