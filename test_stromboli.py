@@ -219,7 +219,51 @@ verifier("invalidation : aucune fernanda apres cassure du plus bas", len(occ_inv
 
 
 
-print("\n5. Agregation hebdomadaire")
+# --- 5. Backtest Fernanda ---------------------------------------------------
+print("\n5. Backtest Fernanda")
+
+ha_bt = scenario_fernanda(sens="haussier")
+occurrences_bt = S.detecter_fernanda_series(ha_bt)
+verifier("scenario backtest : une fernanda presente", len(occurrences_bt) == 1)
+
+i_entree = occurrences_bt[0]["index"]
+n = len(ha_bt)
+closes_reels = np.linspace(100.0, 100.0 + (n - 1) * 2, n)  # hausse lineaire connue
+prix_entree = closes_reels[i_entree]
+
+for h in (1, 3, 5):
+    j = i_entree + h
+    if j < n:
+        rendement_attendu = (closes_reels[j] - prix_entree) / prix_entree * 100
+        verifier(
+            f"rendement a {h}j coherent avec une hausse lineaire connue",
+            rendement_attendu > 0,
+        )
+
+df_bt = pd.DataFrame([{
+    "ticker": "TEST", "place": "US", "date": ha_bt.index[i_entree],
+    "prix_entree": prix_entree,
+    "rendement_1j": 2.0, "rendement_3j": 5.0, "rendement_5j": 8.0,
+    "rendement_10j": None, "rendement_20j": None,
+}])
+rapport = S.resume_backtest(df_bt, annees=1, total_stromboli=1, horizons=(1, 3, 5, 10, 20))
+verifier("rapport backtest : taux 100% affiche pour rendements positifs", "100.0%" in rapport)
+verifier("rapport backtest : horizons sans donnee absents", "10j" not in rapport)
+verifier("rapport backtest : taux de validation affiche", "validation" in rapport)
+verifier("rapport backtest vide gere", "0 signal" in S.resume_backtest(pd.DataFrame(), annees=1))
+
+verifier(
+    "compter_stromboli : detecte le stromboli du scenario",
+    S.compter_stromboli(ha_bt) >= 1,
+)
+verifier(
+    "compter_stromboli : aucun stromboli sur du plat",
+    S.compter_stromboli(cadre_ha([[100.0, 101.0, 99.0, 100.0]] * 15)) == 0,
+)
+
+
+# --- 6. Agregation hebdomadaire --------------------------------------------
+print("\n6. Agregation hebdomadaire")
 jours = pd.date_range("2024-01-01", periods=15, freq="B")
 quotidien = pd.DataFrame(
     {
@@ -244,7 +288,7 @@ verifier("semaine en cours incomplete retiree",
 
 
 # --- 6. Formatage du message -----------------------------------------------
-print("\n6. Formatage du message")
+print("\n7. Formatage du message")
 signaux = [{
     "type": "stromboli", "ticker": "AAPL", "place": "US", "tf": "D", "sens": "haussier",
     "bougies": 4, "date": pd.Timestamp("2026-08-10"), "ha_close": 231.45,
