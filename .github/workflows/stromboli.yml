@@ -30,6 +30,10 @@ on:
         description: "Diagnostic detaille pour un ticker (ex: ELI.BR), vide = desactive"
         required: false
         default: ""
+      seuil_doji:
+        description: "Seuil du doji, fraction du range (0.05 = 5%)"
+        required: false
+        default: "0.05"
 
 jobs:
   scan:
@@ -64,7 +68,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           STROMBOLI_MIN_BOUGIES: "3"
-          STROMBOLI_SEUIL_DOJI: "0.05"
+          STROMBOLI_SEUIL_DOJI: ${{ github.event.inputs.seuil_doji || '0.05' }}
           STROMBOLI_TOLERANCE: "0.0"
         run: |
           python stromboli.py \
@@ -76,7 +80,7 @@ jobs:
         if: github.event.inputs.backtest_annees != '0' && github.event.inputs.backtest_annees != ''
         env:
           STROMBOLI_MIN_BOUGIES: "3"
-          STROMBOLI_SEUIL_DOJI: "0.05"
+          STROMBOLI_SEUIL_DOJI: ${{ github.event.inputs.seuil_doji || '0.05' }}
           STROMBOLI_TOLERANCE: "0.0"
         run: |
           python stromboli.py \
@@ -95,7 +99,7 @@ jobs:
         if: github.event.inputs.diagnostic_ticker != '' && github.event.inputs.diagnostic_ticker != null
         env:
           STROMBOLI_MIN_BOUGIES: "3"
-          STROMBOLI_SEUIL_DOJI: "0.05"
+          STROMBOLI_SEUIL_DOJI: ${{ github.event.inputs.seuil_doji || '0.05' }}
           STROMBOLI_TOLERANCE: "0.0"
         run: |
           python stromboli.py \
