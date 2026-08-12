@@ -569,14 +569,23 @@ def detecter_fernanda_series(ha):
 HORIZONS_BACKTEST = (1, 3, 5, 10, 20)
 
 
+def compter_stromboli(ha):
+    """Nombre total de Stromboli (doji confirmes) sur toute la serie."""
+    return sum(1 for i in range(len(ha)) if detecter_stromboli(ha, i) is not None)
+
+
 def backtest_fernanda(univers, annees, horizons=HORIZONS_BACKTEST):
     """
     Parcourt l'historique Daily de tout l'univers et releve, pour chaque
     Fernanda, le rendement reel a chaque horizon (en jours de bourse).
-    Retourne un DataFrame, une ligne par signal.
+    Retourne (DataFrame des Fernanda, nombre total de Stromboli detectes).
+    Le ratio Fernanda/Stromboli donne le taux de validation : utile pour
+    comparer l'effet d'un seuil de doji different (plus large = plus de
+    Stromboli, mais pas forcement plus de Fernanda de qualite).
     """
     periode = f"{annees}y"
     lignes = []
+    total_stromboli = 0
 
     for place, tickers in univers.items():
         print(f"\n[{place}] telechargement de {len(tickers)} tickers ({periode})")
@@ -588,6 +597,8 @@ def backtest_fernanda(univers, annees, horizons=HORIZONS_BACKTEST):
                 continue
 
             ha = heikin_ashi(cadre)
+            total_stromboli += compter_stromboli(ha)
+
             occurrences = detecter_fernanda_series(ha)
             if not occurrences:
                 continue
@@ -612,14 +623,25 @@ def backtest_fernanda(univers, annees, horizons=HORIZONS_BACKTEST):
                         ligne[f"rendement_{h}j"] = None
                 lignes.append(ligne)
 
-    return pd.DataFrame(lignes)
+    return pd.DataFrame(lignes), total_stromboli
 
 
-def resume_backtest(df, annees, horizons=HORIZONS_BACKTEST):
+def resume_backtest(df, annees, total_stromboli=None, horizons=HORIZONS_BACKTEST):
     if df.empty:
-        return "Aucune Fernanda sur la periode."
+        entete = f"Backtest Fernanda — 0 signal sur {annees} ans"
+        if total_stromboli is not None:
+            entete += f" ({total_stromboli} Stromboli detectes, 0 valide)"
+        return entete
 
-    sortie = [f"Backtest Fernanda — {len(df)} signaux sur {annees} ans", ""]
+    sortie = [f"Backtest Fernanda — {len(df)} signaux sur {annees} ans"]
+    if total_stromboli is not None and total_stromboli > 0:
+        taux_validation = len(df) / total_stromboli * 100
+        sortie.append(
+            f"  Stromboli detectes : {total_stromboli} · "
+            f"Fernanda : {len(df)} · "
+            f"taux de validation {taux_validation:.1f}%"
+        )
+    sortie.append("")
 
     for h in horizons:
         col = f"rendement_{h}j"
@@ -1099,8 +1121,8 @@ def main():
         return 0
 
     if args.backtest:
-        df = backtest_fernanda(univers, args.backtest)
-        rapport = resume_backtest(df, args.backtest)
+        df, total_stromboli = backtest_fernanda(univers, args.backtest)
+        rapport = resume_backtest(df, args.backtest, total_stromboli)
         print("\n" + rapport)
         chemin = RACINE / "backtest_fernanda.csv"
         if not df.empty:
