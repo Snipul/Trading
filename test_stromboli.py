@@ -246,20 +246,22 @@ df_bt = pd.DataFrame([{
     "rendement_1j": 2.0, "rendement_3j": 5.0, "rendement_5j": 8.0,
     "rendement_10j": None, "rendement_20j": None,
 }])
-rapport = S.resume_backtest(df_bt, annees=1, total_stromboli=1, horizons=(1, 3, 5, 10, 20))
-verifier("rapport backtest : taux 100% affiche pour rendements positifs", "100.0%" in rapport)
+df_bt_strom = pd.DataFrame([{
+    "ticker": "TEST", "place": "US", "date": ha_bt.index[12],
+    "prix_entree": prix_entree,
+    "rendement_1j": -1.0, "rendement_3j": 1.0, "rendement_5j": 3.0,
+    "rendement_10j": None, "rendement_20j": None,
+}])
+rapport = S.resume_backtest(df_bt_strom, df_bt, annees=1, horizons=(1, 3, 5, 10, 20))
+verifier("rapport backtest : taux 100% affiche pour la fernanda", "100.0%" in rapport)
 verifier("rapport backtest : horizons sans donnee absents", "10j" not in rapport)
 verifier("rapport backtest : taux de validation affiche", "validation" in rapport)
-verifier("rapport backtest vide gere", "0 signal" in S.resume_backtest(pd.DataFrame(), annees=1))
+verifier("rapport backtest : section entree directe presente", "ENTREE DIRECTE" in rapport)
+verifier("rapport backtest : section fernanda presente", "ENTREE A LA FERNANDA" in rapport)
 
-verifier(
-    "compter_stromboli : detecte le stromboli du scenario",
-    S.compter_stromboli(ha_bt) >= 1,
-)
-verifier(
-    "compter_stromboli : aucun stromboli sur du plat",
-    S.compter_stromboli(cadre_ha([[100.0, 101.0, 99.0, 100.0]] * 15)) == 0,
-)
+vide = S.resume_backtest(pd.DataFrame(), pd.DataFrame(), annees=1)
+verifier("rapport backtest vide gere", "aucun signal exploitable" in vide)
+verifier("rapport backtest vide : 0 stromboli affiche", "Stromboli detectes : 0" in vide)
 
 
 # --- 6. Agregation hebdomadaire --------------------------------------------
