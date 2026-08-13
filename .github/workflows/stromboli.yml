@@ -92,7 +92,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: backtest-fernanda
-          path: backtest_fernanda.csv
+          path: |
+            backtest_stromboli.csv
+            backtest_fernanda.csv
           if-no-files-found: ignore
 
       - name: Diagnostic ticker
