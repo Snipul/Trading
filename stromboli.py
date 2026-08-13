@@ -569,23 +569,22 @@ def detecter_fernanda_series(ha):
 HORIZONS_BACKTEST = (1, 3, 5, 10, 20)
 
 
-def compter_stromboli(ha):
-    """Nombre total de Stromboli (doji confirmes) sur toute la serie."""
-    return sum(1 for i in range(len(ha)) if detecter_stromboli(ha, i) is not None)
-
-
 def backtest_fernanda(univers, annees, horizons=HORIZONS_BACKTEST):
     """
-    Parcourt l'historique Daily de tout l'univers et releve, pour chaque
-    Fernanda, le rendement reel a chaque horizon (en jours de bourse).
-    Retourne (DataFrame des Fernanda, nombre total de Stromboli detectes).
-    Le ratio Fernanda/Stromboli donne le taux de validation : utile pour
-    comparer l'effet d'un seuil de doji different (plus large = plus de
-    Stromboli, mais pas forcement plus de Fernanda de qualite).
+    Parcourt l'historique Daily de tout l'univers et releve le rendement reel
+    (prix de cloture reel, pas HA) a plusieurs horizons, pour deux points
+    d'entree possibles :
+      - direct a la cloture du Stromboli (doji), sans attendre de confirmation
+      - a la validation Fernanda (cloture au-dessus M7 ascendante + Tenkan)
+    Ca permet de repondre a la question : attendre la Fernanda ameliore-t-il
+    reellement les resultats, ou est-ce que trader des le Stromboli marche
+    aussi bien (voire mieux, avec un point d'entree plus tot) ?
+
+    Retourne (DataFrame Stromboli, DataFrame Fernanda), une ligne par signal.
     """
     periode = f"{annees}y"
-    lignes = []
-    total_stromboli = 0
+    lignes_stromboli = []
+    lignes_fernanda = []
 
     for place, tickers in univers.items():
         print(f"\n[{place}] telechargement de {len(tickers)} tickers ({periode})")
@@ -597,68 +596,90 @@ def backtest_fernanda(univers, annees, horizons=HORIZONS_BACKTEST):
                 continue
 
             ha = heikin_ashi(cadre)
-            total_stromboli += compter_stromboli(ha)
-
-            occurrences = detecter_fernanda_series(ha)
-            if not occurrences:
-                continue
-
             closes_reels = cadre["Close"].to_numpy(dtype=float)
             n = len(closes_reels)
 
-            for occ in occurrences:
-                i = occ["index"]
+            def rendements(i):
                 prix_entree = closes_reels[i]
-                ligne = {
-                    "ticker": ticker,
-                    "place": place,
-                    "date": occ["date"],
-                    "prix_entree": prix_entree,
-                }
+                ligne = {"prix_entree": prix_entree}
                 for h in horizons:
                     j = i + h
                     if j < n and prix_entree > 0:
                         ligne[f"rendement_{h}j"] = (closes_reels[j] - prix_entree) / prix_entree * 100
                     else:
                         ligne[f"rendement_{h}j"] = None
-                lignes.append(ligne)
+                return ligne
 
-    return pd.DataFrame(lignes), total_stromboli
+            # Tous les Stromboli, qu'ils soient ensuite valides par une Fernanda ou pas
+            for i in range(len(ha)):
+                trouve = detecter_stromboli(ha, i)
+                if trouve is None:
+                    continue
+                lignes_stromboli.append({
+                    "ticker": ticker, "place": place, "date": trouve["date"],
+                    **rendements(i),
+                })
+
+            # Fernanda (entree confirmee)
+            for occ in detecter_fernanda_series(ha):
+                i = occ["index"]
+                lignes_fernanda.append({
+                    "ticker": ticker, "place": place, "date": occ["date"],
+                    "stromboli_date": occ["stromboli_date"],
+                    **rendements(i),
+                })
+
+    return pd.DataFrame(lignes_stromboli), pd.DataFrame(lignes_fernanda)
 
 
-def resume_backtest(df, annees, total_stromboli=None, horizons=HORIZONS_BACKTEST):
-    if df.empty:
-        entete = f"Backtest Fernanda — 0 signal sur {annees} ans"
-        if total_stromboli is not None:
-            entete += f" ({total_stromboli} Stromboli detectes, 0 valide)"
-        return entete
-
-    sortie = [f"Backtest Fernanda — {len(df)} signaux sur {annees} ans"]
-    if total_stromboli is not None and total_stromboli > 0:
-        taux_validation = len(df) / total_stromboli * 100
-        sortie.append(
-            f"  Stromboli detectes : {total_stromboli} · "
-            f"Fernanda : {len(df)} · "
-            f"taux de validation {taux_validation:.1f}%"
-        )
-    sortie.append("")
-
+def _table_horizons(df, horizons):
+    """Lignes formatees reussite/rendement par horizon, pour un DataFrame de signaux."""
+    lignes = []
     for h in horizons:
         col = f"rendement_{h}j"
         valides = df[col].dropna()
         if len(valides) == 0:
             continue
         taux_reussite = (valides > 0).mean() * 100
-        sortie.append(
+        lignes.append(
             f"  {h:>2}j : {len(valides):>4} signaux exploitables · "
             f"reussite {taux_reussite:5.1f}% · "
             f"rendement moyen {valides.mean():+6.2f}% · "
             f"median {valides.median():+6.2f}%"
         )
+    return lignes
 
+
+def resume_backtest(df_stromboli, df_fernanda, annees, horizons=HORIZONS_BACKTEST):
+    total_stromboli = len(df_stromboli)
+    total_fernanda = len(df_fernanda)
+    taux_validation = (total_fernanda / total_stromboli * 100) if total_stromboli else 0.0
+
+    sortie = [
+        f"Backtest — {annees} ans",
+        f"  Stromboli detectes : {total_stromboli} · "
+        f"Fernanda : {total_fernanda} · "
+        f"taux de validation {taux_validation:.1f}%",
+        "",
+    ]
+
+    sortie.append(f"ENTREE DIRECTE AU STROMBOLI ({total_stromboli} signaux)")
+    if df_stromboli.empty:
+        sortie.append("  aucun signal exploitable")
+    else:
+        sortie.extend(_table_horizons(df_stromboli, horizons))
     sortie.append("")
-    sortie.append("Par place :")
-    sortie.append(str(df.groupby("place").size().rename("signaux")))
+
+    sortie.append(f"ENTREE A LA FERNANDA ({total_fernanda} signaux)")
+    if df_fernanda.empty:
+        sortie.append("  aucun signal exploitable")
+    else:
+        sortie.extend(_table_horizons(df_fernanda, horizons))
+    sortie.append("")
+
+    if not df_fernanda.empty:
+        sortie.append("Fernanda par place :")
+        sortie.append(str(df_fernanda.groupby("place").size().rename("signaux")))
 
     return "\n".join(sortie)
 
@@ -1121,13 +1142,17 @@ def main():
         return 0
 
     if args.backtest:
-        df, total_stromboli = backtest_fernanda(univers, args.backtest)
-        rapport = resume_backtest(df, args.backtest, total_stromboli)
+        df_stromboli, df_fernanda = backtest_fernanda(univers, args.backtest)
+        rapport = resume_backtest(df_stromboli, df_fernanda, args.backtest)
         print("\n" + rapport)
-        chemin = RACINE / "backtest_fernanda.csv"
-        if not df.empty:
-            df.to_csv(chemin, index=False)
-            print(f"\nDetail ecrit dans {chemin.name}")
+        if not df_stromboli.empty:
+            chemin = RACINE / "backtest_stromboli.csv"
+            df_stromboli.to_csv(chemin, index=False)
+            print(f"\nDetail Stromboli ecrit dans {chemin.name}")
+        if not df_fernanda.empty:
+            chemin = RACINE / "backtest_fernanda.csv"
+            df_fernanda.to_csv(chemin, index=False)
+            print(f"Detail Fernanda ecrit dans {chemin.name}")
         return 0
 
     signaux = scanner(univers, timeframes)
