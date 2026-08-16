@@ -381,6 +381,36 @@ def to_weekly(ohlc):
     return hebdo
 
 
+def to_monthly(ohlc):
+    """
+    Agrege en bougies mensuelles (mois calendaire, cloture fin de mois).
+    Le mois en cours, incomplet, est retire. Avec 2 ans d'historique, ca
+    donne environ 24 bougies mensuelles : le seuil M7/Tenkan (9 periodes)
+    est atteint, mais les Stromboli Monthly seront tres rares.
+    """
+    mensuel = ohlc.resample("ME").agg(
+        {"Open": "first", "High": "max", "Low": "min", "Close": "last", "Volume": "sum"}
+    ).dropna(subset=["Open", "Close"])
+
+    if len(mensuel) == 0:
+        return mensuel
+
+    dernier_jour = ohlc.index[-1]
+    if mensuel.index[-1] > dernier_jour:
+        mensuel = mensuel.iloc[:-1]
+
+    return mensuel
+
+
+def agreger_tf(ohlc, tf):
+    """Renvoie les bougies Daily/Weekly/Monthly selon tf ('D', 'W' ou 'M')."""
+    if tf == "D":
+        return ohlc
+    if tf == "W":
+        return to_weekly(ohlc)
+    return to_monthly(ohlc)
+
+
 # ---------------------------------------------------------------------------
 # Detection du Stromboli
 # ---------------------------------------------------------------------------
@@ -549,6 +579,7 @@ def detecter_fernanda_series(ha):
                     "index": i,
                     "date": ha.index[i],
                     "stromboli_date": ha.index[actif_haussier],
+                    "stromboli_index": actif_haussier,
                 })
                 actif_haussier = None
             elif ha_low[i] < ha_low[i - 1]:
@@ -569,7 +600,23 @@ def detecter_fernanda_series(ha):
 HORIZONS_BACKTEST = (1, 3, 5, 10, 20)
 
 
-def backtest_fernanda(univers, annees, horizons=HORIZONS_BACKTEST):
+def ratio_volume(ha, i, fenetre=20):
+    """
+    Ratio volume de la bougie i / moyenne des `fenetre` bougies precedentes.
+    None si le volume n'est pas disponible ou la moyenne est nulle.
+    """
+    if "volume" not in ha.columns:
+        return None
+    debut = max(0, i - fenetre)
+    if i <= debut:
+        return None
+    moyenne = float(ha["volume"].iloc[debut:i].mean())
+    if moyenne <= 0:
+        return None
+    return float(ha["volume"].iloc[i]) / moyenne
+
+
+def backtest_fernanda(univers, annees, horizons=HORIZONS_BACKTEST, volume_min=None):
     """
     Parcourt l'historique Daily de tout l'univers et releve le rendement reel
     (prix de cloture reel, pas HA) a plusieurs horizons, pour deux points
@@ -579,6 +626,12 @@ def backtest_fernanda(univers, annees, horizons=HORIZONS_BACKTEST):
     Ca permet de repondre a la question : attendre la Fernanda ameliore-t-il
     reellement les resultats, ou est-ce que trader des le Stromboli marche
     aussi bien (voire mieux, avec un point d'entree plus tot) ?
+
+    volume_min : si fourni, ne garde que les signaux dont le Stromboli
+    d'origine a un volume >= volume_min fois sa moyenne 20 bougies. C'est un
+    outil d'ANALYSE uniquement (pour explorer si le volume au doji ameliore
+    le taux de reussite) — le scan reel n'utilise jamais ce filtre, le volume
+    y reste purement informatif, decision manuelle de l'operateur.
 
     Retourne (DataFrame Stromboli, DataFrame Fernanda), une ligne par signal.
     """
@@ -615,17 +668,27 @@ def backtest_fernanda(univers, annees, horizons=HORIZONS_BACKTEST):
                 trouve = detecter_stromboli(ha, i)
                 if trouve is None:
                     continue
+                vol_ratio = ratio_volume(ha, i)
+                if volume_min is not None and (vol_ratio is None or vol_ratio < volume_min):
+                    continue
                 lignes_stromboli.append({
                     "ticker": ticker, "place": place, "date": trouve["date"],
+                    "volume_ratio_doji": vol_ratio,
                     **rendements(i),
                 })
 
-            # Fernanda (entree confirmee)
+            # Fernanda (entree confirmee) — le filtre volume porte sur le doji
+            # du Stromboli d'origine, pas sur la bougie de validation elle-meme :
+            # c'est la participation au moment du retournement qui nous interesse.
             for occ in detecter_fernanda_series(ha):
                 i = occ["index"]
+                vol_ratio = ratio_volume(ha, occ["stromboli_index"])
+                if volume_min is not None and (vol_ratio is None or vol_ratio < volume_min):
+                    continue
                 lignes_fernanda.append({
                     "ticker": ticker, "place": place, "date": occ["date"],
                     "stromboli_date": occ["stromboli_date"],
+                    "volume_ratio_doji": vol_ratio,
                     **rendements(i),
                 })
 
@@ -650,13 +713,17 @@ def _table_horizons(df, horizons):
     return lignes
 
 
-def resume_backtest(df_stromboli, df_fernanda, annees, horizons=HORIZONS_BACKTEST):
+def resume_backtest(df_stromboli, df_fernanda, annees, volume_min=None, horizons=HORIZONS_BACKTEST):
     total_stromboli = len(df_stromboli)
     total_fernanda = len(df_fernanda)
     taux_validation = (total_fernanda / total_stromboli * 100) if total_stromboli else 0.0
 
+    entete = f"Backtest — {annees} ans"
+    if volume_min is not None:
+        entete += f" · filtre volume >= x{volume_min} au doji (analyse uniquement, jamais applique en scan reel)"
+
     sortie = [
-        f"Backtest — {annees} ans",
+        entete,
         f"  Stromboli detectes : {total_stromboli} · "
         f"Fernanda : {total_fernanda} · "
         f"taux de validation {taux_validation:.1f}%",
@@ -861,7 +928,7 @@ def scanner(univers, timeframes, periode=PERIODE_DAILY):
 
         for ticker, ohlc in donnees.items():
             for tf in timeframes:
-                cadre = ohlc if tf == "D" else to_weekly(ohlc)
+                cadre = agreger_tf(ohlc, tf)
                 if len(cadre) < MIN_BOUGIES + 2:
                     continue
 
@@ -911,7 +978,7 @@ def scanner_historique(univers, timeframes, annees):
 
         for ticker, ohlc in donnees.items():
             for tf in timeframes:
-                cadre = ohlc if tf == "D" else to_weekly(ohlc)
+                cadre = agreger_tf(ohlc, tf)
                 if len(cadre) < MIN_BOUGIES + 2:
                     continue
                 ha = heikin_ashi(cadre)
@@ -999,23 +1066,26 @@ def decouper(texte, taille):
     return morceaux
 
 
-def formater(signaux, timeframes):
+ETIQUETTES_TF = {"D": "DAILY", "W": "WEEKLY", "M": "MONTHLY"}
+
+
+def formater(signaux, timeframes, titre="STROMBOLI"):
     horodatage = datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M UTC")
 
     stromboli = [s for s in signaux if s.get("type") == "stromboli"]
     fernanda = [s for s in signaux if s.get("type") in ("fernanda", "fernando")]
 
     if not signaux:
-        return f"<b>STROMBOLI</b> — {horodatage}\n\nAucun signal sur {', '.join(timeframes)}."
+        return f"<b>{titre}</b> — {horodatage}\n\nAucun signal sur {', '.join(timeframes)}."
 
-    lignes = [f"<b>STROMBOLI</b> — {horodatage}", ""]
+    lignes = [f"<b>{titre}</b> — {horodatage}", ""]
 
     for tf in timeframes:
         groupe = [s for s in stromboli if s["tf"] == tf]
         if not groupe:
             continue
 
-        etiquette = "DAILY" if tf == "D" else "WEEKLY"
+        etiquette = ETIQUETTES_TF.get(tf, tf)
         lignes.append(f"<b>▲ {etiquette} HAUSSIER</b> ({len(groupe)})")
 
         for signal in sorted(groupe, key=lambda s: s["ticker"]):
@@ -1038,7 +1108,7 @@ def formater(signaux, timeframes):
         if not groupe:
             continue
 
-        etiquette = "DAILY" if tf == "D" else "WEEKLY"
+        etiquette = ETIQUETTES_TF.get(tf, tf)
         lignes.append(f"<b>▲ {etiquette} FERNANDA</b> ({len(groupe)})")
 
         for signal in sorted(groupe, key=lambda s: s["ticker"]):
@@ -1084,7 +1154,7 @@ def resume_historique(lignes, annees):
 
 def main():
     parseur = argparse.ArgumentParser(description="Bot d'alerte Stromboli")
-    parseur.add_argument("--tf", default="DW", help="D, W ou DW (defaut DW)")
+    parseur.add_argument("--tf", default="DW", help="combinaison de D, W, M (ex: DWM, defaut DW)")
     parseur.add_argument(
         "--univers",
         default="tout",
@@ -1098,12 +1168,17 @@ def main():
         help="probabilite de reussite des Fernanda (rendement reel, plusieurs horizons)",
     )
     parseur.add_argument(
+        "--volume-min", type=float, metavar="RATIO", default=None,
+        help="filtre d'analyse du backtest : garde uniquement les doji avec "
+             "volume >= RATIO fois leur moyenne 20 bougies (jamais utilise en scan reel)",
+    )
+    parseur.add_argument(
         "--diagnostic", metavar="TICKER",
         help="affiche les valeurs HA/M7/Tenkan bougie par bougie pour un ticker (ex: ELI.BR)",
     )
     args = parseur.parse_args()
 
-    timeframes = [c for c in "DW" if c in args.tf.upper()]
+    timeframes = [c for c in "DWM" if c in args.tf.upper()]
     if not timeframes:
         print("--tf doit contenir D et/ou W")
         return 1
@@ -1142,8 +1217,8 @@ def main():
         return 0
 
     if args.backtest:
-        df_stromboli, df_fernanda = backtest_fernanda(univers, args.backtest)
-        rapport = resume_backtest(df_stromboli, df_fernanda, args.backtest)
+        df_stromboli, df_fernanda = backtest_fernanda(univers, args.backtest, volume_min=args.volume_min)
+        rapport = resume_backtest(df_stromboli, df_fernanda, args.backtest, volume_min=args.volume_min)
         print("\n" + rapport)
         if not df_stromboli.empty:
             chemin = RACINE / "backtest_stromboli.csv"
@@ -1158,7 +1233,26 @@ def main():
     signaux = scanner(univers, timeframes)
     print(f"\n{len(signaux)} signal(aux) detecte(s)")
 
-    envoyer_telegram(formater(signaux, timeframes), dry_run=args.dry_run)
+    # Deux notifications separees : Crypto d'un cote, tout le reste (actions,
+    # indices) de l'autre. On n'envoie une notif pour un groupe que si ce
+    # groupe faisait bien partie du scan demande (evite un message "Aucun
+    # signal" superflu quand on lance un scan cible, ex --univers crypto).
+    a_crypto = "Crypto" in univers
+    a_actions = any(place != "Crypto" for place in univers)
+
+    if a_crypto:
+        signaux_crypto = [s for s in signaux if s["place"] == "Crypto"]
+        envoyer_telegram(
+            formater(signaux_crypto, timeframes, titre="STROMBOLI CRYPTO"),
+            dry_run=args.dry_run,
+        )
+
+    if a_actions:
+        signaux_actions = [s for s in signaux if s["place"] != "Crypto"]
+        envoyer_telegram(
+            formater(signaux_actions, timeframes, titre="STROMBOLI ACTIONS"),
+            dry_run=args.dry_run,
+        )
 
     resume = os.getenv("GITHUB_STEP_SUMMARY")
     if resume:
