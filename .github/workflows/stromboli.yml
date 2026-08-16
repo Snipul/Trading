@@ -2,15 +2,14 @@ name: Stromboli
 
 on:
   schedule:
-    # Daily du lundi au jeudi, 21h30 UTC = 23h30 heure d'ete / 22h30 heure d'hiver
-    # (marge confortable apres cloture US toute l'annee, sans ajustement DST)
-    - cron: "30 21 * * 1-4"
-    # Vendredi, meme horaire : Daily + Weekly
-    - cron: "30 21 * * 5"
+    # Un seul cron, tous les jours, 21h30 UTC = 23h30 heure d'ete / 22h30 heure d'hiver.
+    # L'univers scanne varie selon le jour (voir etape "Determiner les parametres") :
+    # tout (actions+crypto) en semaine, crypto seul le week-end.
+    - cron: "30 21 * * *"
   workflow_dispatch:
     inputs:
       tf:
-        description: "Unites de temps (D, W ou DW)"
+        description: "Unites de temps, combinaison de D, W, M (ex: DWM)"
         required: false
         default: "DW"
       univers:
@@ -34,6 +33,10 @@ on:
         description: "Seuil du doji, fraction du range (0.05 = 5%)"
         required: false
         default: "0.05"
+      volume_min_backtest:
+        description: "Backtest uniquement : filtre volume >= x fois la moyenne au doji (vide = pas de filtre)"
+        required: false
+        default: ""
 
 jobs:
   scan:
@@ -51,15 +54,30 @@ jobs:
       - name: Installer les dependances
         run: pip install yfinance pandas numpy requests lxml
 
-      - name: Determiner les unites de temps
+      - name: Determiner les parametres
         id: params
         run: |
           if [ -n "${{ github.event.inputs.tf }}" ]; then
             echo "tf=${{ github.event.inputs.tf }}" >> $GITHUB_OUTPUT
-          elif [ "$(date -u +%u)" = "5" ]; then
-            echo "tf=DW" >> $GITHUB_OUTPUT
           else
-            echo "tf=D" >> $GITHUB_OUTPUT
+            tf="D"
+            if [ "$(date -u +%u)" = "5" ]; then
+              tf="${tf}W"
+            fi
+            demain=$(date -u -d "+1 day" +%d)
+            if [ "$demain" = "01" ]; then
+              tf="${tf}M"
+            fi
+            echo "tf=$tf" >> $GITHUB_OUTPUT
+          fi
+
+          # Week-end (samedi=6, dimanche=7) : crypto seul, les marches actions
+          # sont fermes donc inutile de re-scanner ~1500 tickers pour rien.
+          jour=$(date -u +%u)
+          if [ "$jour" -ge 6 ]; then
+            echo "univers=crypto" >> $GITHUB_OUTPUT
+          else
+            echo "univers=tout" >> $GITHUB_OUTPUT
           fi
 
       - name: Scan Stromboli
@@ -73,7 +91,7 @@ jobs:
         run: |
           python stromboli.py \
             --tf ${{ steps.params.outputs.tf }} \
-            --univers ${{ github.event.inputs.univers || 'tout' }} \
+            --univers ${{ github.event.inputs.univers || steps.params.outputs.univers }} \
             ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
 
       - name: Backtest Fernanda
@@ -85,7 +103,8 @@ jobs:
         run: |
           python stromboli.py \
             --backtest ${{ github.event.inputs.backtest_annees }} \
-            --univers ${{ github.event.inputs.univers || 'tout' }}
+            --univers ${{ github.event.inputs.univers || 'tout' }} \
+            ${{ github.event.inputs.volume_min_backtest != '' && format('--volume-min {0}', github.event.inputs.volume_min_backtest) || '' }}
 
       - name: Publier le detail du backtest
         if: github.event.inputs.backtest_annees != '0' && github.event.inputs.backtest_annees != ''
