@@ -288,6 +288,28 @@ verifier("Volume de la semaine = somme",
 verifier("semaine en cours incomplete retiree",
          hebdo.index[-1] <= quotidien.index[-1])
 
+jours_m = pd.date_range("2024-01-01", periods=95, freq="B")
+quotidien_m = pd.DataFrame(
+    {
+        "Open": np.arange(100.0, 100.0 + len(jours_m)),
+        "High": np.arange(100.0, 100.0 + len(jours_m)) + 2,
+        "Low": np.arange(100.0, 100.0 + len(jours_m)) - 2,
+        "Close": np.arange(100.0, 100.0 + len(jours_m)) + 1,
+        "Volume": np.full(len(jours_m), 1000.0),
+    },
+    index=jours_m,
+)
+mensuel = S.to_monthly(quotidien_m)
+verifier("agregation produit des mois", len(mensuel) >= 3)
+verifier("Open du mois = premier jour ouvre",
+         np.isclose(mensuel["Open"].iloc[0], 100.0))
+verifier("mois en cours incomplet retire",
+         mensuel.index[-1] <= quotidien_m.index[-1] + pd.Timedelta(days=31))
+
+verifier("agreger_tf('D') = donnees inchangees", len(S.agreger_tf(quotidien, "D")) == len(quotidien))
+verifier("agreger_tf('W') = to_weekly", len(S.agreger_tf(quotidien, "W")) == len(S.to_weekly(quotidien)))
+verifier("agreger_tf('M') = to_monthly", len(S.agreger_tf(quotidien_m, "M")) == len(S.to_monthly(quotidien_m)))
+
 
 # --- 6. Formatage du message -----------------------------------------------
 print("\n7. Formatage du message")
@@ -311,6 +333,15 @@ message_fern = S.formater(signaux_fern, ["D"])
 verifier("fernanda : ticker present", "MSFT" in message_fern)
 verifier("fernanda : libelle present", "FERNANDA" in message_fern)
 verifier("fernanda : date stromboli reference", "05/08" in message_fern)
+
+signaux_monthly = [{
+    "type": "stromboli", "ticker": "BTCUSD", "place": "Crypto", "tf": "M", "sens": "haussier",
+    "bougies": 4, "date": pd.Timestamp("2026-07-31"), "ha_close": 65000.0,
+    "ratio_corps": 0.02,
+}]
+message_m = S.formater(signaux_monthly, ["D", "W", "M"], titre="STROMBOLI CRYPTO")
+verifier("titre personnalise applique", "STROMBOLI CRYPTO" in message_m)
+verifier("etiquette MONTHLY presente", "MONTHLY" in message_m)
 
 
 print("\n" + "=" * 50)
