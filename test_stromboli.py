@@ -64,6 +64,19 @@ verifier("corps trop gros rejete", not S.est_doji(gros, 0))
 sans_meche = cadre_ha([[100.0, 102.0, 100.0, 100.05]])
 verifier("petit corps sans meche basse rejete", not S.est_doji(sans_meche, 0))
 
+# doji dragonfly : pas de meche haute, meche basse presente
+dragonfly = cadre_ha([[100.0, 100.0, 96.0, 100.0]])
+verifier(
+    "dragonfly rejete par defaut (INCLURE_DRAGONFLY=False)",
+    S.INCLURE_DRAGONFLY == False and not S.est_doji(dragonfly, 0),
+)
+gravestone = cadre_ha([[100.0, 104.0, 100.0, 100.0]])
+S.INCLURE_DRAGONFLY = True
+verifier("dragonfly accepte quand INCLURE_DRAGONFLY=True", S.est_doji(dragonfly, 0))
+verifier("gravestone jamais accepte (baissier desactive)", not S.est_doji(gravestone, 0))
+verifier("doji classique toujours accepte avec l'option activee", S.est_doji(doji, 0))
+S.INCLURE_DRAGONFLY = False  # restaure l'etat par defaut pour la suite des tests
+
 
 # --- 3. Detection du Stromboli ---------------------------------------------
 print("\n3. Detection du Stromboli")
