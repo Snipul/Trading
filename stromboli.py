@@ -76,6 +76,7 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 MIN_BOUGIES = int(os.getenv("STROMBOLI_MIN_BOUGIES", "3"))
 SEUIL_DOJI = float(os.getenv("STROMBOLI_SEUIL_DOJI", "0.05"))
 TOLERANCE_MECHE = float(os.getenv("STROMBOLI_TOLERANCE", "0.0"))
+INCLURE_DRAGONFLY = os.getenv("STROMBOLI_DOJI_DRAGONFLY", "false").strip().lower() in ("1", "true", "vrai", "oui")
 
 EPS = 1e-9  # marge anti-erreur d'arrondi flottant, pas une tolerance metier
 
@@ -446,7 +447,15 @@ def est_verte_pleine(ha, i):
 
 
 def est_doji(ha, i):
-    """Petit corps, avec des meches des deux cotes."""
+    """
+    Petit corps (<= SEUIL_DOJI % du range).
+
+    Doji classique : meches des deux cotes.
+    Doji dragonfly (si INCLURE_DRAGONFLY) : pas de meche haute, meche basse
+    presente — signal de retournement haussier, parfois considere plus fort
+    qu'un doji classique. Desactive par defaut pour ne pas changer le
+    comportement existant du bot.
+    """
     ouverture = float(ha["open"].iloc[i])
     cloture = float(ha["close"].iloc[i])
     haut = float(ha["high"].iloc[i])
@@ -462,7 +471,14 @@ def est_doji(ha, i):
 
     meche_haute = haut - max(ouverture, cloture)
     meche_basse = min(ouverture, cloture) - bas
-    return meche_haute > EPS and meche_basse > EPS
+
+    if meche_haute > EPS and meche_basse > EPS:
+        return True  # doji classique
+
+    if INCLURE_DRAGONFLY and meche_haute <= EPS and meche_basse > EPS:
+        return True  # doji dragonfly
+
+    return False
 
 
 def compter_serie(ha, fin, test):
