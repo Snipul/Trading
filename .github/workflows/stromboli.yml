@@ -33,6 +33,11 @@ on:
         description: "Seuil du doji, fraction du range (0.05 = 5%)"
         required: false
         default: "0.05"
+      doji_dragonfly:
+        description: "Accepter aussi le doji dragonfly (pas de meche haute)"
+        type: boolean
+        required: false
+        default: false
       volume_min_backtest:
         description: "Backtest uniquement : filtre volume >= x fois la moyenne au doji (vide = pas de filtre)"
         required: false
@@ -88,6 +93,7 @@ jobs:
           STROMBOLI_MIN_BOUGIES: "3"
           STROMBOLI_SEUIL_DOJI: ${{ github.event.inputs.seuil_doji || '0.05' }}
           STROMBOLI_TOLERANCE: "0.0"
+          STROMBOLI_DOJI_DRAGONFLY: ${{ github.event.inputs.doji_dragonfly || 'false' }}
         run: |
           python stromboli.py \
             --tf ${{ steps.params.outputs.tf }} \
@@ -100,6 +106,7 @@ jobs:
           STROMBOLI_MIN_BOUGIES: "3"
           STROMBOLI_SEUIL_DOJI: ${{ github.event.inputs.seuil_doji || '0.05' }}
           STROMBOLI_TOLERANCE: "0.0"
+          STROMBOLI_DOJI_DRAGONFLY: ${{ github.event.inputs.doji_dragonfly || 'false' }}
         run: |
           python stromboli.py \
             --backtest ${{ github.event.inputs.backtest_annees }} \
@@ -122,6 +129,7 @@ jobs:
           STROMBOLI_MIN_BOUGIES: "3"
           STROMBOLI_SEUIL_DOJI: ${{ github.event.inputs.seuil_doji || '0.05' }}
           STROMBOLI_TOLERANCE: "0.0"
+          STROMBOLI_DOJI_DRAGONFLY: ${{ github.event.inputs.doji_dragonfly || 'false' }}
         run: |
           python stromboli.py \
             --tf ${{ steps.params.outputs.tf }} \
