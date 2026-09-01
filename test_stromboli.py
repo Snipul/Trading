@@ -319,6 +319,40 @@ verifier("Open du mois = premier jour ouvre",
 verifier("mois en cours incomplet retire",
          mensuel.index[-1] <= quotidien_m.index[-1] + pd.Timedelta(days=31))
 
+# Regression : le mois qui vient de se terminer ne doit pas etre supprime a
+# tort quand le dernier jour CALENDAIRE du mois tombe un week-end/ferie.
+def cadre_jours_ouvres(dernier_jour_ouvre, debut="2026-03-01"):
+    jours = pd.bdate_range(debut, dernier_jour_ouvre)
+    return pd.DataFrame({
+        "Open": np.arange(100.0, 100.0 + len(jours)), "High": np.arange(100.0, 100.0 + len(jours)) + 2,
+        "Low": np.arange(100.0, 100.0 + len(jours)) - 2, "Close": np.arange(100.0, 100.0 + len(jours)) + 1,
+        "Volume": np.full(len(jours), 1000.0),
+    }, index=jours)
+
+# 31 mai 2026 = dimanche, derniere seance = vendredi 29 -> mai doit rester
+cadre_mai = cadre_jours_ouvres("2026-05-29")
+mensuel_mai = S.to_monthly(cadre_mai)
+verifier(
+    "mois termine un week-end : conserve (pas supprime a tort)",
+    len(mensuel_mai) > 0 and mensuel_mai.index[-1] == pd.Timestamp("2026-05-31"),
+)
+
+# 31 aout 2026 = lundi (jour de bourse) : doit rester conserve (non-regression)
+cadre_aout = cadre_jours_ouvres("2026-08-31")
+mensuel_aout = S.to_monthly(cadre_aout)
+verifier(
+    "mois termine un jour de bourse : toujours conserve",
+    len(mensuel_aout) > 0 and mensuel_aout.index[-1] == pd.Timestamp("2026-08-31"),
+)
+
+# Scan en plein milieu du mois : le mois en cours doit rester exclu
+cadre_milieu = cadre_jours_ouvres("2026-06-15")
+mensuel_milieu = S.to_monthly(cadre_milieu)
+verifier(
+    "mois reellement incomplet (milieu de mois) toujours exclu",
+    len(mensuel_milieu) > 0 and mensuel_milieu.index[-1] == pd.Timestamp("2026-05-31"),
+)
+
 verifier("agreger_tf('D') = donnees inchangees", len(S.agreger_tf(quotidien, "D")) == len(quotidien))
 verifier("agreger_tf('W') = to_weekly", len(S.agreger_tf(quotidien, "W")) == len(S.to_weekly(quotidien)))
 verifier("agreger_tf('M') = to_monthly", len(S.agreger_tf(quotidien_m, "M")) == len(S.to_monthly(quotidien_m)))
@@ -355,6 +389,64 @@ signaux_monthly = [{
 message_m = S.formater(signaux_monthly, ["D", "W", "M"], titre="STROMBOLI CRYPTO")
 verifier("titre personnalise applique", "STROMBOLI CRYPTO" in message_m)
 verifier("etiquette MONTHLY presente", "MONTHLY" in message_m)
+
+
+# --- 8. Filet de secours Twelve Data -----------------------------------
+print("\n8. Filet de secours Twelve Data")
+
+verifier("mapping .PA -> XPAR", S._exchange_twelvedata("ALCPB.PA") == "XPAR")
+verifier("mapping .AS -> XAMS", S._exchange_twelvedata("VPK.AS") == "XAMS")
+verifier("mapping .BR -> XBRU", S._exchange_twelvedata("MELE.BR") == "XBRU")
+verifier("ticker US -> pas d'exchange", S._exchange_twelvedata("AAPL") is None)
+
+verifier(
+    "desactive par defaut (cle vide)",
+    S.TWELVEDATA_API_KEY == "" and S.telecharger_twelvedata(["ALCPB.PA"]) == {},
+)
+
+import unittest.mock as _mock
+
+_reponse_ok = {
+    "status": "ok",
+    "values": [
+        {"datetime": f"2026-{m:02d}-01", "open": "0.50", "high": "0.55", "low": "0.48", "close": "0.52", "volume": "125000"}
+        for m in range(1, 13)
+    ] * 3,
+}
+
+
+class _FausseReponseOk:
+    def raise_for_status(self):
+        pass
+
+    def json(self):
+        return _reponse_ok
+
+
+S.TWELVEDATA_API_KEY = "cle_de_test"
+with _mock.patch("requests.get", return_value=_FausseReponseOk()):
+    _resultat = S.telecharger_twelvedata(["ALCPB.PA"])
+verifier("parsing : ticker recupere", "ALCPB.PA" in _resultat)
+verifier(
+    "parsing : colonnes correctes",
+    list(_resultat["ALCPB.PA"].columns) == ["Open", "High", "Low", "Close", "Volume"],
+)
+verifier("parsing : index trie chronologiquement", _resultat["ALCPB.PA"].index.is_monotonic_increasing)
+
+
+class _FausseReponseErreur:
+    def raise_for_status(self):
+        pass
+
+    def json(self):
+        return {"status": "error", "code": 403, "message": "not available on your plan"}
+
+
+with _mock.patch("requests.get", return_value=_FausseReponseErreur()):
+    _resultat_erreur = S.telecharger_twelvedata(["ALCPB.PA"])
+verifier("erreur de plan geree proprement", _resultat_erreur == {})
+
+S.TWELVEDATA_API_KEY = ""  # restaure l'etat par defaut
 
 
 print("\n" + "=" * 50)
