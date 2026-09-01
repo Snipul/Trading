@@ -99,6 +99,7 @@ jobs:
           STROMBOLI_SEUIL_DOJI: ${{ github.event.inputs.seuil_doji || '0.05' }}
           STROMBOLI_TOLERANCE: "0.0"
           STROMBOLI_DOJI_DRAGONFLY: ${{ github.event.inputs.doji_dragonfly || 'false' }}
+          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
         run: |
           python stromboli.py \
             --tf ${{ steps.params.outputs.tf }} \
@@ -112,6 +113,7 @@ jobs:
           STROMBOLI_SEUIL_DOJI: ${{ github.event.inputs.seuil_doji || '0.05' }}
           STROMBOLI_TOLERANCE: "0.0"
           STROMBOLI_DOJI_DRAGONFLY: ${{ github.event.inputs.doji_dragonfly || 'false' }}
+          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
         run: |
           python stromboli.py \
             --backtest ${{ github.event.inputs.backtest_annees }} \
@@ -135,6 +137,7 @@ jobs:
           STROMBOLI_SEUIL_DOJI: ${{ github.event.inputs.seuil_doji || '0.05' }}
           STROMBOLI_TOLERANCE: "0.0"
           STROMBOLI_DOJI_DRAGONFLY: ${{ github.event.inputs.doji_dragonfly || 'false' }}
+          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
         run: |
           python stromboli.py \
             --tf ${{ steps.params.outputs.tf }} \
@@ -142,6 +145,8 @@ jobs:
 
       - name: Valider univers
         if: github.event.inputs.valider_univers == 'true'
+        env:
+          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
         run: |
           python stromboli.py \
             --univers ${{ github.event.inputs.univers || 'tout' }} \
