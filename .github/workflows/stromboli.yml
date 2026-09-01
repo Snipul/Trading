@@ -37,7 +37,7 @@ on:
         description: "Accepter aussi le doji dragonfly (pas de meche haute)"
         type: boolean
         required: false
-        default: false
+        default: true
       volume_min_backtest:
         description: "Backtest uniquement : filtre volume >= x fois la moyenne au doji (vide = pas de filtre)"
         required: false
@@ -98,7 +98,7 @@ jobs:
           STROMBOLI_MIN_BOUGIES: "3"
           STROMBOLI_SEUIL_DOJI: ${{ github.event.inputs.seuil_doji || '0.05' }}
           STROMBOLI_TOLERANCE: "0.0"
-          STROMBOLI_DOJI_DRAGONFLY: ${{ github.event.inputs.doji_dragonfly || 'false' }}
+          STROMBOLI_DOJI_DRAGONFLY: ${{ github.event.inputs.doji_dragonfly || 'true' }}
           TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
         run: |
           python stromboli.py \
@@ -112,7 +112,7 @@ jobs:
           STROMBOLI_MIN_BOUGIES: "3"
           STROMBOLI_SEUIL_DOJI: ${{ github.event.inputs.seuil_doji || '0.05' }}
           STROMBOLI_TOLERANCE: "0.0"
-          STROMBOLI_DOJI_DRAGONFLY: ${{ github.event.inputs.doji_dragonfly || 'false' }}
+          STROMBOLI_DOJI_DRAGONFLY: ${{ github.event.inputs.doji_dragonfly || 'true' }}
           TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
         run: |
           python stromboli.py \
@@ -136,7 +136,7 @@ jobs:
           STROMBOLI_MIN_BOUGIES: "3"
           STROMBOLI_SEUIL_DOJI: ${{ github.event.inputs.seuil_doji || '0.05' }}
           STROMBOLI_TOLERANCE: "0.0"
-          STROMBOLI_DOJI_DRAGONFLY: ${{ github.event.inputs.doji_dragonfly || 'false' }}
+          STROMBOLI_DOJI_DRAGONFLY: ${{ github.event.inputs.doji_dragonfly || 'true' }}
           TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
         run: |
           python stromboli.py \
