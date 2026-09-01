@@ -72,6 +72,7 @@ RACINE = Path(__file__).resolve().parent
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
+TWELVEDATA_API_KEY = os.getenv("TWELVEDATA_API_KEY", "")
 
 MIN_BOUGIES = int(os.getenv("STROMBOLI_MIN_BOUGIES", "3"))
 SEUIL_DOJI = float(os.getenv("STROMBOLI_SEUIL_DOJI", "0.05"))
@@ -388,6 +389,15 @@ def to_monthly(ohlc):
     Le mois en cours, incomplet, est retire. Avec 2 ans d'historique, ca
     donne environ 24 bougies mensuelles : le seuil M7/Tenkan (9 periodes)
     est atteint, mais les Stromboli Monthly seront tres rares.
+
+    Contrairement a to_weekly (dont le vendredi est presque toujours un
+    jour de bourse), le dernier jour CALENDAIRE d'un mois tombe tres souvent
+    un week-end ou un jour ferie. Comparer la derniere seance disponible a
+    ce jour calendaire exact rejetterait alors a tort le mois qui vient de
+    se terminer (ex : 31 mai un dimanche, derniere seance le vendredi 29 —
+    le mois est bel et bien fini, mais 29 < 31). On considere donc le mois
+    termine des que la derniere seance tombe dans les 3 derniers jours
+    calendaires du mois (couvre les week-ends et la plupart des ponts feries).
     """
     mensuel = ohlc.resample("ME").agg(
         {"Open": "first", "High": "max", "Low": "min", "Close": "last", "Volume": "sum"}
@@ -397,7 +407,8 @@ def to_monthly(ohlc):
         return mensuel
 
     dernier_jour = ohlc.index[-1]
-    if mensuel.index[-1] > dernier_jour:
+    proche_fin_de_mois = dernier_jour.day >= dernier_jour.days_in_month - 3
+    if not proche_fin_de_mois:
         mensuel = mensuel.iloc[:-1]
 
     return mensuel
@@ -832,6 +843,77 @@ def diagnostiquer(ticker, tf, nb_bougies=25):
     print("\n[R] = rouge pleine (HA_high == HA_open)   [D] = doji")
 
 
+TWELVEDATA_API = "https://api.twelvedata.com"
+TWELVEDATA_EXCHANGE = {".PA": "XPAR", ".AS": "XAMS", ".BR": "XBRU"}
+
+
+def _exchange_twelvedata(ticker):
+    """Devine le parametre 'exchange' Twelve Data a partir du suffixe du ticker."""
+    for suffixe, code in TWELVEDATA_EXCHANGE.items():
+        if ticker.endswith(suffixe):
+            return code
+    return None  # US et autres : pas de parametre exchange necessaire
+
+
+def telecharger_twelvedata(tickers, outputsize=700):
+    """
+    Filet de secours utilise UNIQUEMENT pour les tickers que yfinance n'a pas
+    reussi a recuperer. Ne remplace jamais Yahoo comme source principale :
+    le plan gratuit de Twelve Data ne couvre que les marches US, pas
+    Euronext (Paris/Amsterdam/Bruxelles necessitent un palier payant chez
+    eux) — donc ce filet n'aidera reellement que sur les echecs US.
+
+    Retourne {ticker: DataFrame} au meme format que telecharger().
+    """
+    if not TWELVEDATA_API_KEY or not tickers:
+        return {}
+
+    donnees = {}
+    for ticker in tickers:
+        symbole = ticker.split(".")[0]  # Twelve Data attend le symbole nu
+        exchange = _exchange_twelvedata(ticker)
+        params = {
+            "symbol": symbole,
+            "interval": "1day",
+            "outputsize": outputsize,
+            "apikey": TWELVEDATA_API_KEY,
+        }
+        if exchange:
+            params["exchange"] = exchange
+
+        try:
+            reponse = requests.get(f"{TWELVEDATA_API}/time_series", params=params, timeout=15)
+            reponse.raise_for_status()
+            data = reponse.json()
+
+            if data.get("status") == "error" or "values" not in data:
+                continue
+
+            valeurs = data["values"]
+            if len(valeurs) < MIN_BOUGIES + 25:
+                continue
+
+            cadre = pd.DataFrame(valeurs)
+            cadre["datetime"] = pd.to_datetime(cadre["datetime"])
+            cadre = cadre.set_index("datetime").sort_index()
+            cadre = cadre.rename(columns={
+                "open": "Open", "high": "High", "low": "Low",
+                "close": "Close", "volume": "Volume",
+            })
+            colonnes = ["Open", "High", "Low", "Close"] + (["Volume"] if "volume" in valeurs[0] else [])
+            cadre = cadre[colonnes].astype(float)
+            if "Volume" not in cadre.columns:
+                cadre["Volume"] = 0.0
+
+            donnees[ticker] = cadre
+        except Exception:
+            continue
+
+        time.sleep(8)  # reste sous la limite gratuite de 8 requetes/minute
+
+    return donnees
+
+
 def telecharger(tickers, periode):
     """Telecharge en lots. Retourne {ticker: DataFrame OHLCV}."""
     donnees = {}
@@ -868,6 +950,18 @@ def telecharger(tickers, periode):
                 continue
 
         time.sleep(0.4)
+
+    # Filet de secours Twelve Data, seulement pour ce qui manque encore et
+    # seulement si une cle est configuree (desactive par defaut, aucun
+    # changement de comportement si TWELVEDATA_API_KEY n'est pas definie).
+    if TWELVEDATA_API_KEY:
+        manquants = [t for t in tickers if t not in donnees]
+        if manquants:
+            print(f"  {len(manquants)} tickers absents de Yahoo, tentative via Twelve Data...")
+            recuperes = telecharger_twelvedata(manquants)
+            if recuperes:
+                print(f"  {len(recuperes)} recuperes via Twelve Data : {sorted(recuperes.keys())}")
+                donnees.update(recuperes)
 
     return donnees
 
