@@ -42,6 +42,11 @@ on:
         description: "Backtest uniquement : filtre volume >= x fois la moyenne au doji (vide = pas de filtre)"
         required: false
         default: ""
+      valider_univers:
+        description: "Lister les tickers de l'univers choisi et ceux sans donnees Yahoo (--valider-univers)"
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   scan:
@@ -86,7 +91,7 @@ jobs:
           fi
 
       - name: Scan Stromboli
-        if: (github.event.inputs.backtest_annees == '0' || github.event.inputs.backtest_annees == '') && (github.event.inputs.diagnostic_ticker == '' || github.event.inputs.diagnostic_ticker == null)
+        if: (github.event.inputs.backtest_annees == '0' || github.event.inputs.backtest_annees == '') && (github.event.inputs.diagnostic_ticker == '' || github.event.inputs.diagnostic_ticker == null) && github.event.inputs.valider_univers != 'true'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -134,3 +139,10 @@ jobs:
           python stromboli.py \
             --tf ${{ steps.params.outputs.tf }} \
             --diagnostic ${{ github.event.inputs.diagnostic_ticker }}
+
+      - name: Valider univers
+        if: github.event.inputs.valider_univers == 'true'
+        run: |
+          python stromboli.py \
+            --univers ${{ github.event.inputs.univers || 'tout' }} \
+            --valider-univers
