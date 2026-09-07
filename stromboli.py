@@ -620,6 +620,87 @@ def detecter_fernanda_series(ha):
     return occurrences
 
 
+def detecter_stromboli_baissier(ha, i):
+    """
+    Miroir de detecter_stromboli, cote baissier — RESERVE A L'ANALYSE
+    (backtest --avec-fernando). N'est jamais appele par le scan live ni les
+    alertes Telegram, qui restent long-only comme decide au depart.
+
+    >= 3 bougies HA vertes PLEINES consecutives (aucune meche basse,
+    HA_low == HA_open), suivies IMMEDIATEMENT d'un doji.
+    """
+    if i < MIN_BOUGIES:
+        return None
+    if not est_doji(ha, i):
+        return None
+
+    serie_verte = compter_serie(ha, i - 1, est_verte_pleine)
+    if serie_verte < MIN_BOUGIES:
+        return None
+
+    etendue = _range(ha, i)
+    corps = abs(float(ha["close"].iloc[i]) - float(ha["open"].iloc[i]))
+
+    resultat = {
+        "sens": "baissier",
+        "bougies": serie_verte,
+        "date": ha.index[i],
+        "ha_close": float(ha["close"].iloc[i]),
+        "ratio_corps": corps / etendue if etendue > 0 else 0.0,
+    }
+
+    if "volume" in ha.columns:
+        volume = float(ha["volume"].iloc[i])
+        debut = max(0, i - 20)
+        moyenne = float(ha["volume"].iloc[debut:i].mean()) if i > debut else 0.0
+        resultat["volume"] = volume
+        resultat["volume_ratio"] = volume / moyenne if moyenne > 0 else None
+
+    return resultat
+
+
+def detecter_fernando_series(ha):
+    """
+    Miroir de detecter_fernanda_series, cote baissier — RESERVE A L'ANALYSE.
+    Fernando (short) : apres un Stromboli baissier, cloture sous la M7
+    (descendante) et sous la Tenkan. Invalidation si une bougie fait un
+    plus haut HA superieur a celui de la bougie precedente. Une seule
+    Fernando par Stromboli baissier, meme regle de non re-signal que Fernanda.
+    """
+    m7 = calcul_m7(ha)
+    tenkan = calcul_tenkan(ha)
+    ha_high = ha["high"].to_numpy()
+    ha_close = ha["close"].to_numpy()
+
+    occurrences = []
+    actif_baissier = None
+
+    for i in range(len(ha)):
+        trouve = detecter_stromboli_baissier(ha, i)
+        if trouve:
+            actif_baissier = i
+
+        if actif_baissier is not None and i > actif_baissier:
+            valide = (
+                ha_close[i] < m7[i]
+                and m7[i] < m7[i - 1]
+                and ha_close[i] < tenkan[i]
+            )
+            if valide:
+                occurrences.append({
+                    "type": "fernando",
+                    "index": i,
+                    "date": ha.index[i],
+                    "stromboli_date": ha.index[actif_baissier],
+                    "stromboli_index": actif_baissier,
+                })
+                actif_baissier = None
+            elif ha_high[i] > ha_high[i - 1]:
+                actif_baissier = None
+
+    return occurrences
+
+
 # ---------------------------------------------------------------------------
 # Backtest — probabilite de reussite des Fernanda
 # ---------------------------------------------------------------------------
@@ -648,7 +729,7 @@ def ratio_volume(ha, i, fenetre=20):
     return float(ha["volume"].iloc[i]) / moyenne
 
 
-def backtest_fernanda(univers, annees, horizons=HORIZONS_BACKTEST, volume_min=None):
+def backtest_fernanda(univers, annees, horizons=HORIZONS_BACKTEST, volume_min=None, avec_fernando=False):
     """
     Parcourt l'historique Daily de tout l'univers et releve le rendement reel
     (prix de cloture reel, pas HA) a plusieurs horizons, pour deux points
@@ -665,11 +746,21 @@ def backtest_fernanda(univers, annees, horizons=HORIZONS_BACKTEST, volume_min=No
     le taux de reussite) — le scan reel n'utilise jamais ce filtre, le volume
     y reste purement informatif, decision manuelle de l'operateur.
 
-    Retourne (DataFrame Stromboli, DataFrame Fernanda), une ligne par signal.
+    avec_fernando : si True, calcule EN PLUS le miroir baissier (Stromboli
+    baissier + Fernando/short), RESERVE A L'ANALYSE. Le "rendement" du short
+    est l'inverse du rendement reel du prix (une baisse de prix = un gain
+    pour le vendeur), pour que le taux de reussite se lise directement comme
+    un vrai P&L de vente a decouvert, pas comme le simple miroir d'un
+    rendement d'achat. Aucun impact sur le scan live ni les alertes
+    Telegram, qui restent long-only.
+
+    Retourne (DataFrame Stromboli, DataFrame Fernanda) si avec_fernando=False,
+    ou (DataFrame Stromboli, DataFrame Fernanda, DataFrame Fernando) si True.
     """
     periode = f"{annees}y"
     lignes_stromboli = []
     lignes_fernanda = []
+    lignes_fernando = []
 
     for place, tickers in univers.items():
         print(f"\n[{place}] telechargement de {len(tickers)} tickers ({periode})")
@@ -684,13 +775,14 @@ def backtest_fernanda(univers, annees, horizons=HORIZONS_BACKTEST, volume_min=No
             closes_reels = cadre["Close"].to_numpy(dtype=float)
             n = len(closes_reels)
 
-            def rendements(i):
+            def rendements(i, short=False):
                 prix_entree = closes_reels[i]
                 ligne = {"prix_entree": prix_entree}
                 for h in horizons:
                     j = i + h
                     if j < n and prix_entree > 0:
-                        ligne[f"rendement_{h}j"] = (closes_reels[j] - prix_entree) / prix_entree * 100
+                        variation = (closes_reels[j] - prix_entree) / prix_entree * 100
+                        ligne[f"rendement_{h}j"] = -variation if short else variation
                     else:
                         ligne[f"rendement_{h}j"] = None
                 return ligne
@@ -724,6 +816,22 @@ def backtest_fernanda(univers, annees, horizons=HORIZONS_BACKTEST, volume_min=No
                     **rendements(i),
                 })
 
+            # Fernando (short, analyse uniquement)
+            if avec_fernando:
+                for occ in detecter_fernando_series(ha):
+                    i = occ["index"]
+                    vol_ratio = ratio_volume(ha, occ["stromboli_index"])
+                    if volume_min is not None and (vol_ratio is None or vol_ratio < volume_min):
+                        continue
+                    lignes_fernando.append({
+                        "ticker": ticker, "place": place, "date": occ["date"],
+                        "stromboli_date": occ["stromboli_date"],
+                        "volume_ratio_doji": vol_ratio,
+                        **rendements(i, short=True),
+                    })
+
+    if avec_fernando:
+        return pd.DataFrame(lignes_stromboli), pd.DataFrame(lignes_fernanda), pd.DataFrame(lignes_fernando)
     return pd.DataFrame(lignes_stromboli), pd.DataFrame(lignes_fernanda)
 
 
@@ -745,7 +853,7 @@ def _table_horizons(df, horizons):
     return lignes
 
 
-def resume_backtest(df_stromboli, df_fernanda, annees, volume_min=None, horizons=HORIZONS_BACKTEST):
+def resume_backtest(df_stromboli, df_fernanda, annees, volume_min=None, horizons=HORIZONS_BACKTEST, df_fernando=None):
     total_stromboli = len(df_stromboli)
     total_fernanda = len(df_fernanda)
     taux_validation = (total_fernanda / total_stromboli * 100) if total_stromboli else 0.0
@@ -776,9 +884,30 @@ def resume_backtest(df_stromboli, df_fernanda, annees, volume_min=None, horizons
         sortie.extend(_table_horizons(df_fernanda, horizons))
     sortie.append("")
 
+    if df_fernando is not None:
+        total_fernando = len(df_fernando)
+        sortie.append(
+            f"ENTREE AU FERNANDO / SHORT ({total_fernando} signaux) "
+            f"— analyse uniquement, jamais en scan reel"
+        )
+        sortie.append(
+            "  Rendement = P&L reel d'une vente a decouvert "
+            "(une baisse de prix apparait en positif)"
+        )
+        if df_fernando.empty:
+            sortie.append("  aucun signal exploitable")
+        else:
+            sortie.extend(_table_horizons(df_fernando, horizons))
+        sortie.append("")
+
     if not df_fernanda.empty:
         sortie.append("Fernanda par place :")
         sortie.append(str(df_fernanda.groupby("place").size().rename("signaux")))
+
+    if df_fernando is not None and not df_fernando.empty:
+        sortie.append("")
+        sortie.append("Fernando par place :")
+        sortie.append(str(df_fernando.groupby("place").size().rename("signaux")))
 
     return "\n".join(sortie)
 
@@ -1319,6 +1448,11 @@ def main():
              "volume >= RATIO fois leur moyenne 20 bougies (jamais utilise en scan reel)",
     )
     parseur.add_argument(
+        "--avec-fernando", action="store_true",
+        help="backtest uniquement : calcule aussi le miroir baissier (Stromboli baissier "
+             "+ Fernando/short), jamais utilise en scan reel ni alertes Telegram",
+    )
+    parseur.add_argument(
         "--diagnostic", metavar="TICKER",
         help="affiche les valeurs HA/M7/Tenkan bougie par bougie pour un ticker (ex: ELI.BR)",
     )
@@ -1363,8 +1497,18 @@ def main():
         return 0
 
     if args.backtest:
-        df_stromboli, df_fernanda = backtest_fernanda(univers, args.backtest, volume_min=args.volume_min)
-        rapport = resume_backtest(df_stromboli, df_fernanda, args.backtest, volume_min=args.volume_min)
+        if args.avec_fernando:
+            df_stromboli, df_fernanda, df_fernando = backtest_fernanda(
+                univers, args.backtest, volume_min=args.volume_min, avec_fernando=True
+            )
+        else:
+            df_stromboli, df_fernanda = backtest_fernanda(univers, args.backtest, volume_min=args.volume_min)
+            df_fernando = None
+
+        rapport = resume_backtest(
+            df_stromboli, df_fernanda, args.backtest,
+            volume_min=args.volume_min, df_fernando=df_fernando,
+        )
         print("\n" + rapport)
         if not df_stromboli.empty:
             chemin = RACINE / "backtest_stromboli.csv"
@@ -1374,6 +1518,10 @@ def main():
             chemin = RACINE / "backtest_fernanda.csv"
             df_fernanda.to_csv(chemin, index=False)
             print(f"Detail Fernanda ecrit dans {chemin.name}")
+        if df_fernando is not None and not df_fernando.empty:
+            chemin = RACINE / "backtest_fernando.csv"
+            df_fernando.to_csv(chemin, index=False)
+            print(f"Detail Fernando ecrit dans {chemin.name}")
         return 0
 
     signaux = scanner(univers, timeframes)
