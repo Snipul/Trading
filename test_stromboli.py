@@ -449,6 +449,57 @@ verifier("erreur de plan geree proprement", _resultat_erreur == {})
 S.TWELVEDATA_API_KEY = ""  # restaure l'etat par defaut
 
 
+# --- 9. Telechargement EODHD (source principale) ---------------------------
+print("\n9. Telechargement EODHD")
+
+verifier("mapping US ajoute .US", S._symbole_eodhd("AAPL") == "AAPL.US")
+verifier("mapping .PA inchange", S._symbole_eodhd("ALCPB.PA") == "ALCPB.PA")
+verifier("mapping .AS inchange", S._symbole_eodhd("AZRN.AS") == "AZRN.AS")
+verifier("mapping .BR inchange", S._symbole_eodhd("MELE.BR") == "MELE.BR")
+verifier("mapping futures inchange", S._symbole_eodhd("ES=F") == "ES=F")
+verifier("mapping indice cash inchange", S._symbole_eodhd("^GDAXI") == "^GDAXI")
+
+verifier("periode 2y -> 730 jours", S._periode_en_jours("2y") == 730)
+verifier("periode 1y -> 365 jours", S._periode_en_jours("1y") == 365)
+verifier("periode 3mo -> 93 jours", S._periode_en_jours("3mo") == 93)
+
+verifier(
+    "desactive sans cle EODHD",
+    S.EODHD_API_KEY == "" and S.telecharger(["AAPL"], "2y") == {},
+)
+
+_reponse_eodhd_ok = [
+    {"date": f"2026-{m:02d}-01", "open": 100.0, "high": 105.0, "low": 98.0,
+     "close": 103.0, "adjusted_close": 102.5, "volume": 125000}
+    for m in range(1, 13)
+] * 3
+
+
+class _FausseReponseEodhdOk:
+    def raise_for_status(self):
+        pass
+
+    def json(self):
+        return _reponse_eodhd_ok
+
+
+S.EODHD_API_KEY = "cle_de_test"
+with _mock.patch("requests.get", return_value=_FausseReponseEodhdOk()):
+    _resultat_eodhd = S.telecharger(["AAPL"], "2y")
+verifier("EODHD : ticker recupere", "AAPL" in _resultat_eodhd)
+verifier(
+    "EODHD : colonnes correctes",
+    list(_resultat_eodhd["AAPL"].columns) == ["Open", "High", "Low", "Close", "Volume"],
+)
+verifier(
+    "EODHD : utilise adjusted_close",
+    _resultat_eodhd["AAPL"]["Close"].iloc[0] == 102.5,
+)
+verifier("EODHD : index trie chronologiquement", _resultat_eodhd["AAPL"].index.is_monotonic_increasing)
+
+S.EODHD_API_KEY = ""  # restaure l'etat par defaut
+
+
 print("\n" + "=" * 50)
 if echecs:
     print(f"{len(echecs)} ECHEC(S) : {echecs}")
