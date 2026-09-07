@@ -62,7 +62,7 @@ jobs:
           cache: pip
 
       - name: Installer les dependances
-        run: pip install yfinance pandas numpy requests lxml
+        run: pip install pandas numpy requests lxml
 
       - name: Determiner les parametres
         id: params
@@ -100,6 +100,7 @@ jobs:
           STROMBOLI_TOLERANCE: "0.0"
           STROMBOLI_DOJI_DRAGONFLY: ${{ github.event.inputs.doji_dragonfly || 'true' }}
           TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
+          EODHD_API_KEY: ${{ secrets.EODHD_API_KEY }}
         run: |
           python stromboli.py \
             --tf ${{ steps.params.outputs.tf }} \
@@ -114,6 +115,7 @@ jobs:
           STROMBOLI_TOLERANCE: "0.0"
           STROMBOLI_DOJI_DRAGONFLY: ${{ github.event.inputs.doji_dragonfly || 'true' }}
           TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
+          EODHD_API_KEY: ${{ secrets.EODHD_API_KEY }}
         run: |
           python stromboli.py \
             --backtest ${{ github.event.inputs.backtest_annees }} \
@@ -138,6 +140,7 @@ jobs:
           STROMBOLI_TOLERANCE: "0.0"
           STROMBOLI_DOJI_DRAGONFLY: ${{ github.event.inputs.doji_dragonfly || 'true' }}
           TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
+          EODHD_API_KEY: ${{ secrets.EODHD_API_KEY }}
         run: |
           python stromboli.py \
             --tf ${{ steps.params.outputs.tf }} \
@@ -147,6 +150,7 @@ jobs:
         if: github.event.inputs.valider_univers == 'true'
         env:
           TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
+          EODHD_API_KEY: ${{ secrets.EODHD_API_KEY }}
         run: |
           python stromboli.py \
             --univers ${{ github.event.inputs.univers || 'tout' }} \
