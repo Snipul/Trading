@@ -4,7 +4,7 @@
 stromboli.py — Bot d'alerte Stromboli (methode Inchi)
 
 Detecte les figures Stromboli en Heikin Ashi, sur les unites de temps
-Daily et Weekly, sur les actions US (Nasdaq 100 + S&P 500) et Euronext
+Daily, Weekly et Monthly, sur les actions US (Nasdaq 100 + S&P 500) et Euronext
 (Paris, Amsterdam, Bruxelles). Envoie les alertes sur Telegram.
 
 Definition du Stromboli
@@ -62,7 +62,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import requests
-import yfinance as yf
 
 # ---------------------------------------------------------------------------
 # Parametres
@@ -73,6 +72,8 @@ RACINE = Path(__file__).resolve().parent
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 TWELVEDATA_API_KEY = os.getenv("TWELVEDATA_API_KEY", "")
+EODHD_API_KEY = os.getenv("EODHD_API_KEY", "")
+EODHD_API = "https://eodhd.com/api"
 
 MIN_BOUGIES = int(os.getenv("STROMBOLI_MIN_BOUGIES", "3"))
 SEUIL_DOJI = float(os.getenv("STROMBOLI_SEUIL_DOJI", "0.05"))
@@ -791,7 +792,7 @@ def diagnostiquer(ticker, tf, nb_bougies=25):
         print(f"Aucune donnee recuperee pour {ticker}.")
         return
 
-    cadre = donnees[ticker] if tf == "D" else to_weekly(donnees[ticker])
+    cadre = agreger_tf(donnees[ticker], tf)
     if len(cadre) < MIN_BOUGIES + 2:
         print("Pas assez de bougies.")
         return
@@ -914,42 +915,79 @@ def telecharger_twelvedata(tickers, outputsize=700):
     return donnees
 
 
+def _periode_en_jours(periode):
+    """Convertit '2y'/'1y'/'3mo'/'5y' en nombre de jours pour construire la date 'from' EODHD."""
+    if periode.endswith("y"):
+        return int(periode[:-1]) * 365
+    if periode.endswith("mo"):
+        return int(periode[:-2]) * 31
+    return 730  # defaut ~2 ans
+
+
+def _symbole_eodhd(ticker):
+    """
+    Convertit un ticker interne en symbole EODHD. Euronext (.PA/.AS/.BR) et
+    la crypto Kraken (non concernee ici) gardent leur format. Les tickers US
+    sans suffixe (ex: 'AAPL') recoivent '.US', requis par EODHD.
+    Les tickers Indices (ES=F, ^GDAXI...) sont passes tels quels : leur
+    mapping EODHD exact n'est pas verifie, ils remonteront simplement en
+    echec si le format ne correspond pas (comme n'importe quel autre trou
+    de couverture).
+    """
+    if any(ticker.endswith(s) for s in (".PA", ".AS", ".BR")):
+        return ticker
+    if "=" in ticker or ticker.startswith("^"):
+        return ticker
+    return f"{ticker}.US"
+
+
 def telecharger(tickers, periode):
-    """Telecharge en lots. Retourne {ticker: DataFrame OHLCV}."""
+    """
+    Telecharge l'historique daily via EODHD (source principale pour
+    actions US/Euronext/Indices depuis la migration hors Yahoo Finance).
+    Une requete par ticker (EODHD n'a pas de mode batch sur ce palier).
+    Retourne {ticker: DataFrame OHLCV}.
+    """
     donnees = {}
-    lots = [tickers[i:i + TAILLE_LOT] for i in range(0, len(tickers), TAILLE_LOT)]
+    if not EODHD_API_KEY:
+        print("  EODHD_API_KEY manquante : aucun telechargement possible.")
+        return donnees
 
-    for numero, lot in enumerate(lots, 1):
-        print(f"  lot {numero}/{len(lots)} ({len(lot)} tickers)...", flush=True)
+    depuis = (datetime.now(timezone.utc) - pd.Timedelta(days=_periode_en_jours(periode))).strftime("%Y-%m-%d")
+
+    for i, ticker in enumerate(tickers, 1):
+        if i % 100 == 0:
+            print(f"  {i}/{len(tickers)} tickers EODHD...", flush=True)
+
         try:
-            brut = yf.download(
-                lot,
-                period=periode,
-                interval="1d",
-                auto_adjust=True,
-                group_by="ticker",
-                progress=False,
-                threads=True,
+            reponse = requests.get(
+                f"{EODHD_API}/eod/{_symbole_eodhd(ticker)}",
+                params={"api_token": EODHD_API_KEY, "fmt": "json", "from": depuis, "period": "d"},
+                timeout=15,
             )
-        except Exception as erreur:
-            print(f"    echec du lot : {erreur}")
-            continue
+            reponse.raise_for_status()
+            valeurs = reponse.json()
 
-        for ticker in lot:
-            try:
-                if len(lot) == 1:
-                    cadre = brut
-                else:
-                    if ticker not in brut.columns.get_level_values(0):
-                        continue
-                    cadre = brut[ticker]
-                cadre = cadre.dropna(subset=["Open", "High", "Low", "Close"])
-                if len(cadre) >= MIN_BOUGIES + 25:
-                    donnees[ticker] = cadre
-            except Exception:
+            if not isinstance(valeurs, list) or len(valeurs) < MIN_BOUGIES + 25:
                 continue
 
-        time.sleep(0.4)
+            cadre = pd.DataFrame(valeurs)
+            cadre["date"] = pd.to_datetime(cadre["date"])
+            cadre = cadre.set_index("date").sort_index()
+            cadre = cadre.rename(columns={
+                "open": "Open", "high": "High", "low": "Low",
+                "adjusted_close": "Close", "volume": "Volume",
+            })
+            cadre = cadre[["Open", "High", "Low", "Close", "Volume"]].dropna(
+                subset=["Open", "High", "Low", "Close"]
+            ).astype(float)
+
+            if len(cadre) >= MIN_BOUGIES + 25:
+                donnees[ticker] = cadre
+        except Exception:
+            continue
+
+        time.sleep(0.05)  # tres large marge sous la limite EODHD de 1000/min
 
     # Filet de secours Twelve Data, seulement pour ce qui manque encore et
     # seulement si une cle est configuree (desactive par defaut, aucun
@@ -957,7 +995,7 @@ def telecharger(tickers, periode):
     if TWELVEDATA_API_KEY:
         manquants = [t for t in tickers if t not in donnees]
         if manquants:
-            print(f"  {len(manquants)} tickers absents de Yahoo, tentative via Twelve Data...")
+            print(f"  {len(manquants)} tickers absents d'EODHD, tentative via Twelve Data...")
             recuperes = telecharger_twelvedata(manquants)
             if recuperes:
                 print(f"  {len(recuperes)} recuperes via Twelve Data : {sorted(recuperes.keys())}")
@@ -1290,7 +1328,7 @@ def main():
 
     timeframes = [c for c in "DWM" if c in args.tf.upper()]
     if not timeframes:
-        print("--tf doit contenir D et/ou W")
+        print("--tf doit contenir D, W et/ou M")
         return 1
 
     if args.diagnostic:
