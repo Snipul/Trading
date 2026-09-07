@@ -500,6 +500,67 @@ verifier("EODHD : index trie chronologiquement", _resultat_eodhd["AAPL"].index.i
 S.EODHD_API_KEY = ""  # restaure l'etat par defaut
 
 
+# --- 10. Fernando / Stromboli baissier (analyse uniquement) ----------------
+print("\n10. Fernando / Stromboli baissier (analyse uniquement)")
+
+_index_bas = pd.date_range("2024-01-01", periods=25, freq="D")
+_lignes_bas = [[100.0, 101.0, 99.0, 100.0] for _ in range(9)]
+_lignes_bas += [
+    [100.0, 104.0, 100.0, 103.0],
+    [103.0, 107.0, 103.0, 106.0],
+    [106.0, 110.0, 106.0, 109.0],
+]
+_lignes_bas.append([109.0, 111.0, 107.0, 108.9])  # doji
+for _k in range(12):
+    _base = 108 - _k * 4
+    _lignes_bas.append([_base, _base + 1, _base - 6, _base - 5])
+
+_ha_bas = pd.DataFrame(
+    _lignes_bas, columns=["open", "high", "low", "close"], index=_index_bas[: len(_lignes_bas)]
+)
+_ha_bas["volume"] = 1_000_000.0
+
+_trouve_baissier = S.detecter_stromboli_baissier(_ha_bas, 12)
+verifier("stromboli baissier detecte", _trouve_baissier is not None)
+verifier("sens correctement etiquete baissier", _trouve_baissier and _trouve_baissier["sens"] == "baissier")
+
+_occ_fernando = S.detecter_fernando_series(_ha_bas)
+verifier("fernando detectee apres stromboli baissier", len(_occ_fernando) >= 1)
+verifier(
+    "fernando posterieure au doji (index 12)",
+    _occ_fernando and _occ_fernando[0]["type"] == "fernando" and _occ_fernando[0]["index"] > 12,
+)
+
+# Inversion du P&L short : une baisse de prix doit ressortir en positif
+_closes_test = [100.0] * 10
+_closes_test[3] = 90.0  # -10% au bout de 3 jours
+
+
+def _rendement_test(i, h, short):
+    variation = (_closes_test[i + h] - _closes_test[i]) / _closes_test[i] * 100
+    return -variation if short else variation
+
+
+verifier("rendement long negatif sur une baisse", _rendement_test(0, 3, short=False) == -10.0)
+verifier("rendement short positif sur la meme baisse", _rendement_test(0, 3, short=True) == 10.0)
+
+# resume_backtest avec Fernando : verifie la section additionnelle
+_df_fernando_test = pd.DataFrame([{
+    "ticker": "TEST", "place": "US", "date": _ha_bas.index[14],
+    "stromboli_date": _ha_bas.index[12], "prix_entree": 100.0,
+    "rendement_1j": 2.0, "rendement_3j": 5.0, "rendement_5j": 8.0,
+    "rendement_10j": None, "rendement_20j": None,
+}])
+_rapport_fernando = S.resume_backtest(
+    pd.DataFrame(), pd.DataFrame(), annees=1, df_fernando=_df_fernando_test,
+)
+verifier("section Fernando presente dans le rapport", "FERNANDO" in _rapport_fernando)
+verifier("mention P&L short dans le rapport", "vente a decouvert" in _rapport_fernando)
+
+_rapport_sans_fernando = S.resume_backtest(pd.DataFrame(), pd.DataFrame(), annees=1)
+verifier("pas de section Fernando si non demandee", "FERNANDO" not in _rapport_sans_fernando)
+
+
 print("\n" + "=" * 50)
 if echecs:
     print(f"{len(echecs)} ECHEC(S) : {echecs}")
