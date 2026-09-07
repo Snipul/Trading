@@ -42,6 +42,11 @@ on:
         description: "Backtest uniquement : filtre volume >= x fois la moyenne au doji (vide = pas de filtre)"
         required: false
         default: ""
+      avec_fernando:
+        description: "Backtest uniquement : calcule aussi le miroir baissier Fernando/short (analyse, jamais en scan reel)"
+        type: boolean
+        required: false
+        default: false
       valider_univers:
         description: "Lister les tickers de l'univers choisi et ceux sans donnees Yahoo (--valider-univers)"
         type: boolean
@@ -120,7 +125,8 @@ jobs:
           python stromboli.py \
             --backtest ${{ github.event.inputs.backtest_annees }} \
             --univers ${{ github.event.inputs.univers || 'tout' }} \
-            ${{ github.event.inputs.volume_min_backtest != '' && format('--volume-min {0}', github.event.inputs.volume_min_backtest) || '' }}
+            ${{ github.event.inputs.volume_min_backtest != '' && format('--volume-min {0}', github.event.inputs.volume_min_backtest) || '' }} \
+            ${{ github.event.inputs.avec_fernando == 'true' && '--avec-fernando' || '' }}
 
       - name: Publier le detail du backtest
         if: github.event.inputs.backtest_annees != '0' && github.event.inputs.backtest_annees != ''
@@ -130,6 +136,7 @@ jobs:
           path: |
             backtest_stromboli.csv
             backtest_fernanda.csv
+            backtest_fernando.csv
           if-no-files-found: ignore
 
       - name: Diagnostic ticker
