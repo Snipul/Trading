@@ -241,19 +241,23 @@ def univers_stockanalysis(slug, suffixe, max_pages=5):
 
 def univers_indices():
     """
-    Petite liste curee d'indices/futures, pas de decouverte automatique
-    (volume trop faible pour justifier une source dynamique).
+    Petite liste curee d'indices, pas de decouverte automatique (volume
+    trop faible pour justifier une source dynamique).
 
-    US : futures continus (bien couverts par Yahoo, roulement automatique).
-    Europe : indices CASH plutot que futures. Les futures Euronext/Eurex
-    (FCE, FDAX, FESX) n'ont pas de serie continue fiable sur Yahoo Finance
-    car les contrats expirent chaque trimestre avec un nouveau code. L'indice
-    cash suit le future de tres pres (arbitrage), donc c'est un proxy fiable
+    Depuis la migration EODHD, on utilise partout des indices CASH au
+    format EODHD 'CODE.INDX' (ex: GSPC.INDX pour le S&P 500), plutot que
+    des futures. Les futures (US comme ES=F, ou Euronext/Eurex FCE/FDAX)
+    ne sont pas couverts par le palier EOD standard d'EODHD. L'indice cash
+    suit le future de tres pres (arbitrage), donc reste un proxy fiable
     pour la detection Stromboli/Fernanda.
+
+    Format 'CODE.INDX' confirme par EODHD pour GSPC.INDX (S&P 500) ; les
+    autres suivent la meme convention documentee mais n'ont pas ete
+    verifies individuellement — a confirmer via --valider-univers.
     """
     return [
-        "ES=F", "NQ=F", "YM=F", "RTY=F",   # US : S&P500, Nasdaq, Dow, Russell2000
-        "^GDAXI", "^FCHI", "^STOXX50E",     # Europe : DAX, CAC40, Euro Stoxx 50
+        "GSPC.INDX", "NDX.INDX", "DJI.INDX", "RUT.INDX",   # US : S&P500, Nasdaq100, Dow, Russell2000
+        "GDAXI.INDX", "FCHI.INDX", "STOXX50E.INDX",         # Europe : DAX, CAC40, Euro Stoxx 50
     ]
 
 
@@ -926,17 +930,11 @@ def _periode_en_jours(periode):
 
 def _symbole_eodhd(ticker):
     """
-    Convertit un ticker interne en symbole EODHD. Euronext (.PA/.AS/.BR) et
-    la crypto Kraken (non concernee ici) gardent leur format. Les tickers US
-    sans suffixe (ex: 'AAPL') recoivent '.US', requis par EODHD.
-    Les tickers Indices (ES=F, ^GDAXI...) sont passes tels quels : leur
-    mapping EODHD exact n'est pas verifie, ils remonteront simplement en
-    echec si le format ne correspond pas (comme n'importe quel autre trou
-    de couverture).
+    Convertit un ticker interne en symbole EODHD. Euronext (.PA/.AS/.BR)
+    et les indices (.INDX) gardent leur format, deja natif EODHD. Les
+    tickers US sans suffixe (ex: 'AAPL') recoivent '.US', requis par EODHD.
     """
-    if any(ticker.endswith(s) for s in (".PA", ".AS", ".BR")):
-        return ticker
-    if "=" in ticker or ticker.startswith("^"):
+    if any(ticker.endswith(s) for s in (".PA", ".AS", ".BR", ".INDX")):
         return ticker
     return f"{ticker}.US"
 
