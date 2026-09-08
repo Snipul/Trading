@@ -51,6 +51,15 @@ on:
         description: "Backtest uniquement : inchi (Stromboli/Fernanda) ou retour-moyenne (RSI-2 / IBS + MM200)"
         required: false
         default: "inchi"
+      stop_loss_backtest:
+        description: "Setup retour-moyenne uniquement : stop loss en % (ex: -8), vide = pas de stop"
+        required: false
+        default: ""
+      validation_croisee:
+        description: "Setup retour-moyenne uniquement : decoupe en decouverte/validation (hors echantillon)"
+        type: boolean
+        required: false
+        default: false
       valider_univers:
         description: "Lister les tickers de l'univers choisi et ceux sans donnees Yahoo (--valider-univers)"
         type: boolean
@@ -131,7 +140,9 @@ jobs:
             --univers ${{ github.event.inputs.univers || 'tout' }} \
             ${{ github.event.inputs.volume_min_backtest != '' && format('--volume-min {0}', github.event.inputs.volume_min_backtest) || '' }} \
             ${{ github.event.inputs.avec_fernando == 'true' && '--avec-fernando' || '' }} \
-            --setup ${{ github.event.inputs.setup_backtest || 'inchi' }}
+            --setup ${{ github.event.inputs.setup_backtest || 'inchi' }} \
+            ${{ github.event.inputs.stop_loss_backtest != '' && format('--stop-loss {0}', github.event.inputs.stop_loss_backtest) || '' }} \
+            ${{ github.event.inputs.validation_croisee == 'true' && '--validation-croisee' || '' }}
 
       - name: Publier le detail du backtest
         if: github.event.inputs.backtest_annees != '0' && github.event.inputs.backtest_annees != ''
