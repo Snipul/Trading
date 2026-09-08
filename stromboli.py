@@ -1007,7 +1007,43 @@ def _donnee_suspecte(cadre, gap_prix_max=80.0, gap_jours_max=60):
     return False
 
 
-def _trades_retour_moyenne(cadre, declencheur, stop_pct=None, frais_pct=0.0):
+def _ratio_volume_signal(cadre, i, fenetre=20):
+    """
+    Ratio volume du jour i / moyenne des `fenetre` jours precedents, sur un
+    DataFrame OHLCV brut (colonne 'Volume'). Teste l'hypothese 'pic de
+    volume au moment du signal' : un fort volume ce jour-la est-il un bon
+    ou un mauvais signe pour le retour a la moyenne ?
+    """
+    if "Volume" not in cadre.columns:
+        return None
+    debut = max(0, i - fenetre)
+    if i <= debut:
+        return None
+    moyenne = float(cadre["Volume"].iloc[debut:i].mean())
+    if moyenne <= 0:
+        return None
+    return float(cadre["Volume"].iloc[i]) / moyenne
+
+
+def _liquidite_moyenne(cadre, i, fenetre=60):
+    """
+    Volume moyen (nombre de titres/jour) sur les `fenetre` jours precedant
+    le signal — mesure de liquidite GENERALE du titre, independante du
+    signal lui-meme. Teste l'hypothese 'les titres liquides performent-ils
+    mieux que les micro-caps peu tradees ?', separement du pic ponctuel.
+    """
+    if "Volume" not in cadre.columns:
+        return None
+    debut = max(0, i - fenetre)
+    if i <= debut:
+        return None
+    return float(cadre["Volume"].iloc[debut:i].mean())
+
+
+def _trades_retour_moyenne(
+    cadre, declencheur, stop_pct=None, frais_pct=0.0,
+    volume_min_signal=None, volume_min_liquidite=None,
+):
     """
     Simule les trades d'un ticker pour un declencheur donne ('rsi2' ou 'ibs').
     stop_pct : si fourni (ex: -8.0 pour -8%), sortie immediate au niveau du
@@ -1018,6 +1054,13 @@ def _trades_retour_moyenne(cadre, declencheur, stop_pct=None, frais_pct=0.0):
     (ex: 0.2 pour 2€ de frais sur une position de 1000€), deduits directement
     du rendement de chaque trade. 0.0 par defaut = aucun frais (comportement
     inchange). A calibrer selon TON compte reel — jamais suppose par le code.
+    volume_min_signal : si fourni, ne garde que les signaux dont le volume
+    DU JOUR est >= volume_min_signal fois sa moyenne 20 jours (pic de volume
+    au signal). Outil d'ANALYSE uniquement, jamais applique en scan reel.
+    volume_min_liquidite : si fourni, ne garde que les signaux dont le
+    volume MOYEN des 60 jours precedents (hors du signal lui-meme, mesure
+    de liquidite generale du titre) est >= ce seuil (nombre absolu de
+    titres/jour). Outil d'ANALYSE uniquement, jamais applique en scan reel.
     Retourne une liste de dicts (date_entree, date_sortie, jours, rendement, motif).
     """
     closes = cadre["Close"].to_numpy(dtype=float)
@@ -1046,6 +1089,18 @@ def _trades_retour_moyenne(cadre, declencheur, stop_pct=None, frais_pct=0.0):
         if not signal:
             i += 1
             continue
+
+        if volume_min_signal is not None:
+            ratio = _ratio_volume_signal(cadre, i)
+            if ratio is None or ratio < volume_min_signal:
+                i += 1
+                continue
+
+        if volume_min_liquidite is not None:
+            liquidite = _liquidite_moyenne(cadre, i)
+            if liquidite is None or liquidite < volume_min_liquidite:
+                i += 1
+                continue
 
         prix_entree = closes[i]
         prix_stop = prix_entree * (1 + stop_pct / 100) if stop_pct is not None else None
@@ -1079,7 +1134,10 @@ def _trades_retour_moyenne(cadre, declencheur, stop_pct=None, frais_pct=0.0):
     return trades
 
 
-def backtest_retour_moyenne(univers, annees, declencheurs=("rsi2", "ibs"), stop_pct=None, frais_pct=0.0):
+def backtest_retour_moyenne(
+    univers, annees, declencheurs=("rsi2", "ibs"), stop_pct=None, frais_pct=0.0,
+    volume_min_signal=None, volume_min_liquidite=None,
+):
     """Lance les simulations sur tout l'univers. Retourne {declencheur: DataFrame}."""
     periode = f"{annees}y"
     resultats = {d: [] for d in declencheurs}
@@ -1095,7 +1153,10 @@ def backtest_retour_moyenne(univers, annees, declencheurs=("rsi2", "ibs"), stop_
                 exclus += 1
                 continue
             for d in declencheurs:
-                for t in _trades_retour_moyenne(cadre, d, stop_pct=stop_pct, frais_pct=frais_pct):
+                for t in _trades_retour_moyenne(
+                    cadre, d, stop_pct=stop_pct, frais_pct=frais_pct,
+                    volume_min_signal=volume_min_signal, volume_min_liquidite=volume_min_liquidite,
+                ):
                     resultats[d].append({"ticker": ticker, "place": place, **t})
 
     if exclus:
@@ -1129,7 +1190,10 @@ def _stats_trades(df):
     return lignes
 
 
-def resume_retour_moyenne(resultats, annees, stop_pct=None, frais_pct=0.0):
+def resume_retour_moyenne(
+    resultats, annees, stop_pct=None, frais_pct=0.0,
+    volume_min_signal=None, volume_min_liquidite=None,
+):
     libelles = {"rsi2": f"RSI-2 < {RM_SEUIL_RSI2:.0f}", "ibs": f"IBS < {RM_SEUIL_IBS:.2f}"}
     entete = f"Backtest retour a la moyenne — {annees} ans (analyse uniquement, jamais en scan reel)"
     sortie = [
@@ -1137,7 +1201,9 @@ def resume_retour_moyenne(resultats, annees, stop_pct=None, frais_pct=0.0):
         f"  Filtre : cloture > MM200 ascendante · Sortie : cloture > MM5 ou RSI-2 > "
         f"{RM_RSI2_SORTIE:.0f} ou {RM_MAX_HOLD} seances max"
         + (f" · Stop loss : {stop_pct:+.1f}%" if stop_pct is not None else "")
-        + (f" · Frais : -{frais_pct:.2f}% par trade (calibrer selon TON compte reel)" if frais_pct else ""),
+        + (f" · Frais : -{frais_pct:.2f}% par trade (calibrer selon TON compte reel)" if frais_pct else "")
+        + (f" · Pic volume >= x{volume_min_signal:.1f} au signal" if volume_min_signal is not None else "")
+        + (f" · Liquidite moyenne >= {volume_min_liquidite:,.0f} titres/jour" if volume_min_liquidite is not None else ""),
         "",
     ]
     for d, df in resultats.items():
@@ -2051,6 +2117,16 @@ def main():
              "A calibrer selon TON compte reel, jamais suppose par le code.",
     )
     parseur.add_argument(
+        "--volume-min-signal", type=float, metavar="RATIO", default=None,
+        help="setup retour-moyenne uniquement : garde seulement les signaux avec volume du "
+             "jour >= RATIO fois sa moyenne 20 jours (pic de volume au signal)",
+    )
+    parseur.add_argument(
+        "--volume-min-liquidite", type=float, metavar="VOLUME", default=None,
+        help="setup retour-moyenne uniquement : garde seulement les signaux dont le volume "
+             "moyen des 60 jours precedents est >= VOLUME titres/jour (liquidite generale)",
+    )
+    parseur.add_argument(
         "--validation-croisee", action="store_true",
         help="setup retour-moyenne uniquement : decoupe les trades en decouverte/validation "
              "(coupure = date mediane) pour verifier que l'edge tient hors echantillon",
@@ -2134,10 +2210,12 @@ def main():
 
         if args.setup == "retour-moyenne":
             resultats = backtest_retour_moyenne(
-                univers, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct
+                univers, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct,
+                volume_min_signal=args.volume_min_signal, volume_min_liquidite=args.volume_min_liquidite,
             )
             print("\n" + resume_retour_moyenne(
-                resultats, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct
+                resultats, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct,
+                volume_min_signal=args.volume_min_signal, volume_min_liquidite=args.volume_min_liquidite,
             ))
             if args.validation_croisee:
                 print("\n" + resume_validation_croisee(resultats, args.backtest, stop_pct=args.stop_loss))
