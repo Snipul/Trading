@@ -604,6 +604,42 @@ verifier("entree le premier jour du repli (RSI-2 deja < 10)", _trades and _trade
 verifier("trade gagnant a la reprise", _trades and _trades[0]["rendement"] > 0)
 verifier("sortie sur la MM5", _trades and _trades[0]["motif"] == "mm5")
 
+# Stop loss : un crash brutal juste apres l'entree doit declencher le stop
+# exactement au niveau du stop, pas a la cloture (plus negative) du jour.
+_base_crash = _base.copy()
+_base_crash[252] = _base_crash[251] * 0.80  # -20% le lendemain de l'entree
+_cadre_crash = pd.DataFrame(
+    {"Open": _base_crash, "High": _base_crash + 1, "Low": _base_crash - 1, "Close": _base_crash, "Volume": 1000.0},
+    index=_idx,
+)
+_trades_stop = S._trades_retour_moyenne(_cadre_crash, "rsi2", stop_pct=-8.0)
+verifier("stop loss declenche sur un crash brutal", _trades_stop and _trades_stop[0]["motif"] == "stop_loss")
+verifier(
+    "rendement au niveau exact du stop, pas la cloture reelle",
+    _trades_stop and abs(_trades_stop[0]["rendement"] - (-8.0)) < 0.01,
+)
+verifier(
+    "sans stop_pct, comportement inchange (retrocompatibilite)",
+    S._trades_retour_moyenne(_cadre_rm, "rsi2", stop_pct=None) == _trades,
+)
+
+# Validation croisee : un renversement synthetique (1ere moitie 100% gagnante,
+# 2e moitie 100% perdante) doit etre detecte distinctement dans les 2 blocs.
+_trades_synthetiques = pd.DataFrame({
+    "date_entree": pd.date_range("2024-01-01", periods=40, freq="15D"),
+    "jours": [3] * 40,
+    "rendement": [1.0] * 20 + [-1.0] * 20,
+    "motif": ["mm5"] * 40,
+    "place": ["US"] * 40,
+})
+_rapport_vc = S.resume_validation_croisee({"rsi2": _trades_synthetiques}, annees=2)
+verifier("validation croisee : sections presentes", "DECOUVERTE" in _rapport_vc and "VALIDATION" in _rapport_vc)
+verifier("validation croisee : decouverte a 100% de reussite", "reussite 100.0%" in _rapport_vc)
+verifier("validation croisee : validation a 0% de reussite", "reussite   0.0%" in _rapport_vc)
+
+_rapport_vc_vide = S.resume_validation_croisee({"rsi2": pd.DataFrame()}, annees=2)
+verifier("validation croisee : echantillon vide gere", "echantillon trop petit" in _rapport_vc_vide)
+
 _base_baisse = np.linspace(160, 100, _n)  # tendance baissiere : filtre MM200 doit bloquer
 _cadre_baisse = pd.DataFrame(
     {"Open": _base_baisse, "High": _base_baisse + 1, "Low": _base_baisse - 1, "Close": _base_baisse, "Volume": 1000.0},
