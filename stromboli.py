@@ -976,6 +976,37 @@ def calcul_ibs(cadre):
     return ibs
 
 
+def _donnee_suspecte(cadre, gap_prix_max=80.0, gap_jours_max=60):
+    """
+    Detecte les series de prix qui portent la signature d'une suspension de
+    cotation prolongee suivie d'une reprise chaotique (ex: ALTRA.PA, trou de
+    cotation 2020-2025 puis +198% en une seule seance a la reprise). Deux
+    signaux independants, l'un OU l'autre suffit :
+      - un saut de prix extreme d'une seance a l'autre (gap_prix_max, en %)
+      - un trou de plusieurs mois dans le calendrier de cotation lui-meme
+        (gap_jours_max, en jours calendaires) — le signal le plus specifique :
+        un vrai mouvement de marche, meme violent, ne cree jamais un trou de
+        plusieurs mois dans les dates, seule une suspension le fait.
+
+    Le ticker entier est exclu (pas seulement le trade concerne) car toute
+    la fenetre MM200/EMA autour de l'evenement est faussee par des prix
+    d'avant-suspension totalement decorreles du niveau de reprise.
+    """
+    closes = cadre["Close"].to_numpy(dtype=float)
+    if len(closes) < 2:
+        return False
+
+    variations = np.abs(np.diff(closes) / closes[:-1] * 100)
+    if len(variations) and np.nanmax(variations) > gap_prix_max:
+        return True
+
+    ecarts_jours = cadre.index.to_series().diff().dt.days.to_numpy()[1:]
+    if len(ecarts_jours) and np.nanmax(ecarts_jours) > gap_jours_max:
+        return True
+
+    return False
+
+
 def _trades_retour_moyenne(cadre, declencheur, stop_pct=None, frais_pct=0.0):
     """
     Simule les trades d'un ticker pour un declencheur donne ('rsi2' ou 'ibs').
@@ -1052,6 +1083,7 @@ def backtest_retour_moyenne(univers, annees, declencheurs=("rsi2", "ibs"), stop_
     """Lance les simulations sur tout l'univers. Retourne {declencheur: DataFrame}."""
     periode = f"{annees}y"
     resultats = {d: [] for d in declencheurs}
+    exclus = 0
 
     for place, tickers in univers.items():
         print(f"\n[{place}] telechargement de {len(tickers)} tickers ({periode})")
@@ -1059,9 +1091,15 @@ def backtest_retour_moyenne(univers, annees, declencheurs=("rsi2", "ibs"), stop_
         print(f"  {len(donnees)} tickers exploitables")
 
         for ticker, cadre in donnees.items():
+            if _donnee_suspecte(cadre):
+                exclus += 1
+                continue
             for d in declencheurs:
                 for t in _trades_retour_moyenne(cadre, d, stop_pct=stop_pct, frais_pct=frais_pct):
                     resultats[d].append({"ticker": ticker, "place": place, **t})
+
+    if exclus:
+        print(f"\n{exclus} tickers exclus (saut de prix ou trou de cotation suspect)")
 
     return {d: pd.DataFrame(lignes) for d, lignes in resultats.items()}
 
@@ -1229,6 +1267,7 @@ def backtest_ema_cross(univers, annees, stop_pct=None, frais_pct=0.0):
     """Lance le backtest EMA 8/21 sur tout l'univers. Retourne {'ema_cross': DataFrame}."""
     periode = f"{annees}y"
     lignes = []
+    exclus = 0
 
     for place, tickers in univers.items():
         print(f"\n[{place}] telechargement de {len(tickers)} tickers ({periode})")
@@ -1236,8 +1275,14 @@ def backtest_ema_cross(univers, annees, stop_pct=None, frais_pct=0.0):
         print(f"  {len(donnees)} tickers exploitables")
 
         for ticker, cadre in donnees.items():
+            if _donnee_suspecte(cadre):
+                exclus += 1
+                continue
             for t in _trades_ema_cross(cadre, stop_pct=stop_pct, frais_pct=frais_pct):
                 lignes.append({"ticker": ticker, "place": place, **t})
+
+    if exclus:
+        print(f"\n{exclus} tickers exclus (saut de prix ou trou de cotation suspect)")
 
     return {"ema_cross": pd.DataFrame(lignes)}
 
