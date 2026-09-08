@@ -1042,7 +1042,7 @@ def _liquidite_moyenne(cadre, i, fenetre=60):
 
 def _trades_retour_moyenne(
     cadre, declencheur, stop_pct=None, frais_pct=0.0,
-    volume_min_signal=None, volume_min_liquidite=None,
+    volume_min_signal=None, volume_min_liquidite=None, entree_lendemain=False,
 ):
     """
     Simule les trades d'un ticker pour un declencheur donne ('rsi2' ou 'ibs').
@@ -1061,9 +1061,17 @@ def _trades_retour_moyenne(
     volume MOYEN des 60 jours precedents (hors du signal lui-meme, mesure
     de liquidite generale du titre) est >= ce seuil (nombre absolu de
     titres/jour). Outil d'ANALYSE uniquement, jamais applique en scan reel.
+    entree_lendemain : si True, simule une entree REALISTE a l'OUVERTURE du
+    jour SUIVANT le signal (le bot ne peut agir qu'apres cloture, donc le
+    premier ordre reellement possible est le lendemain matin), plutot qu'a
+    la cloture du jour du signal lui-meme — hypothese optimiste et
+    impossible a executer en pratique, utilisee par defaut dans toutes les
+    versions precedentes du backtest. Permet de mesurer l'ecart reel entre
+    theorie et execution.
     Retourne une liste de dicts (date_entree, date_sortie, jours, rendement, motif).
     """
     closes = cadre["Close"].to_numpy(dtype=float)
+    ouvertures = cadre["Open"].to_numpy(dtype=float)
     bas = cadre["Low"].to_numpy(dtype=float)
     n = len(closes)
     if n < 210:
@@ -1102,11 +1110,19 @@ def _trades_retour_moyenne(
                 i += 1
                 continue
 
-        prix_entree = closes[i]
+        if entree_lendemain:
+            entree_idx = i + 1  # toujours < n car la boucle exige i < n-1
+            prix_entree = ouvertures[entree_idx]
+            debut_recherche = entree_idx  # le reste de la seance d'entree compte deja
+        else:
+            entree_idx = i
+            prix_entree = closes[i]
+            debut_recherche = entree_idx + 1
+
         prix_stop = prix_entree * (1 + stop_pct / 100) if stop_pct is not None else None
         sortie_j, motif, prix_sortie = None, None, None
 
-        for j in range(i + 1, min(i + RM_MAX_HOLD, n - 1) + 1):
+        for j in range(debut_recherche, min(entree_idx + RM_MAX_HOLD, n - 1) + 1):
             if prix_stop is not None and bas[j] <= prix_stop:
                 sortie_j, motif, prix_sortie = j, "stop_loss", prix_stop
                 break
@@ -1118,14 +1134,14 @@ def _trades_retour_moyenne(
                 break
 
         if sortie_j is None:
-            sortie_j = min(i + RM_MAX_HOLD, n - 1)
+            sortie_j = min(entree_idx + RM_MAX_HOLD, n - 1)
             motif, prix_sortie = "max_hold", closes[sortie_j]
 
         rendement_brut = (prix_sortie - prix_entree) / prix_entree * 100
         trades.append({
-            "date_entree": cadre.index[i],
+            "date_entree": cadre.index[entree_idx],
             "date_sortie": cadre.index[sortie_j],
-            "jours": sortie_j - i,
+            "jours": sortie_j - entree_idx,
             "rendement": rendement_brut - frais_pct,
             "motif": motif,
         })
@@ -1136,7 +1152,7 @@ def _trades_retour_moyenne(
 
 def backtest_retour_moyenne(
     univers, annees, declencheurs=("rsi2", "ibs"), stop_pct=None, frais_pct=0.0,
-    volume_min_signal=None, volume_min_liquidite=None,
+    volume_min_signal=None, volume_min_liquidite=None, entree_lendemain=False,
 ):
     """Lance les simulations sur tout l'univers. Retourne {declencheur: DataFrame}."""
     periode = f"{annees}y"
@@ -1156,6 +1172,7 @@ def backtest_retour_moyenne(
                 for t in _trades_retour_moyenne(
                     cadre, d, stop_pct=stop_pct, frais_pct=frais_pct,
                     volume_min_signal=volume_min_signal, volume_min_liquidite=volume_min_liquidite,
+                    entree_lendemain=entree_lendemain,
                 ):
                     resultats[d].append({"ticker": ticker, "place": place, **t})
 
@@ -1192,7 +1209,7 @@ def _stats_trades(df):
 
 def resume_retour_moyenne(
     resultats, annees, stop_pct=None, frais_pct=0.0,
-    volume_min_signal=None, volume_min_liquidite=None,
+    volume_min_signal=None, volume_min_liquidite=None, entree_lendemain=False,
 ):
     libelles = {"rsi2": f"RSI-2 < {RM_SEUIL_RSI2:.0f}", "ibs": f"IBS < {RM_SEUIL_IBS:.2f}"}
     entete = f"Backtest retour a la moyenne — {annees} ans (analyse uniquement, jamais en scan reel)"
@@ -1203,7 +1220,8 @@ def resume_retour_moyenne(
         + (f" · Stop loss : {stop_pct:+.1f}%" if stop_pct is not None else "")
         + (f" · Frais : -{frais_pct:.2f}% par trade (calibrer selon TON compte reel)" if frais_pct else "")
         + (f" · Pic volume >= x{volume_min_signal:.1f} au signal" if volume_min_signal is not None else "")
-        + (f" · Liquidite moyenne >= {volume_min_liquidite:,.0f} titres/jour" if volume_min_liquidite is not None else ""),
+        + (f" · Liquidite moyenne >= {volume_min_liquidite:,.0f} titres/jour" if volume_min_liquidite is not None else "")
+        + (" · Entree REALISTE a l'ouverture du lendemain (pas la cloture du signal)" if entree_lendemain else ""),
         "",
     ]
     for d, df in resultats.items():
@@ -2127,6 +2145,11 @@ def main():
              "moyen des 60 jours precedents est >= VOLUME titres/jour (liquidite generale)",
     )
     parseur.add_argument(
+        "--entree-lendemain", action="store_true",
+        help="setup retour-moyenne uniquement : simule une entree REALISTE a l'ouverture du "
+             "jour suivant le signal, plutot qu'a la cloture du jour du signal (optimiste)",
+    )
+    parseur.add_argument(
         "--validation-croisee", action="store_true",
         help="setup retour-moyenne uniquement : decoupe les trades en decouverte/validation "
              "(coupure = date mediane) pour verifier que l'edge tient hors echantillon",
@@ -2212,10 +2235,12 @@ def main():
             resultats = backtest_retour_moyenne(
                 univers, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct,
                 volume_min_signal=args.volume_min_signal, volume_min_liquidite=args.volume_min_liquidite,
+                entree_lendemain=args.entree_lendemain,
             )
             print("\n" + resume_retour_moyenne(
                 resultats, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct,
                 volume_min_signal=args.volume_min_signal, volume_min_liquidite=args.volume_min_liquidite,
+                entree_lendemain=args.entree_lendemain,
             ))
             if args.validation_croisee:
                 print("\n" + resume_validation_croisee(resultats, args.backtest, stop_pct=args.stop_loss))
