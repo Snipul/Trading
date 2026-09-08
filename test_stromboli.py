@@ -496,6 +496,48 @@ verifier(
     _resultat_eodhd["AAPL"]["Close"].iloc[0] == 102.5,
 )
 verifier("EODHD : index trie chronologiquement", _resultat_eodhd["AAPL"].index.is_monotonic_increasing)
+verifier(
+    "EODHD : Open aussi mis a l'echelle du facteur d'ajustement (pas seulement Close)",
+    abs(_resultat_eodhd["AAPL"]["Open"].iloc[0] - 100.0 * (102.5 / 103.0)) < 1e-9,
+)
+
+# Regression : un split doit etre invisible (pas de saut artificiel entre le
+# Close ajuste de la veille et l'Open — corrige, du lendemain). C'est le bug
+# reel qui produisait des "pire trade -90%" impossibles avec un stop a -8%.
+_valeurs_split = [
+    {"date": "2024-01-01", "open": 100.0, "high": 105.0, "low": 98.0, "close": 102.0, "adjusted_close": 102.0, "volume": 100000},
+    {"date": "2024-01-02", "open": 101.0, "high": 106.0, "low": 99.0, "close": 103.0, "adjusted_close": 103.0, "volume": 100000},
+]
+_dates_split = pd.bdate_range("2024-01-03", periods=35)
+for _k, _d in enumerate(_dates_split):
+    _valeurs_split.append({
+        "date": _d.strftime("%Y-%m-%d"),
+        "open": 1000.0 + _k, "high": 1050.0 + _k, "low": 980.0 + _k, "close": 1020.0 + _k,
+        "adjusted_close": 102.0 + _k / 10, "volume": 100000,
+    })
+
+
+class _FausseReponseSplit:
+    def raise_for_status(self):
+        pass
+
+    def json(self):
+        return _valeurs_split
+
+
+with _mock.patch("requests.get", return_value=_FausseReponseSplit()):
+    _resultat_split = S.telecharger(["SPLIT"], "2y")
+_cadre_split = _resultat_split["SPLIT"]
+_ratio_close = _cadre_split["Close"].iloc[2] / _cadre_split["Close"].iloc[1]
+_ratio_open = _cadre_split["Open"].iloc[2] / _cadre_split["Close"].iloc[1]
+verifier(
+    "split : aucun saut artificiel sur Close autour du split",
+    0.9 < _ratio_close < 1.1,
+)
+verifier(
+    "split : aucun saut artificiel entre Close (veille) et Open corrige (lendemain)",
+    0.9 < _ratio_open < 1.1,
+)
 
 S.EODHD_API_KEY = ""  # restaure l'etat par defaut
 
@@ -893,6 +935,42 @@ verifier("rapport sortie partielle : objectif par defaut affiche (+5.0%)", "+5.0
 verifier(
     "sortie partielle : aucun trade en tendance baissiere pure (meme filtre EMA50)",
     S._trades_ema_cross_partiel(_cadre_baisse_ema) == [],
+)
+
+# Filtre volume sur l'EMA cross (pur et partiel), meme logique que sur le retour a la moyenne
+_sans_filtre_ema = S._trades_ema_cross_partiel(_cadre_long)
+_avec_filtre_ema_strict = S._trades_ema_cross_partiel(_cadre_long, volume_min_signal=3.0)
+verifier(
+    "EMA cross partiel : filtre volume strict exclut un volume normal",
+    len(_avec_filtre_ema_strict) < len(_sans_filtre_ema),
+)
+
+_volumes_pic_ema = np.full(len(_cadre_long), 1_000_000.0)
+if _sans_filtre_ema:
+    _i_signal_ema = _cadre_long.index.get_loc(_sans_filtre_ema[0]["date_entree"])
+    _volumes_pic_ema[_i_signal_ema] = 5_000_000.0
+_cadre_long_pic = _cadre_long.assign(Volume=_volumes_pic_ema)
+verifier(
+    "EMA cross partiel : pic de volume au signal passe le meme filtre",
+    len(S._trades_ema_cross_partiel(_cadre_long_pic, volume_min_signal=3.0)) >= 1,
+)
+verifier(
+    "EMA cross partiel : retrocompatibilite sans filtre volume",
+    S._trades_ema_cross_partiel(_cadre_long) == _sans_filtre_ema,
+)
+
+_sans_filtre_ema_pur = S._trades_ema_cross(_cadre_long)
+verifier(
+    "EMA cross pur : filtre volume strict exclut aussi un volume normal",
+    len(S._trades_ema_cross(_cadre_long, volume_min_signal=3.0)) < len(_sans_filtre_ema_pur),
+)
+verifier(
+    "rapport EMA cross : mention du pic de volume si filtre actif",
+    "Pic volume" in S.resume_ema_cross({"ema_cross": pd.DataFrame(_sans_filtre_ema_pur)}, annees=2, volume_min_signal=2.0),
+)
+verifier(
+    "rapport EMA cross partiel : mention de la liquidite si filtre actif",
+    "Liquidite" in S.resume_ema_cross_partiel({"ema_cross_partiel": pd.DataFrame(_sans_filtre_ema)}, annees=2, volume_min_liquidite=100000),
 )
 
 
