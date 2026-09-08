@@ -47,6 +47,10 @@ on:
         type: boolean
         required: false
         default: false
+      setup_backtest:
+        description: "Backtest uniquement : inchi (Stromboli/Fernanda) ou retour-moyenne (RSI-2 / IBS + MM200)"
+        required: false
+        default: "inchi"
       valider_univers:
         description: "Lister les tickers de l'univers choisi et ceux sans donnees Yahoo (--valider-univers)"
         type: boolean
@@ -126,7 +130,8 @@ jobs:
             --backtest ${{ github.event.inputs.backtest_annees }} \
             --univers ${{ github.event.inputs.univers || 'tout' }} \
             ${{ github.event.inputs.volume_min_backtest != '' && format('--volume-min {0}', github.event.inputs.volume_min_backtest) || '' }} \
-            ${{ github.event.inputs.avec_fernando == 'true' && '--avec-fernando' || '' }}
+            ${{ github.event.inputs.avec_fernando == 'true' && '--avec-fernando' || '' }} \
+            --setup ${{ github.event.inputs.setup_backtest || 'inchi' }}
 
       - name: Publier le detail du backtest
         if: github.event.inputs.backtest_annees != '0' && github.event.inputs.backtest_annees != ''
@@ -137,6 +142,8 @@ jobs:
             backtest_stromboli.csv
             backtest_fernanda.csv
             backtest_fernando.csv
+            backtest_rm_rsi2.csv
+            backtest_rm_ibs.csv
           if-no-files-found: ignore
 
       - name: Diagnostic ticker
