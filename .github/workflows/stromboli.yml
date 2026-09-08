@@ -68,6 +68,14 @@ on:
         description: "Setup retour-moyenne uniquement : frais aller-retour en % de la position (ex: 0.2 pour 2 euros sur 1000 euros), vide/0 = aucun frais"
         required: false
         default: ""
+      volume_min_signal_backtest:
+        description: "Setup retour-moyenne uniquement : garde les signaux avec pic de volume >= x fois la moyenne 20j (ex: 2), vide = pas de filtre"
+        required: false
+        default: ""
+      volume_min_liquidite_backtest:
+        description: "Setup retour-moyenne uniquement : garde les signaux dont la liquidite moyenne 60j >= X titres/jour (ex: 500000), vide = pas de filtre"
+        required: false
+        default: ""
       valider_univers:
         description: "Lister les tickers de l'univers choisi et ceux sans donnees Yahoo (--valider-univers)"
         type: boolean
@@ -151,7 +159,9 @@ jobs:
             --setup ${{ github.event.inputs.setup_backtest || 'inchi' }} \
             ${{ github.event.inputs.stop_loss_backtest != '' && format('--stop-loss {0}', github.event.inputs.stop_loss_backtest) || '' }} \
             ${{ github.event.inputs.validation_croisee == 'true' && '--validation-croisee' || '' }} \
-            ${{ github.event.inputs.frais_pct_backtest != '' && format('--frais-pct {0}', github.event.inputs.frais_pct_backtest) || '' }}
+            ${{ github.event.inputs.frais_pct_backtest != '' && format('--frais-pct {0}', github.event.inputs.frais_pct_backtest) || '' }} \
+            ${{ github.event.inputs.volume_min_signal_backtest != '' && format('--volume-min-signal {0}', github.event.inputs.volume_min_signal_backtest) || '' }} \
+            ${{ github.event.inputs.volume_min_liquidite_backtest != '' && format('--volume-min-liquidite {0}', github.event.inputs.volume_min_liquidite_backtest) || '' }}
 
       - name: Publier le detail du backtest
         if: github.event.inputs.backtest_annees != '0' && github.event.inputs.backtest_annees != ''
