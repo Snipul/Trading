@@ -48,7 +48,7 @@ on:
         required: false
         default: false
       setup_backtest:
-        description: "Backtest uniquement : inchi (Stromboli/Fernanda), retour-moyenne (RSI-2/IBS + MM200) ou ema-cross (suivi de tendance EMA 8/21)"
+        description: "Backtest uniquement : inchi (Stromboli/Fernanda), retour-moyenne (RSI-2/IBS + MM200), ema-cross (suivi de tendance) ou ema-cross-partiel (sortie partielle)"
         required: false
         default: "inchi"
       stop_loss_backtest:
@@ -161,6 +161,7 @@ jobs:
             backtest_rm_rsi2.csv
             backtest_rm_ibs.csv
             backtest_ema_cross.csv
+            backtest_ema_cross_partiel.csv
           if-no-files-found: ignore
 
       - name: Diagnostic ticker
