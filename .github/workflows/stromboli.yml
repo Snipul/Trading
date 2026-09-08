@@ -48,7 +48,7 @@ on:
         required: false
         default: false
       setup_backtest:
-        description: "Backtest uniquement : inchi (Stromboli/Fernanda) ou retour-moyenne (RSI-2 / IBS + MM200)"
+        description: "Backtest uniquement : inchi (Stromboli/Fernanda), retour-moyenne (RSI-2/IBS + MM200) ou ema-cross (suivi de tendance EMA 8/21)"
         required: false
         default: "inchi"
       stop_loss_backtest:
@@ -60,6 +60,10 @@ on:
         type: boolean
         required: false
         default: false
+      frais_pct_backtest:
+        description: "Setup retour-moyenne uniquement : frais aller-retour en % de la position (ex: 0.2 pour 2 euros sur 1000 euros), vide/0 = aucun frais"
+        required: false
+        default: ""
       valider_univers:
         description: "Lister les tickers de l'univers choisi et ceux sans donnees Yahoo (--valider-univers)"
         type: boolean
@@ -142,7 +146,8 @@ jobs:
             ${{ github.event.inputs.avec_fernando == 'true' && '--avec-fernando' || '' }} \
             --setup ${{ github.event.inputs.setup_backtest || 'inchi' }} \
             ${{ github.event.inputs.stop_loss_backtest != '' && format('--stop-loss {0}', github.event.inputs.stop_loss_backtest) || '' }} \
-            ${{ github.event.inputs.validation_croisee == 'true' && '--validation-croisee' || '' }}
+            ${{ github.event.inputs.validation_croisee == 'true' && '--validation-croisee' || '' }} \
+            ${{ github.event.inputs.frais_pct_backtest != '' && format('--frais-pct {0}', github.event.inputs.frais_pct_backtest) || '' }}
 
       - name: Publier le detail du backtest
         if: github.event.inputs.backtest_annees != '0' && github.event.inputs.backtest_annees != ''
@@ -155,6 +160,7 @@ jobs:
             backtest_fernando.csv
             backtest_rm_rsi2.csv
             backtest_rm_ibs.csv
+            backtest_ema_cross.csv
           if-no-files-found: ignore
 
       - name: Diagnostic ticker
