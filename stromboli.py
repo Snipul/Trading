@@ -1183,14 +1183,17 @@ def resume_validation_croisee(resultats, annees, stop_pct=None):
 
 
 # ---------------------------------------------------------------------------
-# Backtest — suivi de tendance (EMA 8/21, filtre EMA50)
+# Backtest — suivi de tendance (EMA 8/21, filtre EMA50, Chandelier Exit)
 # ---------------------------------------------------------------------------
 #
 # Setup independant de la methode Inchi, sur prix REELS, famille CONTINUATION
 # de tendance (pas retour a la moyenne comme RSI-2/IBS) :
 #   Filtre     : EMA21 > EMA50 (tendance de fond confirmee)
 #   Entree     : EMA8 croise AU-DESSUS de l'EMA21 (le jour du croisement)
-#   Sortie     : EMA8 recroise SOUS l'EMA21, ou MAX_HOLD seances, ou stop loss
+#   Sortie     : stop suiveur Chandelier Exit (plus haut depuis l'entree
+#                moins 3x ATR22), OU l'EMA8 recroise sous l'EMA21 —
+#                AUCUNE limite de duree fixe : on laisse courir la tendance
+#                tant qu'elle ne montre pas de vrai signe de faiblesse.
 # Profil attendu, oppose au retour a la moyenne : moins de trades gagnants,
 # mais des gagnants nettement plus gros (on laisse courir la tendance).
 # Un seul trade a la fois par ticker. Outil d'ANALYSE uniquement.
@@ -1198,7 +1201,8 @@ def resume_validation_croisee(resultats, annees, stop_pct=None):
 RM_EMA_RAPIDE = 8
 RM_EMA_LENTE = 21
 RM_EMA_FOND = 50
-RM_EMA_MAX_HOLD = 20
+RM_CHANDELIER_ATR_PERIODE = 22
+RM_CHANDELIER_MULTIPLICATEUR = 3.0
 
 
 def calcul_ema(closes, periode):
@@ -1206,49 +1210,92 @@ def calcul_ema(closes, periode):
     return pd.Series(closes, dtype=float).ewm(span=periode, adjust=False).mean().to_numpy()
 
 
+def calcul_atr(cadre, periode=RM_CHANDELIER_ATR_PERIODE):
+    """
+    ATR de Wilder (True Range lisse exponentiellement, methode standard).
+    True Range = max(High-Low, |High-Close_veille|, |Low-Close_veille|).
+    """
+    haut = cadre["High"].to_numpy(dtype=float)
+    bas = cadre["Low"].to_numpy(dtype=float)
+    cloture = cadre["Close"].to_numpy(dtype=float)
+    n = len(cloture)
+
+    tr = np.empty(n)
+    tr[0] = haut[0] - bas[0]
+    for i in range(1, n):
+        tr[i] = max(
+            haut[i] - bas[i],
+            abs(haut[i] - cloture[i - 1]),
+            abs(bas[i] - cloture[i - 1]),
+        )
+
+    atr = np.full(n, np.nan)
+    if n <= periode:
+        return atr
+    atr[periode] = tr[1:periode + 1].mean()
+    for i in range(periode + 1, n):
+        atr[i] = (atr[i - 1] * (periode - 1) + tr[i]) / periode
+    return atr
+
+
 def _trades_ema_cross(cadre, stop_pct=None, frais_pct=0.0):
     """
     Simule les trades de suivi de tendance EMA8/21 pour un ticker.
-    Meme structure que _trades_retour_moyenne (stop sur plus bas intraday,
-    frais deduits du rendement), mais entree/sortie sur croisement d'EMA
-    plutot que sur repli RSI-2/IBS.
+    Sortie principale : Chandelier Exit (stop suiveur base sur l'ATR du
+    titre, pas un pourcentage fixe identique pour tous). stop_pct, si
+    fourni, agit comme plancher de securite supplementaire (perte max
+    absolue depuis l'entree), en plus du Chandelier — jamais a la place.
+    Aucune limite de duree : le trade court tant qu'aucune des deux
+    conditions de sortie n'est declenchee.
     """
     closes = cadre["Close"].to_numpy(dtype=float)
+    haut = cadre["High"].to_numpy(dtype=float)
     bas = cadre["Low"].to_numpy(dtype=float)
     n = len(closes)
-    if n < RM_EMA_FOND + 10:
+    if n < RM_EMA_FOND + RM_CHANDELIER_ATR_PERIODE + 10:
         return []
 
     ema_rapide = calcul_ema(closes, RM_EMA_RAPIDE)
     ema_lente = calcul_ema(closes, RM_EMA_LENTE)
     ema_fond = calcul_ema(closes, RM_EMA_FOND)
+    atr = calcul_atr(cadre)
 
     trades = []
-    i = RM_EMA_FOND
+    i = max(RM_EMA_FOND, RM_CHANDELIER_ATR_PERIODE)
     while i < n - 1:
         croisement_haussier = (
             ema_rapide[i] > ema_lente[i] and ema_rapide[i - 1] <= ema_lente[i - 1]
         )
         filtre_ok = ema_lente[i] > ema_fond[i]
-        if not (croisement_haussier and filtre_ok):
+        if not (croisement_haussier and filtre_ok) or np.isnan(atr[i]):
             i += 1
             continue
 
         prix_entree = closes[i]
-        prix_stop = prix_entree * (1 + stop_pct / 100) if stop_pct is not None else None
+        prix_stop_fixe = prix_entree * (1 + stop_pct / 100) if stop_pct is not None else None
+        plus_haut = haut[i]
         sortie_j, motif, prix_sortie = None, None, None
 
-        for j in range(i + 1, min(i + RM_EMA_MAX_HOLD, n - 1) + 1):
-            if prix_stop is not None and bas[j] <= prix_stop:
-                sortie_j, motif, prix_sortie = j, "stop_loss", prix_stop
+        j = i + 1
+        while j < n:
+            niveau_chandelier = plus_haut - RM_CHANDELIER_MULTIPLICATEUR * atr[j]
+
+            if prix_stop_fixe is not None and bas[j] <= prix_stop_fixe:
+                sortie_j, motif, prix_sortie = j, "stop_fixe", prix_stop_fixe
+                break
+            if bas[j] <= niveau_chandelier:
+                sortie_j, motif, prix_sortie = j, "chandelier", niveau_chandelier
                 break
             if ema_rapide[j] < ema_lente[j]:
                 sortie_j, motif, prix_sortie = j, "croisement_baissier", closes[j]
                 break
 
+            plus_haut = max(plus_haut, haut[j])
+            j += 1
+
         if sortie_j is None:
-            sortie_j = min(i + RM_EMA_MAX_HOLD, n - 1)
-            motif, prix_sortie = "max_hold", closes[sortie_j]
+            sortie_j = n - 1
+            motif, prix_sortie = "fin_donnees", closes[sortie_j]
 
         rendement_brut = (prix_sortie - prix_entree) / prix_entree * 100
         trades.append({
@@ -1293,8 +1340,9 @@ def resume_ema_cross(resultats, annees, stop_pct=None, frais_pct=0.0):
         entete,
         f"  Filtre : EMA{RM_EMA_LENTE} > EMA{RM_EMA_FOND} · "
         f"Entree : EMA{RM_EMA_RAPIDE} croise au-dessus EMA{RM_EMA_LENTE} · "
-        f"Sortie : croisement inverse ou {RM_EMA_MAX_HOLD} seances max"
-        + (f" · Stop loss : {stop_pct:+.1f}%" if stop_pct is not None else "")
+        f"Sortie : Chandelier Exit (plus haut - {RM_CHANDELIER_MULTIPLICATEUR:.0f}xATR{RM_CHANDELIER_ATR_PERIODE}) "
+        f"ou croisement inverse — aucune limite de duree"
+        + (f" · Plancher de securite : {stop_pct:+.1f}%" if stop_pct is not None else "")
         + (f" · Frais : -{frais_pct:.2f}% par trade" if frais_pct else ""),
         "",
     ]
