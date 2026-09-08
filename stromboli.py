@@ -912,6 +912,185 @@ def resume_backtest(df_stromboli, df_fernanda, annees, volume_min=None, horizons
     return "\n".join(sortie)
 
 
+# ---------------------------------------------------------------------------
+# Backtest — retour a la moyenne (RSI-2 / IBS + filtre MM200)
+# ---------------------------------------------------------------------------
+#
+# Setup independant de la methode Inchi, sur prix REELS (pas Heikin Ashi) :
+#   Filtre     : cloture > MM200 et MM200 ascendante (repli dans une tendance
+#                de fond haussiere, jamais a contre-tendance)
+#   Declencheur: RSI-2 < 10  (variante 'rsi2')  ou  IBS < 0.20 (variante 'ibs')
+#   Entree     : cloture du jour du signal
+#   Sortie     : premiere cloture > MM5, ou RSI-2 > 70, ou MAX_HOLD seances
+#   Un seul trade a la fois par ticker (pas de chevauchement).
+#
+# Contrairement au backtest Inchi (horizons fixes), on mesure ici un vrai
+# P&L par trade avec la regle de sortie du setup : c'est la seule facon de
+# comparer honnetement au ~70% publie par Connors pour le RSI-2.
+# Outil d'ANALYSE uniquement : rien de tout ca n'est branche sur le scan live.
+
+RM_SEUIL_RSI2 = 10.0
+RM_SEUIL_IBS = 0.20
+RM_RSI2_SORTIE = 70.0
+RM_MAX_HOLD = 10
+
+
+def calcul_rsi(closes, periode=2):
+    """RSI de Wilder (lissage exponentiel classique). Retourne un ndarray (NaN au debut)."""
+    closes = np.asarray(closes, dtype=float)
+    n = len(closes)
+    rsi = np.full(n, np.nan)
+    if n <= periode:
+        return rsi
+    delta = np.diff(closes)
+    gains = np.where(delta > 0, delta, 0.0)
+    pertes = np.where(delta < 0, -delta, 0.0)
+    gain_moy = gains[:periode].mean()
+    perte_moy = pertes[:periode].mean()
+    for i in range(periode, n - 1):
+        if i > periode:
+            gain_moy = (gain_moy * (periode - 1) + gains[i - 1]) / periode
+            perte_moy = (perte_moy * (periode - 1) + pertes[i - 1]) / periode
+        if perte_moy == 0:
+            rsi[i] = 100.0 if gain_moy > 0 else 50.0
+        else:
+            rs = gain_moy / perte_moy
+            rsi[i] = 100.0 - 100.0 / (1.0 + rs)
+    # derniere valeur
+    gain_moy = (gain_moy * (periode - 1) + gains[-1]) / periode
+    perte_moy = (perte_moy * (periode - 1) + pertes[-1]) / periode
+    rsi[-1] = 100.0 if perte_moy == 0 and gain_moy > 0 else (
+        50.0 if perte_moy == 0 else 100.0 - 100.0 / (1.0 + gain_moy / perte_moy)
+    )
+    return rsi
+
+
+def calcul_ibs(cadre):
+    """IBS = (Close - Low) / (High - Low). NaN si range nul."""
+    haut = cadre["High"].to_numpy(dtype=float)
+    bas = cadre["Low"].to_numpy(dtype=float)
+    cloture = cadre["Close"].to_numpy(dtype=float)
+    etendue = haut - bas
+    with np.errstate(divide="ignore", invalid="ignore"):
+        ibs = np.where(etendue > 0, (cloture - bas) / etendue, np.nan)
+    return ibs
+
+
+def _trades_retour_moyenne(cadre, declencheur):
+    """
+    Simule les trades d'un ticker pour un declencheur donne ('rsi2' ou 'ibs').
+    Retourne une liste de dicts (date_entree, date_sortie, jours, rendement, motif).
+    """
+    closes = cadre["Close"].to_numpy(dtype=float)
+    n = len(closes)
+    if n < 210:
+        return []
+
+    mm200 = pd.Series(closes).rolling(200).mean().to_numpy()
+    mm5 = pd.Series(closes).rolling(5).mean().to_numpy()
+    rsi2 = calcul_rsi(closes, 2)
+    ibs = calcul_ibs(cadre) if declencheur == "ibs" else None
+
+    trades = []
+    i = 200
+    while i < n - 1:
+        filtre_ok = (
+            not np.isnan(mm200[i]) and not np.isnan(mm200[i - 1])
+            and closes[i] > mm200[i] and mm200[i] > mm200[i - 1]
+        )
+        if declencheur == "rsi2":
+            signal = filtre_ok and not np.isnan(rsi2[i]) and rsi2[i] < RM_SEUIL_RSI2
+        else:
+            signal = filtre_ok and not np.isnan(ibs[i]) and ibs[i] < RM_SEUIL_IBS
+
+        if not signal:
+            i += 1
+            continue
+
+        prix_entree = closes[i]
+        sortie_j, motif = None, None
+        for j in range(i + 1, min(i + RM_MAX_HOLD, n - 1) + 1):
+            if not np.isnan(mm5[j]) and closes[j] > mm5[j]:
+                sortie_j, motif = j, "mm5"
+                break
+            if not np.isnan(rsi2[j]) and rsi2[j] > RM_RSI2_SORTIE:
+                sortie_j, motif = j, "rsi70"
+                break
+        if sortie_j is None:
+            sortie_j = min(i + RM_MAX_HOLD, n - 1)
+            motif = "max_hold"
+
+        trades.append({
+            "date_entree": cadre.index[i],
+            "date_sortie": cadre.index[sortie_j],
+            "jours": sortie_j - i,
+            "rendement": (closes[sortie_j] - prix_entree) / prix_entree * 100,
+            "motif": motif,
+        })
+        i = sortie_j + 1  # pas de chevauchement
+
+    return trades
+
+
+def backtest_retour_moyenne(univers, annees, declencheurs=("rsi2", "ibs")):
+    """Lance les simulations sur tout l'univers. Retourne {declencheur: DataFrame}."""
+    periode = f"{annees}y"
+    resultats = {d: [] for d in declencheurs}
+
+    for place, tickers in univers.items():
+        print(f"\n[{place}] telechargement de {len(tickers)} tickers ({periode})")
+        donnees = telecharger_pour_place(place, tickers, periode)
+        print(f"  {len(donnees)} tickers exploitables")
+
+        for ticker, cadre in donnees.items():
+            for d in declencheurs:
+                for t in _trades_retour_moyenne(cadre, d):
+                    resultats[d].append({"ticker": ticker, "place": place, **t})
+
+    return {d: pd.DataFrame(lignes) for d, lignes in resultats.items()}
+
+
+def resume_retour_moyenne(resultats, annees):
+    libelles = {"rsi2": f"RSI-2 < {RM_SEUIL_RSI2:.0f}", "ibs": f"IBS < {RM_SEUIL_IBS:.2f}"}
+    sortie = [
+        f"Backtest retour a la moyenne — {annees} ans (analyse uniquement, jamais en scan reel)",
+        f"  Filtre : cloture > MM200 ascendante · Sortie : cloture > MM5 ou RSI-2 > "
+        f"{RM_RSI2_SORTIE:.0f} ou {RM_MAX_HOLD} seances max",
+        "",
+    ]
+    for d, df in resultats.items():
+        sortie.append(f"DECLENCHEUR {libelles.get(d, d)} ({len(df)} trades)")
+        if df.empty:
+            sortie.append("  aucun trade")
+            sortie.append("")
+            continue
+        r = df["rendement"]
+        gagnants = r[r > 0]
+        perdants = r[r <= 0]
+        esperance = r.mean()
+        sortie.append(
+            f"  reussite {(r > 0).mean() * 100:5.1f}% · "
+            f"rendement moyen {esperance:+6.2f}% · median {r.median():+6.2f}% · "
+            f"duree moyenne {df['jours'].mean():.1f} seances"
+        )
+        sortie.append(
+            f"  gain moyen des gagnants {gagnants.mean() if len(gagnants) else 0:+6.2f}% · "
+            f"perte moyenne des perdants {perdants.mean() if len(perdants) else 0:+6.2f}% · "
+            f"pire trade {r.min():+6.2f}%"
+        )
+        motifs = df["motif"].value_counts(normalize=True) * 100
+        sortie.append(
+            "  sorties : " + " · ".join(f"{m} {p:.0f}%" for m, p in motifs.items())
+        )
+        if "place" in df.columns:
+            sortie.append("  par place : " + " · ".join(
+                f"{p} {len(g)} trades / {(g['rendement'] > 0).mean() * 100:.0f}%"
+                for p, g in df.groupby("place")
+            ))
+        sortie.append("")
+    return "\n".join(sortie)
+
+
 def diagnostiquer(ticker, tf, nb_bougies=25):
     """
     Affiche, bougie par bougie, les valeurs HA exactes calculees par le bot
@@ -1453,6 +1632,11 @@ def main():
              "+ Fernando/short), jamais utilise en scan reel ni alertes Telegram",
     )
     parseur.add_argument(
+        "--setup", default="inchi", choices=["inchi", "retour-moyenne"],
+        help="backtest uniquement : 'inchi' (Stromboli/Fernanda, defaut) ou "
+             "'retour-moyenne' (RSI-2 / IBS + filtre MM200, prix reels)",
+    )
+    parseur.add_argument(
         "--diagnostic", metavar="TICKER",
         help="affiche les valeurs HA/M7/Tenkan bougie par bougie pour un ticker (ex: ELI.BR)",
     )
@@ -1497,6 +1681,16 @@ def main():
         return 0
 
     if args.backtest:
+        if args.setup == "retour-moyenne":
+            resultats = backtest_retour_moyenne(univers, args.backtest)
+            print("\n" + resume_retour_moyenne(resultats, args.backtest))
+            for d, df in resultats.items():
+                if not df.empty:
+                    chemin = RACINE / f"backtest_rm_{d}.csv"
+                    df.to_csv(chemin, index=False)
+                    print(f"Detail {d} ecrit dans {chemin.name}")
+            return 0
+
         if args.avec_fernando:
             df_stromboli, df_fernanda, df_fernando = backtest_fernanda(
                 univers, args.backtest, volume_min=args.volume_min, avec_fernando=True
