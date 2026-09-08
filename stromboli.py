@@ -976,13 +976,17 @@ def calcul_ibs(cadre):
     return ibs
 
 
-def _trades_retour_moyenne(cadre, declencheur, stop_pct=None):
+def _trades_retour_moyenne(cadre, declencheur, stop_pct=None, frais_pct=0.0):
     """
     Simule les trades d'un ticker pour un declencheur donne ('rsi2' ou 'ibs').
     stop_pct : si fourni (ex: -8.0 pour -8%), sortie immediate au niveau du
     stop des que le plus bas de la seance le franchit (avant meme de tester
     les conditions de sortie normales ce jour-la — un stop protege contre
     la baisse intra-seance, pas seulement a la cloture).
+    frais_pct : frais de courtage aller-retour, en % de la taille de position
+    (ex: 0.2 pour 2€ de frais sur une position de 1000€), deduits directement
+    du rendement de chaque trade. 0.0 par defaut = aucun frais (comportement
+    inchange). A calibrer selon TON compte reel — jamais suppose par le code.
     Retourne une liste de dicts (date_entree, date_sortie, jours, rendement, motif).
     """
     closes = cadre["Close"].to_numpy(dtype=float)
@@ -1031,11 +1035,12 @@ def _trades_retour_moyenne(cadre, declencheur, stop_pct=None):
             sortie_j = min(i + RM_MAX_HOLD, n - 1)
             motif, prix_sortie = "max_hold", closes[sortie_j]
 
+        rendement_brut = (prix_sortie - prix_entree) / prix_entree * 100
         trades.append({
             "date_entree": cadre.index[i],
             "date_sortie": cadre.index[sortie_j],
             "jours": sortie_j - i,
-            "rendement": (prix_sortie - prix_entree) / prix_entree * 100,
+            "rendement": rendement_brut - frais_pct,
             "motif": motif,
         })
         i = sortie_j + 1  # pas de chevauchement
@@ -1043,7 +1048,7 @@ def _trades_retour_moyenne(cadre, declencheur, stop_pct=None):
     return trades
 
 
-def backtest_retour_moyenne(univers, annees, declencheurs=("rsi2", "ibs"), stop_pct=None):
+def backtest_retour_moyenne(univers, annees, declencheurs=("rsi2", "ibs"), stop_pct=None, frais_pct=0.0):
     """Lance les simulations sur tout l'univers. Retourne {declencheur: DataFrame}."""
     periode = f"{annees}y"
     resultats = {d: [] for d in declencheurs}
@@ -1055,7 +1060,7 @@ def backtest_retour_moyenne(univers, annees, declencheurs=("rsi2", "ibs"), stop_
 
         for ticker, cadre in donnees.items():
             for d in declencheurs:
-                for t in _trades_retour_moyenne(cadre, d, stop_pct=stop_pct):
+                for t in _trades_retour_moyenne(cadre, d, stop_pct=stop_pct, frais_pct=frais_pct):
                     resultats[d].append({"ticker": ticker, "place": place, **t})
 
     return {d: pd.DataFrame(lignes) for d, lignes in resultats.items()}
@@ -1086,14 +1091,15 @@ def _stats_trades(df):
     return lignes
 
 
-def resume_retour_moyenne(resultats, annees, stop_pct=None):
+def resume_retour_moyenne(resultats, annees, stop_pct=None, frais_pct=0.0):
     libelles = {"rsi2": f"RSI-2 < {RM_SEUIL_RSI2:.0f}", "ibs": f"IBS < {RM_SEUIL_IBS:.2f}"}
     entete = f"Backtest retour a la moyenne — {annees} ans (analyse uniquement, jamais en scan reel)"
     sortie = [
         entete,
         f"  Filtre : cloture > MM200 ascendante · Sortie : cloture > MM5 ou RSI-2 > "
         f"{RM_RSI2_SORTIE:.0f} ou {RM_MAX_HOLD} seances max"
-        + (f" · Stop loss : {stop_pct:+.1f}%" if stop_pct is not None else ""),
+        + (f" · Stop loss : {stop_pct:+.1f}%" if stop_pct is not None else "")
+        + (f" · Frais : -{frais_pct:.2f}% par trade (calibrer selon TON compte reel)" if frais_pct else ""),
         "",
     ]
     for d, df in resultats.items():
@@ -1135,6 +1141,122 @@ def resume_validation_croisee(resultats, annees, stop_pct=None):
         sortie.extend("  " + l for l in _stats_trades(validation))
         sortie.append("")
 
+    return "\n".join(sortie)
+
+
+# ---------------------------------------------------------------------------
+# Backtest — suivi de tendance (EMA 8/21, filtre EMA50)
+# ---------------------------------------------------------------------------
+#
+# Setup independant de la methode Inchi, sur prix REELS, famille CONTINUATION
+# de tendance (pas retour a la moyenne comme RSI-2/IBS) :
+#   Filtre     : EMA21 > EMA50 (tendance de fond confirmee)
+#   Entree     : EMA8 croise AU-DESSUS de l'EMA21 (le jour du croisement)
+#   Sortie     : EMA8 recroise SOUS l'EMA21, ou MAX_HOLD seances, ou stop loss
+# Profil attendu, oppose au retour a la moyenne : moins de trades gagnants,
+# mais des gagnants nettement plus gros (on laisse courir la tendance).
+# Un seul trade a la fois par ticker. Outil d'ANALYSE uniquement.
+
+RM_EMA_RAPIDE = 8
+RM_EMA_LENTE = 21
+RM_EMA_FOND = 50
+RM_EMA_MAX_HOLD = 20
+
+
+def calcul_ema(closes, periode):
+    """EMA standard (pandas ewm, adjust=False)."""
+    return pd.Series(closes, dtype=float).ewm(span=periode, adjust=False).mean().to_numpy()
+
+
+def _trades_ema_cross(cadre, stop_pct=None, frais_pct=0.0):
+    """
+    Simule les trades de suivi de tendance EMA8/21 pour un ticker.
+    Meme structure que _trades_retour_moyenne (stop sur plus bas intraday,
+    frais deduits du rendement), mais entree/sortie sur croisement d'EMA
+    plutot que sur repli RSI-2/IBS.
+    """
+    closes = cadre["Close"].to_numpy(dtype=float)
+    bas = cadre["Low"].to_numpy(dtype=float)
+    n = len(closes)
+    if n < RM_EMA_FOND + 10:
+        return []
+
+    ema_rapide = calcul_ema(closes, RM_EMA_RAPIDE)
+    ema_lente = calcul_ema(closes, RM_EMA_LENTE)
+    ema_fond = calcul_ema(closes, RM_EMA_FOND)
+
+    trades = []
+    i = RM_EMA_FOND
+    while i < n - 1:
+        croisement_haussier = (
+            ema_rapide[i] > ema_lente[i] and ema_rapide[i - 1] <= ema_lente[i - 1]
+        )
+        filtre_ok = ema_lente[i] > ema_fond[i]
+        if not (croisement_haussier and filtre_ok):
+            i += 1
+            continue
+
+        prix_entree = closes[i]
+        prix_stop = prix_entree * (1 + stop_pct / 100) if stop_pct is not None else None
+        sortie_j, motif, prix_sortie = None, None, None
+
+        for j in range(i + 1, min(i + RM_EMA_MAX_HOLD, n - 1) + 1):
+            if prix_stop is not None and bas[j] <= prix_stop:
+                sortie_j, motif, prix_sortie = j, "stop_loss", prix_stop
+                break
+            if ema_rapide[j] < ema_lente[j]:
+                sortie_j, motif, prix_sortie = j, "croisement_baissier", closes[j]
+                break
+
+        if sortie_j is None:
+            sortie_j = min(i + RM_EMA_MAX_HOLD, n - 1)
+            motif, prix_sortie = "max_hold", closes[sortie_j]
+
+        rendement_brut = (prix_sortie - prix_entree) / prix_entree * 100
+        trades.append({
+            "date_entree": cadre.index[i],
+            "date_sortie": cadre.index[sortie_j],
+            "jours": sortie_j - i,
+            "rendement": rendement_brut - frais_pct,
+            "motif": motif,
+        })
+        i = sortie_j + 1  # pas de chevauchement
+
+    return trades
+
+
+def backtest_ema_cross(univers, annees, stop_pct=None, frais_pct=0.0):
+    """Lance le backtest EMA 8/21 sur tout l'univers. Retourne {'ema_cross': DataFrame}."""
+    periode = f"{annees}y"
+    lignes = []
+
+    for place, tickers in univers.items():
+        print(f"\n[{place}] telechargement de {len(tickers)} tickers ({periode})")
+        donnees = telecharger_pour_place(place, tickers, periode)
+        print(f"  {len(donnees)} tickers exploitables")
+
+        for ticker, cadre in donnees.items():
+            for t in _trades_ema_cross(cadre, stop_pct=stop_pct, frais_pct=frais_pct):
+                lignes.append({"ticker": ticker, "place": place, **t})
+
+    return {"ema_cross": pd.DataFrame(lignes)}
+
+
+def resume_ema_cross(resultats, annees, stop_pct=None, frais_pct=0.0):
+    entete = f"Backtest suivi de tendance EMA {RM_EMA_RAPIDE}/{RM_EMA_LENTE} — {annees} ans (analyse uniquement, jamais en scan reel)"
+    sortie = [
+        entete,
+        f"  Filtre : EMA{RM_EMA_LENTE} > EMA{RM_EMA_FOND} · "
+        f"Entree : EMA{RM_EMA_RAPIDE} croise au-dessus EMA{RM_EMA_LENTE} · "
+        f"Sortie : croisement inverse ou {RM_EMA_MAX_HOLD} seances max"
+        + (f" · Stop loss : {stop_pct:+.1f}%" if stop_pct is not None else "")
+        + (f" · Frais : -{frais_pct:.2f}% par trade" if frais_pct else ""),
+        "",
+    ]
+    for d, df in resultats.items():
+        sortie.append(f"DECLENCHEUR {d} ({len(df)} trades)")
+        sortie.extend(_stats_trades(df))
+        sortie.append("")
     return "\n".join(sortie)
 
 
@@ -1679,14 +1801,21 @@ def main():
              "+ Fernando/short), jamais utilise en scan reel ni alertes Telegram",
     )
     parseur.add_argument(
-        "--setup", default="inchi", choices=["inchi", "retour-moyenne"],
-        help="backtest uniquement : 'inchi' (Stromboli/Fernanda, defaut) ou "
-             "'retour-moyenne' (RSI-2 / IBS + filtre MM200, prix reels)",
+        "--setup", default="inchi", choices=["inchi", "retour-moyenne", "ema-cross"],
+        help="backtest uniquement : 'inchi' (Stromboli/Fernanda, defaut), "
+             "'retour-moyenne' (RSI-2 / IBS + filtre MM200) ou "
+             "'ema-cross' (suivi de tendance EMA 8/21, filtre EMA50)",
     )
     parseur.add_argument(
         "--stop-loss", type=float, metavar="PCT", default=None,
         help="setup retour-moyenne uniquement : stop loss en %% (ex: -8 pour -8%%), "
              "sortie immediate si le plus bas de seance le franchit",
+    )
+    parseur.add_argument(
+        "--frais-pct", type=float, metavar="PCT", default=0.0,
+        help="setup retour-moyenne uniquement : frais de courtage aller-retour en %% de "
+             "la position (ex: 0.2 pour 2 euros sur 1000 euros), 0 = aucun frais (defaut). "
+             "A calibrer selon TON compte reel, jamais suppose par le code.",
     )
     parseur.add_argument(
         "--validation-croisee", action="store_true",
@@ -1738,9 +1867,29 @@ def main():
         return 0
 
     if args.backtest:
+        if args.setup == "ema-cross":
+            resultats = backtest_ema_cross(
+                univers, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct
+            )
+            print("\n" + resume_ema_cross(
+                resultats, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct
+            ))
+            if args.validation_croisee:
+                print("\n" + resume_validation_croisee(resultats, args.backtest, stop_pct=args.stop_loss))
+            for d, df in resultats.items():
+                if not df.empty:
+                    chemin = RACINE / f"backtest_{d}.csv"
+                    df.to_csv(chemin, index=False)
+                    print(f"Detail {d} ecrit dans {chemin.name}")
+            return 0
+
         if args.setup == "retour-moyenne":
-            resultats = backtest_retour_moyenne(univers, args.backtest, stop_pct=args.stop_loss)
-            print("\n" + resume_retour_moyenne(resultats, args.backtest, stop_pct=args.stop_loss))
+            resultats = backtest_retour_moyenne(
+                univers, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct
+            )
+            print("\n" + resume_retour_moyenne(
+                resultats, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct
+            ))
             if args.validation_croisee:
                 print("\n" + resume_validation_croisee(resultats, args.backtest, stop_pct=args.stop_loss))
             for d, df in resultats.items():
