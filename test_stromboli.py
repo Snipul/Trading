@@ -673,42 +673,77 @@ verifier("rapport RM : section IBS vide geree", "aucun trade" in _rapport_rm)
 
 
 
-# --- 12. Backtest suivi de tendance (EMA 8/21) ------------------------------
-print("\n12. Backtest suivi de tendance (EMA 8/21)")
+# --- 12. Backtest suivi de tendance (EMA 8/21, Chandelier Exit) ------------
+print("\n12. Backtest suivi de tendance (EMA 8/21, Chandelier Exit)")
 
-verifier("calcul_ema retourne bien une EMA (converge vers la moyenne)", True)  # sanity, verifie plus bas via valeurs
+# ATR : verification manuelle sur une petite serie connue
+_cadre_atr = pd.DataFrame({
+    "High": [102.0, 104.0, 103.0, 106.0, 108.0],
+    "Low": [98.0, 99.0, 100.0, 101.0, 103.0],
+    "Close": [100.0, 103.0, 101.0, 105.0, 107.0],
+})
+_atr = S.calcul_atr(_cadre_atr, periode=3)
+verifier("ATR : NaN pendant la periode de chauffe", np.isnan(_atr[2]))
+verifier("ATR : valeur presente une fois la periode atteinte", not np.isnan(_atr[3]))
 
-_n_ema = 200
-_idx_ema = pd.bdate_range("2024-01-01", periods=_n_ema)
-_closes_ema = np.concatenate([
+# Tendance longue et lisse : le trade doit pouvoir durer bien plus que
+# l'ancienne limite artificielle de 20 seances, tant que le Chandelier
+# n'est pas casse.
+_n_long = 300
+_idx_long = pd.bdate_range("2024-01-01", periods=_n_long)
+_closes_long = np.concatenate([
     np.full(60, 100.0),
-    np.linspace(100, 140, 60),
-    np.linspace(140, 130, 40),
-    np.full(40, 130.0),
+    np.linspace(100, 400, 230),
+    np.full(10, 400.0),
 ])
-_cadre_ema = pd.DataFrame(
-    {"Open": _closes_ema, "High": _closes_ema + 1, "Low": _closes_ema - 1, "Close": _closes_ema, "Volume": 1000.0},
-    index=_idx_ema,
+_cadre_long = pd.DataFrame(
+    {"Open": _closes_long, "High": _closes_long + 1, "Low": _closes_long - 1,
+     "Close": _closes_long, "Volume": 1000.0},
+    index=_idx_long,
 )
-_trades_ema = S._trades_ema_cross(_cadre_ema)
-verifier("un trade genere sur la forte hausse", len(_trades_ema) >= 1)
+_trades_long = S._trades_ema_cross(_cadre_long)
+verifier("un trade genere sur la longue tendance", len(_trades_long) >= 1)
+verifier(
+    "aucune limite artificielle : un trade peut durer bien plus de 20 seances",
+    _trades_long and max(t["jours"] for t in _trades_long) > 20,
+)
+verifier(
+    "motifs de sortie coherents (plus de max_hold, qui n'existe plus)",
+    all(t["motif"] in ("chandelier", "croisement_baissier", "fin_donnees", "stop_fixe") for t in _trades_long),
+)
 
-_closes_baisse_ema = np.linspace(140, 100, _n_ema)
+# Un vrai repli brutal apres une tendance doit declencher le Chandelier
+_closes_repli = np.concatenate([
+    np.full(60, 100.0), np.linspace(100, 200, 100), np.linspace(200, 150, 20), np.full(50, 150.0),
+])
+_cadre_repli = pd.DataFrame(
+    {"Open": _closes_repli, "High": _closes_repli + 1, "Low": _closes_repli - 1,
+     "Close": _closes_repli, "Volume": 1000.0},
+    index=pd.bdate_range("2024-01-01", periods=len(_closes_repli)),
+)
+_trades_repli = S._trades_ema_cross(_cadre_repli)
+verifier(
+    "le Chandelier se declenche sur un vrai repli apres une tendance",
+    any(t["motif"] == "chandelier" for t in _trades_repli),
+)
+
+_closes_baisse_ema = np.linspace(140, 100, _n_long)
 _cadre_baisse_ema = pd.DataFrame(
     {"Open": _closes_baisse_ema, "High": _closes_baisse_ema + 1, "Low": _closes_baisse_ema - 1,
      "Close": _closes_baisse_ema, "Volume": 1000.0},
-    index=_idx_ema,
+    index=_idx_long,
 )
 verifier("aucun trade en tendance baissiere pure (filtre EMA50)", S._trades_ema_cross(_cadre_baisse_ema) == [])
 
-_rapport_ema = S.resume_ema_cross({"ema_cross": pd.DataFrame(_trades_ema)}, annees=2)
+_rapport_ema = S.resume_ema_cross({"ema_cross": pd.DataFrame(_trades_long)}, annees=2)
 verifier("rapport EMA cross : entete presente", "EMA 8/21" in _rapport_ema)
+verifier("rapport EMA cross : mentionne le Chandelier Exit", "Chandelier" in _rapport_ema)
 verifier("rapport EMA cross : section declencheur presente", "DECLENCHEUR ema_cross" in _rapport_ema)
 
-_avec_stop_ema = S._trades_ema_cross(_cadre_ema, stop_pct=-5.0)
+_avec_stop_fixe = S._trades_ema_cross(_cadre_long, stop_pct=-5.0)
 verifier(
-    "stop loss applicable au setup EMA (pas d'erreur, structure coherente)",
-    isinstance(_avec_stop_ema, list),
+    "plancher de securite optionnel applicable en plus du Chandelier",
+    isinstance(_avec_stop_fixe, list),
 )
 
 
