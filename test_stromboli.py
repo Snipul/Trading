@@ -747,6 +747,37 @@ verifier(
 )
 
 
+# --- 12b. Backtest suivi de tendance, sortie partielle ---------------------
+print("\n12b. Backtest suivi de tendance (sortie partielle)")
+
+_trades_partiel = S._trades_ema_cross_partiel(_cadre_long)
+verifier("un trade genere sur la longue tendance (sortie partielle)", len(_trades_partiel) >= 1)
+verifier(
+    "motif combine les deux moities (A+B)",
+    _trades_partiel and "+" in _trades_partiel[0]["motif"],
+)
+verifier(
+    "sur une forte tendance, la moitie A touche son objectif fixe",
+    _trades_partiel and "cible_partielle" in _trades_partiel[0]["motif"],
+)
+verifier(
+    "le rendement blend est strictement inferieur au Chandelier pur (moitie A plafonnee)",
+    _trades_partiel and _trades_long and _trades_partiel[0]["rendement"] < _trades_long[0]["rendement"],
+)
+
+_rapport_partiel = S.resume_ema_cross_partiel(
+    {"ema_cross_partiel": pd.DataFrame(_trades_partiel)}, annees=2
+)
+verifier("rapport sortie partielle : mentionne le mecanisme", "sortie partielle" in _rapport_partiel)
+verifier("rapport sortie partielle : objectif par defaut affiche (+5.0%)", "+5.0%" in _rapport_partiel)
+
+# En tendance baissiere pure, aucun trade ne doit etre genere non plus
+verifier(
+    "sortie partielle : aucun trade en tendance baissiere pure (meme filtre EMA50)",
+    S._trades_ema_cross_partiel(_cadre_baisse_ema) == [],
+)
+
+
 # --- 13. Filtre anti-suspension de cotation (ALTRA.PA et similaires) -------
 print("\n13. Filtre anti-suspension de cotation")
 
