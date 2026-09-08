@@ -976,12 +976,17 @@ def calcul_ibs(cadre):
     return ibs
 
 
-def _trades_retour_moyenne(cadre, declencheur):
+def _trades_retour_moyenne(cadre, declencheur, stop_pct=None):
     """
     Simule les trades d'un ticker pour un declencheur donne ('rsi2' ou 'ibs').
+    stop_pct : si fourni (ex: -8.0 pour -8%), sortie immediate au niveau du
+    stop des que le plus bas de la seance le franchit (avant meme de tester
+    les conditions de sortie normales ce jour-la — un stop protege contre
+    la baisse intra-seance, pas seulement a la cloture).
     Retourne une liste de dicts (date_entree, date_sortie, jours, rendement, motif).
     """
     closes = cadre["Close"].to_numpy(dtype=float)
+    bas = cadre["Low"].to_numpy(dtype=float)
     n = len(closes)
     if n < 210:
         return []
@@ -1008,23 +1013,29 @@ def _trades_retour_moyenne(cadre, declencheur):
             continue
 
         prix_entree = closes[i]
-        sortie_j, motif = None, None
+        prix_stop = prix_entree * (1 + stop_pct / 100) if stop_pct is not None else None
+        sortie_j, motif, prix_sortie = None, None, None
+
         for j in range(i + 1, min(i + RM_MAX_HOLD, n - 1) + 1):
+            if prix_stop is not None and bas[j] <= prix_stop:
+                sortie_j, motif, prix_sortie = j, "stop_loss", prix_stop
+                break
             if not np.isnan(mm5[j]) and closes[j] > mm5[j]:
-                sortie_j, motif = j, "mm5"
+                sortie_j, motif, prix_sortie = j, "mm5", closes[j]
                 break
             if not np.isnan(rsi2[j]) and rsi2[j] > RM_RSI2_SORTIE:
-                sortie_j, motif = j, "rsi70"
+                sortie_j, motif, prix_sortie = j, "rsi70", closes[j]
                 break
+
         if sortie_j is None:
             sortie_j = min(i + RM_MAX_HOLD, n - 1)
-            motif = "max_hold"
+            motif, prix_sortie = "max_hold", closes[sortie_j]
 
         trades.append({
             "date_entree": cadre.index[i],
             "date_sortie": cadre.index[sortie_j],
             "jours": sortie_j - i,
-            "rendement": (closes[sortie_j] - prix_entree) / prix_entree * 100,
+            "rendement": (prix_sortie - prix_entree) / prix_entree * 100,
             "motif": motif,
         })
         i = sortie_j + 1  # pas de chevauchement
@@ -1032,7 +1043,7 @@ def _trades_retour_moyenne(cadre, declencheur):
     return trades
 
 
-def backtest_retour_moyenne(univers, annees, declencheurs=("rsi2", "ibs")):
+def backtest_retour_moyenne(univers, annees, declencheurs=("rsi2", "ibs"), stop_pct=None):
     """Lance les simulations sur tout l'univers. Retourne {declencheur: DataFrame}."""
     periode = f"{annees}y"
     resultats = {d: [] for d in declencheurs}
@@ -1044,50 +1055,86 @@ def backtest_retour_moyenne(univers, annees, declencheurs=("rsi2", "ibs")):
 
         for ticker, cadre in donnees.items():
             for d in declencheurs:
-                for t in _trades_retour_moyenne(cadre, d):
+                for t in _trades_retour_moyenne(cadre, d, stop_pct=stop_pct):
                     resultats[d].append({"ticker": ticker, "place": place, **t})
 
     return {d: pd.DataFrame(lignes) for d, lignes in resultats.items()}
 
 
-def resume_retour_moyenne(resultats, annees):
+def _stats_trades(df):
+    """Lignes formatees (reussite/rendement/duree/gagnants-perdants/sorties) pour un DataFrame de trades."""
+    if df.empty:
+        return ["  aucun trade"]
+    r = df["rendement"]
+    gagnants = r[r > 0]
+    perdants = r[r <= 0]
+    lignes = [
+        f"  reussite {(r > 0).mean() * 100:5.1f}% · "
+        f"rendement moyen {r.mean():+6.2f}% · median {r.median():+6.2f}% · "
+        f"duree moyenne {df['jours'].mean():.1f} seances ({len(df)} trades)",
+        f"  gain moyen des gagnants {gagnants.mean() if len(gagnants) else 0:+6.2f}% · "
+        f"perte moyenne des perdants {perdants.mean() if len(perdants) else 0:+6.2f}% · "
+        f"pire trade {r.min():+6.2f}%",
+    ]
+    motifs = df["motif"].value_counts(normalize=True) * 100
+    lignes.append("  sorties : " + " · ".join(f"{m} {p:.0f}%" for m, p in motifs.items()))
+    if "place" in df.columns:
+        lignes.append("  par place : " + " · ".join(
+            f"{p} {len(g)} trades / {(g['rendement'] > 0).mean() * 100:.0f}%"
+            for p, g in df.groupby("place")
+        ))
+    return lignes
+
+
+def resume_retour_moyenne(resultats, annees, stop_pct=None):
     libelles = {"rsi2": f"RSI-2 < {RM_SEUIL_RSI2:.0f}", "ibs": f"IBS < {RM_SEUIL_IBS:.2f}"}
+    entete = f"Backtest retour a la moyenne — {annees} ans (analyse uniquement, jamais en scan reel)"
     sortie = [
-        f"Backtest retour a la moyenne — {annees} ans (analyse uniquement, jamais en scan reel)",
+        entete,
         f"  Filtre : cloture > MM200 ascendante · Sortie : cloture > MM5 ou RSI-2 > "
-        f"{RM_RSI2_SORTIE:.0f} ou {RM_MAX_HOLD} seances max",
+        f"{RM_RSI2_SORTIE:.0f} ou {RM_MAX_HOLD} seances max"
+        + (f" · Stop loss : {stop_pct:+.1f}%" if stop_pct is not None else ""),
         "",
     ]
     for d, df in resultats.items():
         sortie.append(f"DECLENCHEUR {libelles.get(d, d)} ({len(df)} trades)")
-        if df.empty:
-            sortie.append("  aucun trade")
+        sortie.extend(_stats_trades(df))
+        sortie.append("")
+    return "\n".join(sortie)
+
+
+def resume_validation_croisee(resultats, annees, stop_pct=None):
+    """
+    Decoupe chaque declencheur en deux moities CHRONOLOGIQUES par date
+    d'entree (coupure = date mediane des trades) : 'decouverte' (premiere
+    moitie) et 'validation' (seconde moitie, hors echantillon). Un edge
+    reel doit tenir sur les deux ; s'il ne fonctionne que sur la decouverte,
+    c'est un mirage statistique (surapprentissage sur la periode testee).
+    """
+    libelles = {"rsi2": f"RSI-2 < {RM_SEUIL_RSI2:.0f}", "ibs": f"IBS < {RM_SEUIL_IBS:.2f}"}
+    sortie = [
+        f"Validation croisee (decouverte / validation) — {annees} ans"
+        + (f" · Stop loss : {stop_pct:+.1f}%" if stop_pct is not None else ""),
+        "  Coupure = date mediane des trades. Un edge reel doit tenir sur les DEUX moities.",
+        "",
+    ]
+    for d, df in resultats.items():
+        sortie.append(f"DECLENCHEUR {libelles.get(d, d)}")
+        if df.empty or len(df) < 20:
+            sortie.append("  echantillon trop petit pour decouper (< 20 trades)")
             sortie.append("")
             continue
-        r = df["rendement"]
-        gagnants = r[r > 0]
-        perdants = r[r <= 0]
-        esperance = r.mean()
-        sortie.append(
-            f"  reussite {(r > 0).mean() * 100:5.1f}% · "
-            f"rendement moyen {esperance:+6.2f}% · median {r.median():+6.2f}% · "
-            f"duree moyenne {df['jours'].mean():.1f} seances"
-        )
-        sortie.append(
-            f"  gain moyen des gagnants {gagnants.mean() if len(gagnants) else 0:+6.2f}% · "
-            f"perte moyenne des perdants {perdants.mean() if len(perdants) else 0:+6.2f}% · "
-            f"pire trade {r.min():+6.2f}%"
-        )
-        motifs = df["motif"].value_counts(normalize=True) * 100
-        sortie.append(
-            "  sorties : " + " · ".join(f"{m} {p:.0f}%" for m, p in motifs.items())
-        )
-        if "place" in df.columns:
-            sortie.append("  par place : " + " · ".join(
-                f"{p} {len(g)} trades / {(g['rendement'] > 0).mean() * 100:.0f}%"
-                for p, g in df.groupby("place")
-            ))
+
+        coupure = df["date_entree"].median()
+        decouverte = df[df["date_entree"] < coupure]
+        validation = df[df["date_entree"] >= coupure]
+
+        sortie.append(f"  DECOUVERTE (avant {coupure.date()})")
+        sortie.extend("  " + l for l in _stats_trades(decouverte))
+        sortie.append(f"  VALIDATION (a partir de {coupure.date()}, hors echantillon)")
+        sortie.extend("  " + l for l in _stats_trades(validation))
         sortie.append("")
+
     return "\n".join(sortie)
 
 
@@ -1637,6 +1684,16 @@ def main():
              "'retour-moyenne' (RSI-2 / IBS + filtre MM200, prix reels)",
     )
     parseur.add_argument(
+        "--stop-loss", type=float, metavar="PCT", default=None,
+        help="setup retour-moyenne uniquement : stop loss en %% (ex: -8 pour -8%%), "
+             "sortie immediate si le plus bas de seance le franchit",
+    )
+    parseur.add_argument(
+        "--validation-croisee", action="store_true",
+        help="setup retour-moyenne uniquement : decoupe les trades en decouverte/validation "
+             "(coupure = date mediane) pour verifier que l'edge tient hors echantillon",
+    )
+    parseur.add_argument(
         "--diagnostic", metavar="TICKER",
         help="affiche les valeurs HA/M7/Tenkan bougie par bougie pour un ticker (ex: ELI.BR)",
     )
@@ -1682,8 +1739,10 @@ def main():
 
     if args.backtest:
         if args.setup == "retour-moyenne":
-            resultats = backtest_retour_moyenne(univers, args.backtest)
-            print("\n" + resume_retour_moyenne(resultats, args.backtest))
+            resultats = backtest_retour_moyenne(univers, args.backtest, stop_pct=args.stop_loss)
+            print("\n" + resume_retour_moyenne(resultats, args.backtest, stop_pct=args.stop_loss))
+            if args.validation_croisee:
+                print("\n" + resume_validation_croisee(resultats, args.backtest, stop_pct=args.stop_loss))
             for d, df in resultats.items():
                 if not df.empty:
                     chemin = RACINE / f"backtest_rm_{d}.csv"
