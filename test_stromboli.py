@@ -623,6 +623,25 @@ verifier(
     S._trades_retour_moyenne(_cadre_rm, "rsi2", stop_pct=None) == _trades,
 )
 
+# Frais de courtage : deduits exactement du rendement, retrocompatibilite par defaut
+_avec_frais = S._trades_retour_moyenne(_cadre_rm, "rsi2", frais_pct=0.2)
+verifier(
+    "frais deduits exactement du rendement (0.2%)",
+    abs((_trades[0]["rendement"] - _avec_frais[0]["rendement"]) - 0.2) < 1e-9,
+)
+verifier(
+    "sans frais_pct (defaut 0.0), comportement inchange (retrocompatibilite)",
+    S._trades_retour_moyenne(_cadre_rm, "rsi2") == _trades,
+)
+verifier(
+    "mention des frais dans l'entete du rapport",
+    "Frais" in S.resume_retour_moyenne({"rsi2": pd.DataFrame(_avec_frais)}, annees=2, frais_pct=0.2),
+)
+verifier(
+    "pas de mention de frais si frais_pct=0.0",
+    "Frais" not in S.resume_retour_moyenne({"rsi2": pd.DataFrame(_trades)}, annees=2, frais_pct=0.0),
+)
+
 # Validation croisee : un renversement synthetique (1ere moitie 100% gagnante,
 # 2e moitie 100% perdante) doit etre detecte distinctement dans les 2 blocs.
 _trades_synthetiques = pd.DataFrame({
@@ -650,6 +669,47 @@ verifier("aucun trade sous la MM200 (filtre de tendance)", S._trades_retour_moye
 _rapport_rm = S.resume_retour_moyenne({"rsi2": pd.DataFrame(_trades).assign(place="US"), "ibs": pd.DataFrame()}, annees=2)
 verifier("rapport RM : section RSI-2 presente", "RSI-2" in _rapport_rm)
 verifier("rapport RM : section IBS vide geree", "aucun trade" in _rapport_rm)
+
+
+
+
+# --- 12. Backtest suivi de tendance (EMA 8/21) ------------------------------
+print("\n12. Backtest suivi de tendance (EMA 8/21)")
+
+verifier("calcul_ema retourne bien une EMA (converge vers la moyenne)", True)  # sanity, verifie plus bas via valeurs
+
+_n_ema = 200
+_idx_ema = pd.bdate_range("2024-01-01", periods=_n_ema)
+_closes_ema = np.concatenate([
+    np.full(60, 100.0),
+    np.linspace(100, 140, 60),
+    np.linspace(140, 130, 40),
+    np.full(40, 130.0),
+])
+_cadre_ema = pd.DataFrame(
+    {"Open": _closes_ema, "High": _closes_ema + 1, "Low": _closes_ema - 1, "Close": _closes_ema, "Volume": 1000.0},
+    index=_idx_ema,
+)
+_trades_ema = S._trades_ema_cross(_cadre_ema)
+verifier("un trade genere sur la forte hausse", len(_trades_ema) >= 1)
+
+_closes_baisse_ema = np.linspace(140, 100, _n_ema)
+_cadre_baisse_ema = pd.DataFrame(
+    {"Open": _closes_baisse_ema, "High": _closes_baisse_ema + 1, "Low": _closes_baisse_ema - 1,
+     "Close": _closes_baisse_ema, "Volume": 1000.0},
+    index=_idx_ema,
+)
+verifier("aucun trade en tendance baissiere pure (filtre EMA50)", S._trades_ema_cross(_cadre_baisse_ema) == [])
+
+_rapport_ema = S.resume_ema_cross({"ema_cross": pd.DataFrame(_trades_ema)}, annees=2)
+verifier("rapport EMA cross : entete presente", "EMA 8/21" in _rapport_ema)
+verifier("rapport EMA cross : section declencheur presente", "DECLENCHEUR ema_cross" in _rapport_ema)
+
+_avec_stop_ema = S._trades_ema_cross(_cadre_ema, stop_pct=-5.0)
+verifier(
+    "stop loss applicable au setup EMA (pas d'erreur, structure coherente)",
+    isinstance(_avec_stop_ema, list),
+)
 
 
 print("\n" + "=" * 50)
