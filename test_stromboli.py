@@ -712,6 +712,39 @@ verifier(
 )
 
 
+# --- 13. Filtre anti-suspension de cotation (ALTRA.PA et similaires) -------
+print("\n13. Filtre anti-suspension de cotation")
+
+_dates_avant = pd.bdate_range("2019-01-01", "2020-01-31")
+_dates_apres = pd.bdate_range("2025-08-01", "2025-12-31")
+_dates_altra = _dates_avant.append(_dates_apres)
+_closes_avant = np.full(len(_dates_avant), 1.0)
+_closes_apres = np.concatenate([[2.98], np.full(len(_dates_apres) - 1, 2.52)])
+_closes_altra = np.concatenate([_closes_avant, _closes_apres])
+_cadre_altra = pd.DataFrame(
+    {"Open": _closes_altra, "High": _closes_altra + 0.05, "Low": _closes_altra - 0.05,
+     "Close": _closes_altra, "Volume": 1000.0},
+    index=_dates_altra,
+)
+verifier("cas ALTRA (trou de cotation + saut de prix) detecte comme suspect", S._donnee_suspecte(_cadre_altra))
+
+_dates_ok = pd.bdate_range("2024-01-01", periods=500)
+_closes_ok = 100 + np.cumsum(np.random.default_rng(0).normal(0, 1, 500))
+_cadre_ok = pd.DataFrame(
+    {"Open": _closes_ok, "High": _closes_ok + 1, "Low": _closes_ok - 1, "Close": _closes_ok, "Volume": 1000.0},
+    index=_dates_ok,
+)
+verifier("titre normal jamais exclu a tort", not S._donnee_suspecte(_cadre_ok))
+
+_closes_hausse = np.linspace(100, 300, 500)  # +200% mais progressif, jamais un vrai saut brutal
+_cadre_hausse = pd.DataFrame(
+    {"Open": _closes_hausse, "High": _closes_hausse + 1, "Low": _closes_hausse - 1,
+     "Close": _closes_hausse, "Volume": 1000.0},
+    index=_dates_ok,
+)
+verifier("forte hausse progressive et legitime jamais exclue a tort", not S._donnee_suspecte(_cadre_hausse))
+
+
 print("\n" + "=" * 50)
 if echecs:
     print(f"{len(echecs)} ECHEC(S) : {echecs}")
