@@ -1765,10 +1765,29 @@ def telecharger(tickers, periode):
             cadre = pd.DataFrame(valeurs)
             cadre["date"] = pd.to_datetime(cadre["date"])
             cadre = cadre.set_index("date").sort_index()
-            cadre = cadre.rename(columns={
-                "open": "Open", "high": "High", "low": "Low",
-                "adjusted_close": "Close", "volume": "Volume",
-            })
+
+            # EODHD ne fournit que la cloture ajustee (adjusted_close), jamais
+            # les equivalents pour Open/High/Low. Sans correction, un split
+            # (ex: 10-pour-1) cree un ecart artificiel de plusieurs dizaines
+            # de % entre la cloture ajustee de la veille et l'ouverture brute
+            # du lendemain — invisible sur un backtest close-to-close, mais
+            # catastrophique des qu'on compare a un stop ou qu'on simule une
+            # entree a l'ouverture. On applique le meme facteur d'ajustement
+            # (cloture ajustee / cloture brute) a Open/High/Low, comme le
+            # fait n'importe quel fournisseur serieux en interne.
+            if "close" in cadre.columns and "adjusted_close" in cadre.columns:
+                facteur = cadre["adjusted_close"] / cadre["close"].replace(0, np.nan)
+                cadre["Open"] = cadre["open"] * facteur
+                cadre["High"] = cadre["high"] * facteur
+                cadre["Low"] = cadre["low"] * facteur
+                cadre["Close"] = cadre["adjusted_close"]
+                cadre["Volume"] = cadre["volume"]
+            else:
+                cadre = cadre.rename(columns={
+                    "open": "Open", "high": "High", "low": "Low",
+                    "adjusted_close": "Close", "volume": "Volume",
+                })
+
             cadre = cadre[["Open", "High", "Low", "Close", "Volume"]].dropna(
                 subset=["Open", "High", "Low", "Close"]
             ).astype(float)
