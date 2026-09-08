@@ -1353,6 +1353,145 @@ def resume_ema_cross(resultats, annees, stop_pct=None, frais_pct=0.0):
     return "\n".join(sortie)
 
 
+# ---------------------------------------------------------------------------
+# Backtest — suivi de tendance avec SORTIE PARTIELLE (compromis reussite/gain)
+# ---------------------------------------------------------------------------
+#
+# Meme entree que ema-cross (croisement EMA8/21, filtre EMA50). La position
+# est scindee en deux moities des l'entree :
+#   Moitie A : sort au premier des evenements suivants : objectif fixe
+#              atteint (CIBLE_PARTIELLE, ex +5%), Chandelier Exit, ou
+#              croisement EMA inverse — vise un taux de reussite plus eleve
+#              en encaissant un petit gain rapide.
+#   Moitie B : reste en Chandelier Exit pur (comme ema-cross), pour capter
+#              les gros mouvements quand ils arrivent.
+# Le rendement rapporte est la moyenne 50/50 des deux moities. Un vrai
+# compromis mesurable, pas un cumul des deux avantages sans contrepartie.
+# Outil d'ANALYSE uniquement.
+
+RM_SORTIE_PARTIELLE_CIBLE = 5.0
+
+
+def _trades_ema_cross_partiel(cadre, cible_partielle=RM_SORTIE_PARTIELLE_CIBLE, stop_pct=None, frais_pct=0.0):
+    """Simule les trades de la variante 'sortie partielle'. Meme structure que _trades_ema_cross."""
+    closes = cadre["Close"].to_numpy(dtype=float)
+    haut = cadre["High"].to_numpy(dtype=float)
+    bas = cadre["Low"].to_numpy(dtype=float)
+    n = len(closes)
+    if n < RM_EMA_FOND + RM_CHANDELIER_ATR_PERIODE + 10:
+        return []
+
+    ema_rapide = calcul_ema(closes, RM_EMA_RAPIDE)
+    ema_lente = calcul_ema(closes, RM_EMA_LENTE)
+    ema_fond = calcul_ema(closes, RM_EMA_FOND)
+    atr = calcul_atr(cadre)
+
+    trades = []
+    i = max(RM_EMA_FOND, RM_CHANDELIER_ATR_PERIODE)
+    while i < n - 1:
+        croisement_haussier = (
+            ema_rapide[i] > ema_lente[i] and ema_rapide[i - 1] <= ema_lente[i - 1]
+        )
+        filtre_ok = ema_lente[i] > ema_fond[i]
+        if not (croisement_haussier and filtre_ok) or np.isnan(atr[i]):
+            i += 1
+            continue
+
+        prix_entree = closes[i]
+        prix_cible = prix_entree * (1 + cible_partielle / 100)
+        prix_stop_fixe = prix_entree * (1 + stop_pct / 100) if stop_pct is not None else None
+        plus_haut = haut[i]
+
+        moitie_a, moitie_b = None, None
+        j = i + 1
+        while j < n and (moitie_a is None or moitie_b is None):
+            niveau_chandelier = plus_haut - RM_CHANDELIER_MULTIPLICATEUR * atr[j]
+
+            if moitie_a is None:
+                if prix_stop_fixe is not None and bas[j] <= prix_stop_fixe:
+                    moitie_a = (j, "stop_fixe", prix_stop_fixe)
+                elif haut[j] >= prix_cible:
+                    moitie_a = (j, "cible_partielle", prix_cible)
+                elif bas[j] <= niveau_chandelier:
+                    moitie_a = (j, "chandelier", niveau_chandelier)
+                elif ema_rapide[j] < ema_lente[j]:
+                    moitie_a = (j, "croisement_baissier", closes[j])
+
+            if moitie_b is None:
+                if prix_stop_fixe is not None and bas[j] <= prix_stop_fixe:
+                    moitie_b = (j, "stop_fixe", prix_stop_fixe)
+                elif bas[j] <= niveau_chandelier:
+                    moitie_b = (j, "chandelier", niveau_chandelier)
+                elif ema_rapide[j] < ema_lente[j]:
+                    moitie_b = (j, "croisement_baissier", closes[j])
+
+            plus_haut = max(plus_haut, haut[j])
+            j += 1
+
+        if moitie_a is None:
+            moitie_a = (n - 1, "fin_donnees", closes[n - 1])
+        if moitie_b is None:
+            moitie_b = (n - 1, "fin_donnees", closes[n - 1])
+
+        rendement_a = (moitie_a[2] - prix_entree) / prix_entree * 100
+        rendement_b = (moitie_b[2] - prix_entree) / prix_entree * 100
+        rendement_blend = 0.5 * rendement_a + 0.5 * rendement_b - frais_pct
+
+        sortie_finale_j = max(moitie_a[0], moitie_b[0])
+        trades.append({
+            "date_entree": cadre.index[i],
+            "date_sortie": cadre.index[sortie_finale_j],
+            "jours": sortie_finale_j - i,
+            "rendement": rendement_blend,
+            "motif": f"{moitie_a[1]}+{moitie_b[1]}",
+        })
+        i = sortie_finale_j + 1
+
+    return trades
+
+
+def backtest_ema_cross_partiel(univers, annees, cible_partielle=RM_SORTIE_PARTIELLE_CIBLE, stop_pct=None, frais_pct=0.0):
+    """Lance le backtest 'sortie partielle' sur tout l'univers. Retourne {'ema_cross_partiel': DataFrame}."""
+    periode = f"{annees}y"
+    lignes = []
+    exclus = 0
+
+    for place, tickers in univers.items():
+        print(f"\n[{place}] telechargement de {len(tickers)} tickers ({periode})")
+        donnees = telecharger_pour_place(place, tickers, periode)
+        print(f"  {len(donnees)} tickers exploitables")
+
+        for ticker, cadre in donnees.items():
+            if _donnee_suspecte(cadre):
+                exclus += 1
+                continue
+            for t in _trades_ema_cross_partiel(cadre, cible_partielle=cible_partielle, stop_pct=stop_pct, frais_pct=frais_pct):
+                lignes.append({"ticker": ticker, "place": place, **t})
+
+    if exclus:
+        print(f"\n{exclus} tickers exclus (saut de prix ou trou de cotation suspect)")
+
+    return {"ema_cross_partiel": pd.DataFrame(lignes)}
+
+
+def resume_ema_cross_partiel(resultats, annees, cible_partielle=RM_SORTIE_PARTIELLE_CIBLE, stop_pct=None, frais_pct=0.0):
+    entete = f"Backtest suivi de tendance — sortie partielle — {annees} ans (analyse uniquement, jamais en scan reel)"
+    sortie = [
+        entete,
+        f"  Meme entree que ema-cross. Moitie A : sort a +{cible_partielle:.1f}% (ou Chandelier/croisement "
+        f"si atteint avant). Moitie B : Chandelier Exit pur, aucune limite de duree. "
+        f"Rendement = moyenne 50/50 des deux moities."
+        + (f" · Plancher de securite : {stop_pct:+.1f}%" if stop_pct is not None else "")
+        + (f" · Frais : -{frais_pct:.2f}% par trade" if frais_pct else ""),
+        "",
+    ]
+    for d, df in resultats.items():
+        sortie.append(f"DECLENCHEUR {d} ({len(df)} trades)")
+        sortie.extend(_stats_trades(df))
+        sortie.append("")
+    return "\n".join(sortie)
+
+
 def diagnostiquer(ticker, tf, nb_bougies=25):
     """
     Affiche, bougie par bougie, les valeurs HA exactes calculees par le bot
@@ -1894,10 +2033,11 @@ def main():
              "+ Fernando/short), jamais utilise en scan reel ni alertes Telegram",
     )
     parseur.add_argument(
-        "--setup", default="inchi", choices=["inchi", "retour-moyenne", "ema-cross"],
+        "--setup", default="inchi", choices=["inchi", "retour-moyenne", "ema-cross", "ema-cross-partiel"],
         help="backtest uniquement : 'inchi' (Stromboli/Fernanda, defaut), "
-             "'retour-moyenne' (RSI-2 / IBS + filtre MM200) ou "
-             "'ema-cross' (suivi de tendance EMA 8/21, filtre EMA50)",
+             "'retour-moyenne' (RSI-2 / IBS + filtre MM200), "
+             "'ema-cross' (suivi de tendance EMA 8/21, Chandelier Exit) ou "
+             "'ema-cross-partiel' (meme entree, moitie sortie tot + moitie Chandelier)",
     )
     parseur.add_argument(
         "--stop-loss", type=float, metavar="PCT", default=None,
@@ -1965,6 +2105,22 @@ def main():
                 univers, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct
             )
             print("\n" + resume_ema_cross(
+                resultats, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct
+            ))
+            if args.validation_croisee:
+                print("\n" + resume_validation_croisee(resultats, args.backtest, stop_pct=args.stop_loss))
+            for d, df in resultats.items():
+                if not df.empty:
+                    chemin = RACINE / f"backtest_{d}.csv"
+                    df.to_csv(chemin, index=False)
+                    print(f"Detail {d} ecrit dans {chemin.name}")
+            return 0
+
+        if args.setup == "ema-cross-partiel":
+            resultats = backtest_ema_cross_partiel(
+                univers, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct
+            )
+            print("\n" + resume_ema_cross_partiel(
                 resultats, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct
             ))
             if args.validation_croisee:
