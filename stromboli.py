@@ -2076,7 +2076,7 @@ def main():
     print("BOT STROMBOLI — methode Inchi")
     print(
         f"Parametres : {MIN_BOUGIES} bougies min · doji <= {SEUIL_DOJI * 100:.0f}% "
-        f"· tolerance meche {TOLERANCE_MECHE * 100:.0f}%"
+        f"· tolerance meche {TOLERANCE_MECHE * 100:.2f}%"
     )
     print("=" * 60 + "\n")
 
