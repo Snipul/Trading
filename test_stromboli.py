@@ -561,6 +561,61 @@ _rapport_sans_fernando = S.resume_backtest(pd.DataFrame(), pd.DataFrame(), annee
 verifier("pas de section Fernando si non demandee", "FERNANDO" not in _rapport_sans_fernando)
 
 
+
+
+# --- 11. Backtest retour a la moyenne (RSI-2 / IBS) ------------------------
+print("\n11. Backtest retour a la moyenne (RSI-2 / IBS)")
+
+verifier("RSI-2 = 100 en hausse continue", S.calcul_rsi(np.array([100, 101, 102, 103, 104, 105.0]), 2)[-1] == 100.0)
+verifier("RSI-2 = 0 en baisse continue", S.calcul_rsi(np.array([105, 104, 103, 102, 101, 100.0]), 2)[-1] == 0.0)
+
+
+def _rsi_reference(c, p=14):
+    s = pd.Series(c)
+    d = s.diff()
+    g = d.clip(lower=0)
+    l = -d.clip(upper=0)
+    ag = g.ewm(alpha=1 / p, adjust=False).mean()
+    al = l.ewm(alpha=1 / p, adjust=False).mean()
+    return (100 - 100 / (1 + ag / al)).to_numpy()
+
+
+_c = 100 + np.cumsum(np.random.default_rng(0).normal(0, 1, 400))
+_ecart = np.nanmax(np.abs(S.calcul_rsi(_c, 14)[60:] - _rsi_reference(_c, 14)[60:]))
+verifier("RSI conforme a une reference Wilder independante", _ecart < 0.5)
+
+_cadre_ibs = pd.DataFrame({"High": [110.0, 110.0, 100.0], "Low": [100.0, 100.0, 100.0], "Close": [102.0, 110.0, 100.0]})
+_ibs = S.calcul_ibs(_cadre_ibs)
+verifier("IBS = 0.2 pour une cloture dans les 20% bas", abs(_ibs[0] - 0.2) < 1e-9)
+verifier("IBS = 1.0 pour une cloture au plus haut", _ibs[1] == 1.0)
+verifier("IBS = NaN si range nul", np.isnan(_ibs[2]))
+
+_n = 320
+_idx = pd.bdate_range("2024-01-01", periods=_n)
+_base = np.linspace(100, 160, _n)
+_base[250] -= 8
+_base[251] -= 12
+_cadre_rm = pd.DataFrame(
+    {"Open": _base, "High": _base + 1, "Low": _base - 1, "Close": _base, "Volume": 1000.0}, index=_idx
+)
+_trades = S._trades_retour_moyenne(_cadre_rm, "rsi2")
+verifier("un trade genere sur le repli dans la tendance haussiere", len(_trades) == 1)
+verifier("entree le premier jour du repli (RSI-2 deja < 10)", _trades and _trades[0]["date_entree"] == _idx[250])
+verifier("trade gagnant a la reprise", _trades and _trades[0]["rendement"] > 0)
+verifier("sortie sur la MM5", _trades and _trades[0]["motif"] == "mm5")
+
+_base_baisse = np.linspace(160, 100, _n)  # tendance baissiere : filtre MM200 doit bloquer
+_cadre_baisse = pd.DataFrame(
+    {"Open": _base_baisse, "High": _base_baisse + 1, "Low": _base_baisse - 1, "Close": _base_baisse, "Volume": 1000.0},
+    index=_idx,
+)
+verifier("aucun trade sous la MM200 (filtre de tendance)", S._trades_retour_moyenne(_cadre_baisse, "rsi2") == [])
+
+_rapport_rm = S.resume_retour_moyenne({"rsi2": pd.DataFrame(_trades).assign(place="US"), "ibs": pd.DataFrame()}, annees=2)
+verifier("rapport RM : section RSI-2 presente", "RSI-2" in _rapport_rm)
+verifier("rapport RM : section IBS vide geree", "aucun trade" in _rapport_rm)
+
+
 print("\n" + "=" * 50)
 if echecs:
     print(f"{len(echecs)} ECHEC(S) : {echecs}")
