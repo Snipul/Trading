@@ -1051,6 +1051,44 @@ verifier("message RSI-2 : reference de gestion manuelle presente", "gestion manu
 verifier("message RSI-2 vide gere", "Aucun signal" in S.formater_rsi2([], titre="RSI-2 ACTIONS"))
 
 
+# --- 15. Retour a la moyenne, sortie partielle (Bollinger + breakeven) -----
+print("\n15. Retour a la moyenne, sortie partielle (Bollinger + breakeven)")
+
+_closes_boll = np.array([100.0] * 19 + [110.0])
+_milieu_b, _haute_b, _basse_b = S.calcul_bollinger(_closes_boll, periode=20, ecarts=2.0)
+verifier("Bollinger : bande haute calculee des que la periode est atteinte", not np.isnan(_haute_b[-1]))
+verifier("Bollinger : bande haute au-dessus de la moyenne", _haute_b[-1] > _milieu_b[-1])
+
+_n_p = 320
+_idx_p = pd.bdate_range("2024-01-01", periods=_n_p)
+_base_p = np.linspace(100, 160, _n_p)
+_base_p[250] -= 8
+_base_p[251] -= 12
+for _k in range(252, 270):
+    _base_p[_k] = _base_p[251] + (_k - 251) * 3  # forte reprise -> doit atteindre la Bollinger haute
+_cadre_p = pd.DataFrame(
+    {"Open": _base_p, "High": _base_p + 1, "Low": _base_p - 1, "Close": _base_p, "Volume": 1000.0}, index=_idx_p
+)
+_trades_p = S._trades_retour_moyenne_partiel(_cadre_p, "rsi2")
+verifier("un trade genere sur le repli suivi d'une forte reprise", len(_trades_p) >= 1)
+verifier("motif combine les deux moities (A+B)", _trades_p and "+" in _trades_p[0]["motif"])
+verifier(
+    "sur une forte reprise, la moitie B atteint la bande de Bollinger haute",
+    _trades_p and "bollinger_haute" in _trades_p[0]["motif"],
+)
+
+_trades_simple_p = S._trades_retour_moyenne(_cadre_p, "rsi2")
+verifier(
+    "la sortie partielle capture un gain plus large que la version simple sur une forte reprise",
+    _trades_p and _trades_simple_p and _trades_p[0]["rendement"] > _trades_simple_p[0]["rendement"],
+)
+
+_rapport_p = S.resume_retour_moyenne_partiel({"rsi2": pd.DataFrame(_trades_p)}, annees=2)
+verifier("rapport : mentionne la sortie partielle", "sortie partielle" in _rapport_p)
+verifier("rapport : mentionne le breakeven", "BREAKEVEN" in _rapport_p)
+verifier("rapport : section declencheur presente", "DECLENCHEUR RSI-2" in _rapport_p)
+
+
 print("\n" + "=" * 50)
 if echecs:
     print(f"{len(echecs)} ECHEC(S) : {echecs}")
