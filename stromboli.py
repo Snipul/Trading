@@ -980,6 +980,16 @@ def calcul_ibs(cadre):
     return ibs
 
 
+def calcul_bollinger(closes, periode=20, ecarts=2.0):
+    """Bandes de Bollinger : SMA +/- ecarts x ecart-type, sur `periode` jours."""
+    s = pd.Series(closes, dtype=float)
+    milieu = s.rolling(periode).mean()
+    ecart_type = s.rolling(periode).std()
+    haute = milieu + ecarts * ecart_type
+    basse = milieu - ecarts * ecart_type
+    return milieu.to_numpy(), haute.to_numpy(), basse.to_numpy()
+
+
 def _donnee_suspecte(cadre, gap_prix_max=80.0, gap_jours_max=60):
     """
     Detecte les series de prix qui portent la signature d'une suspension de
@@ -1192,6 +1202,185 @@ def _trades_retour_moyenne(
         i = sortie_j + 1  # pas de chevauchement
 
     return trades
+
+
+def _trades_retour_moyenne_partiel(
+    cadre, declencheur, stop_pct=None, frais_pct=0.0,
+    volume_min_signal=None, volume_min_liquidite=None, entree_lendemain=False,
+):
+    """
+    Variante 'sortie partielle' du retour a la moyenne, sur la meme entree
+    que _trades_retour_moyenne (MM200 + RSI-2<10 ou IBS<0.20 + filtres
+    volume optionnels). La position est scindee en deux moities :
+      Moitie A : sort sur les regles habituelles (cloture > MM5, RSI-2 > 70,
+                 stop initial, ou 10 seances max) — objectif d'ameliorer le
+                 taux de reussite avec une sortie rapide.
+      Moitie B : vise la bande de Bollinger haute (20 jours, 2 ecarts-type).
+                 Des que la moitie A est sortie, le stop de la moitie B
+                 remonte au prix d'entree (breakeven) — elle ne peut alors
+                 plus finir perdante, seulement neutre ou gagnante.
+    Rendement = moyenne 50/50 des deux moities. Objectif : ameliorer le
+    ratio gain/perte du RSI-2 pur, teste ici plutot que suppose.
+    Outil d'ANALYSE uniquement, jamais branche sur le scan live.
+    """
+    closes = cadre["Close"].to_numpy(dtype=float)
+    ouvertures = cadre["Open"].to_numpy(dtype=float)
+    haut = cadre["High"].to_numpy(dtype=float)
+    bas = cadre["Low"].to_numpy(dtype=float)
+    n = len(closes)
+    if n < 210:
+        return []
+
+    mm200 = pd.Series(closes).rolling(200).mean().to_numpy()
+    mm5 = pd.Series(closes).rolling(5).mean().to_numpy()
+    rsi2 = calcul_rsi(closes, 2)
+    ibs = calcul_ibs(cadre) if declencheur == "ibs" else None
+    _, boll_haute, _ = calcul_bollinger(closes, 20, 2.0)
+
+    trades = []
+    i = 200
+    while i < n - 1:
+        filtre_ok = (
+            not np.isnan(mm200[i]) and not np.isnan(mm200[i - 1])
+            and closes[i] > mm200[i] and mm200[i] > mm200[i - 1]
+        )
+        if declencheur == "rsi2":
+            signal = filtre_ok and not np.isnan(rsi2[i]) and rsi2[i] < RM_SEUIL_RSI2
+        else:
+            signal = filtre_ok and not np.isnan(ibs[i]) and ibs[i] < RM_SEUIL_IBS
+
+        if not signal:
+            i += 1
+            continue
+
+        if volume_min_signal is not None:
+            ratio = _ratio_volume_signal(cadre, i)
+            if ratio is None or ratio < volume_min_signal:
+                i += 1
+                continue
+        if volume_min_liquidite is not None:
+            liquidite = _liquidite_moyenne(cadre, i)
+            if liquidite is None or liquidite < volume_min_liquidite:
+                i += 1
+                continue
+
+        if entree_lendemain:
+            entree_idx = i + 1
+            prix_entree = ouvertures[entree_idx]
+            debut_recherche = entree_idx
+        else:
+            entree_idx = i
+            prix_entree = closes[i]
+            debut_recherche = entree_idx + 1
+
+        prix_stop_initial = prix_entree * (1 + stop_pct / 100) if stop_pct is not None else None
+
+        moitie_a, moitie_b = None, None
+        for j in range(debut_recherche, min(entree_idx + RM_MAX_HOLD, n - 1) + 1):
+            if moitie_a is None:
+                if prix_stop_initial is not None and bas[j] <= prix_stop_initial:
+                    moitie_a = (j, "stop_loss", prix_stop_initial)
+                elif not np.isnan(mm5[j]) and closes[j] > mm5[j]:
+                    moitie_a = (j, "mm5", closes[j])
+                elif not np.isnan(rsi2[j]) and rsi2[j] > RM_RSI2_SORTIE:
+                    moitie_a = (j, "rsi70", closes[j])
+
+            # Des que A est sortie (ce jour ou avant), le stop de B remonte
+            # au breakeven — protection nouvelle, meme si aucun stop initial
+            # n'existait. Avant que A sorte, B partage le stop initial de A.
+            if moitie_a is not None:
+                stop_effectif_b = prix_entree if prix_stop_initial is None else max(prix_stop_initial, prix_entree)
+            else:
+                stop_effectif_b = prix_stop_initial
+
+            if moitie_b is None:
+                if stop_effectif_b is not None and bas[j] <= stop_effectif_b:
+                    motif_b = "breakeven" if moitie_a is not None else "stop_loss"
+                    moitie_b = (j, motif_b, stop_effectif_b)
+                elif not np.isnan(boll_haute[j]) and haut[j] >= boll_haute[j]:
+                    moitie_b = (j, "bollinger_haute", boll_haute[j])
+
+            if moitie_a is not None and moitie_b is not None:
+                break
+
+        limite = min(entree_idx + RM_MAX_HOLD, n - 1)
+        if moitie_a is None:
+            moitie_a = (limite, "max_hold", closes[limite])
+        if moitie_b is None:
+            moitie_b = (limite, "max_hold", closes[limite])
+
+        rendement_a = (moitie_a[2] - prix_entree) / prix_entree * 100
+        rendement_b = (moitie_b[2] - prix_entree) / prix_entree * 100
+        rendement_blend = 0.5 * rendement_a + 0.5 * rendement_b - frais_pct
+
+        sortie_finale_j = max(moitie_a[0], moitie_b[0])
+        trades.append({
+            "date_entree": cadre.index[entree_idx],
+            "date_sortie": cadre.index[sortie_finale_j],
+            "jours": sortie_finale_j - entree_idx,
+            "rendement": rendement_blend,
+            "motif": f"{moitie_a[1]}+{moitie_b[1]}",
+        })
+        i = sortie_finale_j + 1
+
+    return trades
+
+
+def backtest_retour_moyenne_partiel(
+    univers, annees, declencheurs=("rsi2", "ibs"), stop_pct=None, frais_pct=0.0,
+    volume_min_signal=None, volume_min_liquidite=None, entree_lendemain=False,
+):
+    """Lance la simulation 'sortie partielle' sur tout l'univers. Retourne {declencheur: DataFrame}."""
+    periode = f"{annees}y"
+    resultats = {d: [] for d in declencheurs}
+    exclus = 0
+
+    for place, tickers in univers.items():
+        print(f"\n[{place}] telechargement de {len(tickers)} tickers ({periode})")
+        donnees = telecharger_pour_place(place, tickers, periode)
+        print(f"  {len(donnees)} tickers exploitables")
+
+        for ticker, cadre in donnees.items():
+            if _donnee_suspecte(cadre):
+                exclus += 1
+                continue
+            for d in declencheurs:
+                for t in _trades_retour_moyenne_partiel(
+                    cadre, d, stop_pct=stop_pct, frais_pct=frais_pct,
+                    volume_min_signal=volume_min_signal, volume_min_liquidite=volume_min_liquidite,
+                    entree_lendemain=entree_lendemain,
+                ):
+                    resultats[d].append({"ticker": ticker, "place": place, **t})
+
+    if exclus:
+        print(f"\n{exclus} tickers exclus (saut de prix ou trou de cotation suspect)")
+
+    return {d: pd.DataFrame(lignes) for d, lignes in resultats.items()}
+
+
+def resume_retour_moyenne_partiel(
+    resultats, annees, stop_pct=None, frais_pct=0.0,
+    volume_min_signal=None, volume_min_liquidite=None, entree_lendemain=False,
+):
+    libelles = {"rsi2": f"RSI-2 < {RM_SEUIL_RSI2:.0f}", "ibs": f"IBS < {RM_SEUIL_IBS:.2f}"}
+    entete = f"Backtest retour a la moyenne — sortie partielle — {annees} ans (analyse uniquement, jamais en scan reel)"
+    sortie = [
+        entete,
+        f"  Moitie A : cloture > MM5, RSI-2 > {RM_RSI2_SORTIE:.0f}, stop, ou {RM_MAX_HOLD} seances max. "
+        f"Moitie B : bande de Bollinger haute (20j, 2 ecarts-type), stop remonte au BREAKEVEN "
+        f"des que A est sortie. Rendement = moyenne 50/50 des deux moities."
+        + (f" · Stop initial : {stop_pct:+.1f}%" if stop_pct is not None else "")
+        + (f" · Frais : -{frais_pct:.2f}% par trade" if frais_pct else "")
+        + (f" · Pic volume >= x{volume_min_signal:.1f} au signal" if volume_min_signal is not None else "")
+        + (f" · Liquidite moyenne >= {volume_min_liquidite:,.0f} titres/jour" if volume_min_liquidite is not None else "")
+        + (" · Entree REALISTE a l'ouverture du lendemain" if entree_lendemain else ""),
+        "",
+    ]
+    for d, df in resultats.items():
+        sortie.append(f"DECLENCHEUR {libelles.get(d, d)} ({len(df)} trades)")
+        sortie.extend(_stats_trades(df))
+        sortie.append("")
+    return "\n".join(sortie)
 
 
 def backtest_retour_moyenne(
@@ -2271,9 +2460,11 @@ def main():
              "+ Fernando/short), jamais utilise en scan reel ni alertes Telegram",
     )
     parseur.add_argument(
-        "--setup", default="inchi", choices=["inchi", "retour-moyenne", "ema-cross", "ema-cross-partiel"],
+        "--setup", default="inchi",
+        choices=["inchi", "retour-moyenne", "retour-moyenne-partiel", "ema-cross", "ema-cross-partiel"],
         help="backtest uniquement : 'inchi' (Stromboli/Fernanda, defaut), "
              "'retour-moyenne' (RSI-2 / IBS + filtre MM200), "
+             "'retour-moyenne-partiel' (meme entree, moitie MM5 + moitie Bollinger haute/breakeven), "
              "'ema-cross' (suivi de tendance EMA 8/21, Chandelier Exit) ou "
              "'ema-cross-partiel' (meme entree, moitie sortie tot + moitie Chandelier)",
     )
@@ -2385,6 +2576,26 @@ def main():
             for d, df in resultats.items():
                 if not df.empty:
                     chemin = RACINE / f"backtest_{d}.csv"
+                    df.to_csv(chemin, index=False)
+                    print(f"Detail {d} ecrit dans {chemin.name}")
+            return 0
+
+        if args.setup == "retour-moyenne-partiel":
+            resultats = backtest_retour_moyenne_partiel(
+                univers, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct,
+                volume_min_signal=args.volume_min_signal, volume_min_liquidite=args.volume_min_liquidite,
+                entree_lendemain=args.entree_lendemain,
+            )
+            print("\n" + resume_retour_moyenne_partiel(
+                resultats, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct,
+                volume_min_signal=args.volume_min_signal, volume_min_liquidite=args.volume_min_liquidite,
+                entree_lendemain=args.entree_lendemain,
+            ))
+            if args.validation_croisee:
+                print("\n" + resume_validation_croisee(resultats, args.backtest, stop_pct=args.stop_loss))
+            for d, df in resultats.items():
+                if not df.empty:
+                    chemin = RACINE / f"backtest_rm_partiel_{d}.csv"
                     df.to_csv(chemin, index=False)
                     print(f"Detail {d} ecrit dans {chemin.name}")
             return 0
