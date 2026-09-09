@@ -1207,6 +1207,7 @@ def _trades_retour_moyenne(
 def _trades_retour_moyenne_partiel(
     cadre, declencheur, stop_pct=None, frais_pct=0.0,
     volume_min_signal=None, volume_min_liquidite=None, entree_lendemain=False,
+    prolonger_apres_tp1=False,
 ):
     """
     Variante 'sortie partielle' du retour a la moyenne, sur la meme entree
@@ -1221,6 +1222,16 @@ def _trades_retour_moyenne_partiel(
                  plus finir perdante, seulement neutre ou gagnante.
     Rendement = moyenne 50/50 des deux moities. Objectif : ameliorer le
     ratio gain/perte du RSI-2 pur, teste ici plutot que suppose.
+
+    prolonger_apres_tp1 : si True, une fois la moitie A sortie (donc B
+    protegee au breakeven, plus aucun risque de perte sur cette moitie),
+    la limite de 10 seances ne s'applique plus a B — elle continue de
+    viser la Bollinger haute jusqu'a la fin des donnees disponibles.
+    Logique : proteger un gain, ce n'est pas prendre un risque, donc rien
+    ne justifie de couper B a une date arbitraire une fois cette protection
+    en place. Par defaut (False), B reste bornee aux memes 10 seances que A,
+    comme la version deja validee.
+
     Outil d'ANALYSE uniquement, jamais branche sur le scan live.
     """
     closes = cadre["Close"].to_numpy(dtype=float)
@@ -1274,40 +1285,44 @@ def _trades_retour_moyenne_partiel(
             debut_recherche = entree_idx + 1
 
         prix_stop_initial = prix_entree * (1 + stop_pct / 100) if stop_pct is not None else None
+        limite_a = min(entree_idx + RM_MAX_HOLD, n - 1)
 
-        moitie_a, moitie_b = None, None
-        for j in range(debut_recherche, min(entree_idx + RM_MAX_HOLD, n - 1) + 1):
-            if moitie_a is None:
-                if prix_stop_initial is not None and bas[j] <= prix_stop_initial:
-                    moitie_a = (j, "stop_loss", prix_stop_initial)
-                elif not np.isnan(mm5[j]) and closes[j] > mm5[j]:
-                    moitie_a = (j, "mm5", closes[j])
-                elif not np.isnan(rsi2[j]) and rsi2[j] > RM_RSI2_SORTIE:
-                    moitie_a = (j, "rsi70", closes[j])
+        # --- Moitie A : regles habituelles, bornee a RM_MAX_HOLD ------------
+        moitie_a = None
+        for j in range(debut_recherche, limite_a + 1):
+            if prix_stop_initial is not None and bas[j] <= prix_stop_initial:
+                moitie_a = (j, "stop_loss", prix_stop_initial)
+                break
+            if not np.isnan(mm5[j]) and closes[j] > mm5[j]:
+                moitie_a = (j, "mm5", closes[j])
+                break
+            if not np.isnan(rsi2[j]) and rsi2[j] > RM_RSI2_SORTIE:
+                moitie_a = (j, "rsi70", closes[j])
+                break
+        if moitie_a is None:
+            moitie_a = (limite_a, "max_hold", closes[limite_a])
 
-            # Des que A est sortie (ce jour ou avant), le stop de B remonte
-            # au breakeven — protection nouvelle, meme si aucun stop initial
-            # n'existait. Avant que A sorte, B partage le stop initial de A.
-            if moitie_a is not None:
+        # --- Moitie B : vise la Bollinger haute, breakeven des que A sort --
+        # Avant que A sorte, B partage le meme stop et la meme fenetre que A.
+        # Apres, son stop remonte au breakeven, et sa fenetre s'etend jusqu'a
+        # la fin des donnees si prolonger_apres_tp1, sinon reste bornee comme A.
+        limite_b = n - 1 if prolonger_apres_tp1 else limite_a
+        moitie_b = None
+        for j in range(debut_recherche, limite_b + 1):
+            if j >= moitie_a[0]:
                 stop_effectif_b = prix_entree if prix_stop_initial is None else max(prix_stop_initial, prix_entree)
             else:
                 stop_effectif_b = prix_stop_initial
 
-            if moitie_b is None:
-                if stop_effectif_b is not None and bas[j] <= stop_effectif_b:
-                    motif_b = "breakeven" if moitie_a is not None else "stop_loss"
-                    moitie_b = (j, motif_b, stop_effectif_b)
-                elif not np.isnan(boll_haute[j]) and haut[j] >= boll_haute[j]:
-                    moitie_b = (j, "bollinger_haute", boll_haute[j])
-
-            if moitie_a is not None and moitie_b is not None:
+            if stop_effectif_b is not None and bas[j] <= stop_effectif_b:
+                motif_b = "breakeven" if j >= moitie_a[0] else "stop_loss"
+                moitie_b = (j, motif_b, stop_effectif_b)
                 break
-
-        limite = min(entree_idx + RM_MAX_HOLD, n - 1)
-        if moitie_a is None:
-            moitie_a = (limite, "max_hold", closes[limite])
+            if not np.isnan(boll_haute[j]) and haut[j] >= boll_haute[j]:
+                moitie_b = (j, "bollinger_haute", boll_haute[j])
+                break
         if moitie_b is None:
-            moitie_b = (limite, "max_hold", closes[limite])
+            moitie_b = (limite_b, "max_hold" if limite_b == limite_a else "fin_donnees", closes[limite_b])
 
         rendement_a = (moitie_a[2] - prix_entree) / prix_entree * 100
         rendement_b = (moitie_b[2] - prix_entree) / prix_entree * 100
@@ -1329,6 +1344,7 @@ def _trades_retour_moyenne_partiel(
 def backtest_retour_moyenne_partiel(
     univers, annees, declencheurs=("rsi2", "ibs"), stop_pct=None, frais_pct=0.0,
     volume_min_signal=None, volume_min_liquidite=None, entree_lendemain=False,
+    prolonger_apres_tp1=False,
 ):
     """Lance la simulation 'sortie partielle' sur tout l'univers. Retourne {declencheur: DataFrame}."""
     periode = f"{annees}y"
@@ -1348,7 +1364,7 @@ def backtest_retour_moyenne_partiel(
                 for t in _trades_retour_moyenne_partiel(
                     cadre, d, stop_pct=stop_pct, frais_pct=frais_pct,
                     volume_min_signal=volume_min_signal, volume_min_liquidite=volume_min_liquidite,
-                    entree_lendemain=entree_lendemain,
+                    entree_lendemain=entree_lendemain, prolonger_apres_tp1=prolonger_apres_tp1,
                 ):
                     resultats[d].append({"ticker": ticker, "place": place, **t})
 
@@ -1361,14 +1377,19 @@ def backtest_retour_moyenne_partiel(
 def resume_retour_moyenne_partiel(
     resultats, annees, stop_pct=None, frais_pct=0.0,
     volume_min_signal=None, volume_min_liquidite=None, entree_lendemain=False,
+    prolonger_apres_tp1=False,
 ):
     libelles = {"rsi2": f"RSI-2 < {RM_SEUIL_RSI2:.0f}", "ibs": f"IBS < {RM_SEUIL_IBS:.2f}"}
     entete = f"Backtest retour a la moyenne — sortie partielle — {annees} ans (analyse uniquement, jamais en scan reel)"
+    limite_b_texte = (
+        "aucune limite de duree une fois le breakeven actif"
+        if prolonger_apres_tp1 else f"{RM_MAX_HOLD} seances max, comme A"
+    )
     sortie = [
         entete,
         f"  Moitie A : cloture > MM5, RSI-2 > {RM_RSI2_SORTIE:.0f}, stop, ou {RM_MAX_HOLD} seances max. "
         f"Moitie B : bande de Bollinger haute (20j, 2 ecarts-type), stop remonte au BREAKEVEN "
-        f"des que A est sortie. Rendement = moyenne 50/50 des deux moities."
+        f"des que A est sortie ({limite_b_texte}). Rendement = moyenne 50/50 des deux moities."
         + (f" · Stop initial : {stop_pct:+.1f}%" if stop_pct is not None else "")
         + (f" · Frais : -{frais_pct:.2f}% par trade" if frais_pct else "")
         + (f" · Pic volume >= x{volume_min_signal:.1f} au signal" if volume_min_signal is not None else "")
@@ -2495,6 +2516,12 @@ def main():
              "jour suivant le signal, plutot qu'a la cloture du jour du signal (optimiste)",
     )
     parseur.add_argument(
+        "--prolonger-apres-tp1", action="store_true",
+        help="setup retour-moyenne-partiel uniquement : une fois la moitie A sortie (breakeven "
+             "actif sur B), retire la limite de 10 seances sur B, qui continue de viser la "
+             "Bollinger haute jusqu'a la fin des donnees",
+    )
+    parseur.add_argument(
         "--validation-croisee", action="store_true",
         help="setup retour-moyenne uniquement : decoupe les trades en decouverte/validation "
              "(coupure = date mediane) pour verifier que l'edge tient hors echantillon",
@@ -2584,12 +2611,12 @@ def main():
             resultats = backtest_retour_moyenne_partiel(
                 univers, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct,
                 volume_min_signal=args.volume_min_signal, volume_min_liquidite=args.volume_min_liquidite,
-                entree_lendemain=args.entree_lendemain,
+                entree_lendemain=args.entree_lendemain, prolonger_apres_tp1=args.prolonger_apres_tp1,
             )
             print("\n" + resume_retour_moyenne_partiel(
                 resultats, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct,
                 volume_min_signal=args.volume_min_signal, volume_min_liquidite=args.volume_min_liquidite,
-                entree_lendemain=args.entree_lendemain,
+                entree_lendemain=args.entree_lendemain, prolonger_apres_tp1=args.prolonger_apres_tp1,
             ))
             if args.validation_croisee:
                 print("\n" + resume_validation_croisee(resultats, args.backtest, stop_pct=args.stop_loss))
