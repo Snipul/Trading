@@ -937,6 +937,7 @@ RM_SEUIL_IBS = 0.20
 RM_RSI2_SORTIE = 70.0
 RM_MAX_HOLD = 10
 RSI2_VOLUME_MIN = float(os.getenv("RSI2_VOLUME_MIN", "2.0"))
+RM_STOP_REFERENCE_PCT = -8.0  # stop indicatif affiche dans l'alerte live, calcule sur la cloture du signal
 
 
 def calcul_rsi(closes, periode=2):
@@ -1085,12 +1086,14 @@ def detecter_rsi2(cadre, i):
     if ratio is None or ratio < RSI2_VOLUME_MIN:
         return None
 
+    prix_close = float(closes[i])
     return {
         "type": "rsi2",
         "date": cadre.index[i],
-        "close": float(closes[i]),
+        "close": prix_close,
         "rsi2": float(rsi2[i]),
         "volume_ratio": float(ratio),
+        "stop_reference": prix_close * (1 + RM_STOP_REFERENCE_PCT / 100),
     }
 
 
@@ -2436,9 +2439,11 @@ def formater_rsi2(signaux, titre="RSI-2"):
 
     for signal in sorted(signaux, key=lambda s: s["ticker"]):
         date = signal["date"].strftime("%d/%m")
+        stop = signal.get("stop_reference")
+        detail_stop = f" · SL {RM_STOP_REFERENCE_PCT:.0f}% = {stop:.2f}" if stop is not None else ""
         lignes.append(
             f"  <code>{signal['ticker']}</code> — {signal['close']:.2f} ({date})\n"
-            f"     RSI-2 {signal['rsi2']:.1f} · vol x{signal['volume_ratio']:.1f}"
+            f"     RSI-2 {signal['rsi2']:.1f} · vol x{signal['volume_ratio']:.1f}{detail_stop}"
         )
 
     lignes.append("")
