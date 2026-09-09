@@ -1088,6 +1088,54 @@ verifier("rapport : mentionne la sortie partielle", "sortie partielle" in _rappo
 verifier("rapport : mentionne le breakeven", "BREAKEVEN" in _rapport_p)
 verifier("rapport : section declencheur presente", "DECLENCHEUR RSI-2" in _rapport_p)
 
+# prolonger_apres_tp1 : une fois A sortie (breakeven actif sur B, donc plus
+# aucun risque de perte sur cette moitie), retirer la limite de 10 jours doit
+# permettre a B de capturer un gain qu'elle aurait rate sinon.
+_n_pr = 400
+_idx_pr = pd.bdate_range("2024-01-01", periods=_n_pr)
+_base_pr = np.linspace(100.0, 160.0, _n_pr)
+_base_pr[249] -= 8
+_base_pr[250] -= 12
+for _k in range(251, 253):  # reprise rapide sur 2 jours (+4/jour)
+    _base_pr[_k] = _base_pr[250] + (_k - 250) * 4
+_niveau_pr = _base_pr[252]
+for _k in range(253, _n_pr):  # puis montee lente et reguliere (+0.1/jour)
+    _base_pr[_k] = _niveau_pr + (_k - 252) * 0.1
+_cadre_pr = pd.DataFrame(
+    {"Open": _base_pr, "High": _base_pr + 0.3, "Low": _base_pr - 0.3, "Close": _base_pr, "Volume": 1000.0},
+    index=_idx_pr,
+)
+_sans_prolong = S._trades_retour_moyenne_partiel(_cadre_pr, "rsi2")
+_avec_prolong = S._trades_retour_moyenne_partiel(_cadre_pr, "rsi2", prolonger_apres_tp1=True)
+
+verifier("prolongation : un trade genere dans les deux cas", _sans_prolong and _avec_prolong)
+verifier(
+    "sans prolongation, B est coupee a 10 jours (max_hold) avant d'atteindre la Bollinger",
+    _sans_prolong and "max_hold" in _sans_prolong[0]["motif"],
+)
+verifier(
+    "avec prolongation, B continue et finit par toucher la Bollinger haute",
+    _avec_prolong and "bollinger_haute" in _avec_prolong[0]["motif"],
+)
+verifier(
+    "avec prolongation, le trade dure plus longtemps",
+    _sans_prolong and _avec_prolong and _avec_prolong[0]["jours"] > _sans_prolong[0]["jours"],
+)
+verifier(
+    "avec prolongation, le rendement capture est superieur",
+    _sans_prolong and _avec_prolong and _avec_prolong[0]["rendement"] > _sans_prolong[0]["rendement"],
+)
+verifier(
+    "retrocompatibilite : sans specifier prolonger_apres_tp1, comportement inchange (defaut False)",
+    S._trades_retour_moyenne_partiel(_cadre_pr, "rsi2") == _sans_prolong,
+)
+verifier(
+    "rapport : mentionne l'absence de limite quand prolonger_apres_tp1 est actif",
+    "aucune limite" in S.resume_retour_moyenne_partiel(
+        {"rsi2": pd.DataFrame(_avec_prolong)}, annees=2, prolonger_apres_tp1=True
+    ),
+)
+
 
 print("\n" + "=" * 50)
 if echecs:
