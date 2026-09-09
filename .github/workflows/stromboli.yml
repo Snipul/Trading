@@ -37,6 +37,10 @@ on:
         description: "Tolerance sur la meche des bougies pleines, fraction du range (0.0 = strict, 0.005 = 0.5%)"
         required: false
         default: "0.0"
+      rsi2_volume_min:
+        description: "Alerte RSI-2 live (US/Euronext) : pic de volume minimum au signal, fois la moyenne 20j"
+        required: false
+        default: "2.0"
       doji_dragonfly:
         description: "Accepter aussi le doji dragonfly (pas de meche haute)"
         type: boolean
@@ -138,6 +142,7 @@ jobs:
           STROMBOLI_SEUIL_DOJI: ${{ github.event.inputs.seuil_doji || '0.05' }}
           STROMBOLI_TOLERANCE: ${{ github.event.inputs.tolerance_meche || '0.0' }}
           STROMBOLI_DOJI_DRAGONFLY: ${{ github.event.inputs.doji_dragonfly || 'true' }}
+          RSI2_VOLUME_MIN: ${{ github.event.inputs.rsi2_volume_min || '2.0' }}
           TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
           EODHD_API_KEY: ${{ secrets.EODHD_API_KEY }}
         run: |
