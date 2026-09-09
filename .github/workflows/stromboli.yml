@@ -56,7 +56,7 @@ on:
         required: false
         default: false
       setup_backtest:
-        description: "Backtest uniquement : inchi (Stromboli/Fernanda), retour-moyenne (RSI-2/IBS + MM200), ema-cross (suivi de tendance) ou ema-cross-partiel (sortie partielle)"
+        description: "Backtest uniquement : inchi, retour-moyenne (RSI-2/IBS+MM200), retour-moyenne-partiel (MM5+Bollinger/breakeven), ema-cross, ou ema-cross-partiel"
         required: false
         default: "inchi"
       stop_loss_backtest:
