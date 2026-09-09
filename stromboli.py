@@ -1097,6 +1097,7 @@ def detecter_rsi2(cadre, i):
 def _trades_retour_moyenne(
     cadre, declencheur, stop_pct=None, frais_pct=0.0,
     volume_min_signal=None, volume_min_liquidite=None, entree_lendemain=False,
+    seuil_rsi2=None,
 ):
     """
     Simule les trades d'un ticker pour un declencheur donne ('rsi2' ou 'ibs').
@@ -1122,8 +1123,15 @@ def _trades_retour_moyenne(
     impossible a executer en pratique, utilisee par defaut dans toutes les
     versions precedentes du backtest. Permet de mesurer l'ecart reel entre
     theorie et execution.
+    seuil_rsi2 : si fourni, remplace RM_SEUIL_RSI2 (10 par defaut) comme
+    seuil de declenchement du signal RSI-2 (ex: 5.0 pour ne garder que les
+    survente plus extremes). N'affecte que le declencheur 'rsi2', jamais
+    'ibs'. Outil d'ANALYSE uniquement, jamais applique au scan live (qui
+    reste sur RM_SEUIL_RSI2, la combinaison validee).
     Retourne une liste de dicts (date_entree, date_sortie, jours, rendement, motif).
     """
+    seuil_rsi2_effectif = RM_SEUIL_RSI2 if seuil_rsi2 is None else seuil_rsi2
+
     closes = cadre["Close"].to_numpy(dtype=float)
     ouvertures = cadre["Open"].to_numpy(dtype=float)
     bas = cadre["Low"].to_numpy(dtype=float)
@@ -1144,7 +1152,7 @@ def _trades_retour_moyenne(
             and closes[i] > mm200[i] and mm200[i] > mm200[i - 1]
         )
         if declencheur == "rsi2":
-            signal = filtre_ok and not np.isnan(rsi2[i]) and rsi2[i] < RM_SEUIL_RSI2
+            signal = filtre_ok and not np.isnan(rsi2[i]) and rsi2[i] < seuil_rsi2_effectif
         else:
             signal = filtre_ok and not np.isnan(ibs[i]) and ibs[i] < RM_SEUIL_IBS
 
@@ -1207,7 +1215,7 @@ def _trades_retour_moyenne(
 def _trades_retour_moyenne_partiel(
     cadre, declencheur, stop_pct=None, frais_pct=0.0,
     volume_min_signal=None, volume_min_liquidite=None, entree_lendemain=False,
-    prolonger_apres_tp1=False,
+    prolonger_apres_tp1=False, seuil_rsi2=None,
 ):
     """
     Variante 'sortie partielle' du retour a la moyenne, sur la meme entree
@@ -1232,8 +1240,12 @@ def _trades_retour_moyenne_partiel(
     en place. Par defaut (False), B reste bornee aux memes 10 seances que A,
     comme la version deja validee.
 
+    seuil_rsi2 : voir _trades_retour_moyenne. Outil d'ANALYSE uniquement.
+
     Outil d'ANALYSE uniquement, jamais branche sur le scan live.
     """
+    seuil_rsi2_effectif = RM_SEUIL_RSI2 if seuil_rsi2 is None else seuil_rsi2
+
     closes = cadre["Close"].to_numpy(dtype=float)
     ouvertures = cadre["Open"].to_numpy(dtype=float)
     haut = cadre["High"].to_numpy(dtype=float)
@@ -1256,7 +1268,7 @@ def _trades_retour_moyenne_partiel(
             and closes[i] > mm200[i] and mm200[i] > mm200[i - 1]
         )
         if declencheur == "rsi2":
-            signal = filtre_ok and not np.isnan(rsi2[i]) and rsi2[i] < RM_SEUIL_RSI2
+            signal = filtre_ok and not np.isnan(rsi2[i]) and rsi2[i] < seuil_rsi2_effectif
         else:
             signal = filtre_ok and not np.isnan(ibs[i]) and ibs[i] < RM_SEUIL_IBS
 
@@ -1344,7 +1356,7 @@ def _trades_retour_moyenne_partiel(
 def backtest_retour_moyenne_partiel(
     univers, annees, declencheurs=("rsi2", "ibs"), stop_pct=None, frais_pct=0.0,
     volume_min_signal=None, volume_min_liquidite=None, entree_lendemain=False,
-    prolonger_apres_tp1=False,
+    prolonger_apres_tp1=False, seuil_rsi2=None,
 ):
     """Lance la simulation 'sortie partielle' sur tout l'univers. Retourne {declencheur: DataFrame}."""
     periode = f"{annees}y"
@@ -1365,6 +1377,7 @@ def backtest_retour_moyenne_partiel(
                     cadre, d, stop_pct=stop_pct, frais_pct=frais_pct,
                     volume_min_signal=volume_min_signal, volume_min_liquidite=volume_min_liquidite,
                     entree_lendemain=entree_lendemain, prolonger_apres_tp1=prolonger_apres_tp1,
+                    seuil_rsi2=seuil_rsi2,
                 ):
                     resultats[d].append({"ticker": ticker, "place": place, **t})
 
@@ -1377,9 +1390,10 @@ def backtest_retour_moyenne_partiel(
 def resume_retour_moyenne_partiel(
     resultats, annees, stop_pct=None, frais_pct=0.0,
     volume_min_signal=None, volume_min_liquidite=None, entree_lendemain=False,
-    prolonger_apres_tp1=False,
+    prolonger_apres_tp1=False, seuil_rsi2=None,
 ):
-    libelles = {"rsi2": f"RSI-2 < {RM_SEUIL_RSI2:.0f}", "ibs": f"IBS < {RM_SEUIL_IBS:.2f}"}
+    seuil_rsi2_effectif = RM_SEUIL_RSI2 if seuil_rsi2 is None else seuil_rsi2
+    libelles = {"rsi2": f"RSI-2 < {seuil_rsi2_effectif:.0f}", "ibs": f"IBS < {RM_SEUIL_IBS:.2f}"}
     entete = f"Backtest retour a la moyenne — sortie partielle — {annees} ans (analyse uniquement, jamais en scan reel)"
     limite_b_texte = (
         "aucune limite de duree une fois le breakeven actif"
@@ -1394,7 +1408,8 @@ def resume_retour_moyenne_partiel(
         + (f" · Frais : -{frais_pct:.2f}% par trade" if frais_pct else "")
         + (f" · Pic volume >= x{volume_min_signal:.1f} au signal" if volume_min_signal is not None else "")
         + (f" · Liquidite moyenne >= {volume_min_liquidite:,.0f} titres/jour" if volume_min_liquidite is not None else "")
-        + (" · Entree REALISTE a l'ouverture du lendemain" if entree_lendemain else ""),
+        + (" · Entree REALISTE a l'ouverture du lendemain" if entree_lendemain else "")
+        + (f" · Seuil RSI-2 personnalise : {seuil_rsi2_effectif:.1f}" if seuil_rsi2 is not None else ""),
         "",
     ]
     for d, df in resultats.items():
@@ -1407,6 +1422,7 @@ def resume_retour_moyenne_partiel(
 def backtest_retour_moyenne(
     univers, annees, declencheurs=("rsi2", "ibs"), stop_pct=None, frais_pct=0.0,
     volume_min_signal=None, volume_min_liquidite=None, entree_lendemain=False,
+    seuil_rsi2=None,
 ):
     """Lance les simulations sur tout l'univers. Retourne {declencheur: DataFrame}."""
     periode = f"{annees}y"
@@ -1426,7 +1442,7 @@ def backtest_retour_moyenne(
                 for t in _trades_retour_moyenne(
                     cadre, d, stop_pct=stop_pct, frais_pct=frais_pct,
                     volume_min_signal=volume_min_signal, volume_min_liquidite=volume_min_liquidite,
-                    entree_lendemain=entree_lendemain,
+                    entree_lendemain=entree_lendemain, seuil_rsi2=seuil_rsi2,
                 ):
                     resultats[d].append({"ticker": ticker, "place": place, **t})
 
@@ -1464,8 +1480,10 @@ def _stats_trades(df):
 def resume_retour_moyenne(
     resultats, annees, stop_pct=None, frais_pct=0.0,
     volume_min_signal=None, volume_min_liquidite=None, entree_lendemain=False,
+    seuil_rsi2=None,
 ):
-    libelles = {"rsi2": f"RSI-2 < {RM_SEUIL_RSI2:.0f}", "ibs": f"IBS < {RM_SEUIL_IBS:.2f}"}
+    seuil_rsi2_effectif = RM_SEUIL_RSI2 if seuil_rsi2 is None else seuil_rsi2
+    libelles = {"rsi2": f"RSI-2 < {seuil_rsi2_effectif:.0f}", "ibs": f"IBS < {RM_SEUIL_IBS:.2f}"}
     entete = f"Backtest retour a la moyenne — {annees} ans (analyse uniquement, jamais en scan reel)"
     sortie = [
         entete,
@@ -1475,7 +1493,8 @@ def resume_retour_moyenne(
         + (f" · Frais : -{frais_pct:.2f}% par trade (calibrer selon TON compte reel)" if frais_pct else "")
         + (f" · Pic volume >= x{volume_min_signal:.1f} au signal" if volume_min_signal is not None else "")
         + (f" · Liquidite moyenne >= {volume_min_liquidite:,.0f} titres/jour" if volume_min_liquidite is not None else "")
-        + (" · Entree REALISTE a l'ouverture du lendemain (pas la cloture du signal)" if entree_lendemain else ""),
+        + (" · Entree REALISTE a l'ouverture du lendemain (pas la cloture du signal)" if entree_lendemain else "")
+        + (f" · Seuil RSI-2 personnalise : {seuil_rsi2_effectif:.1f} (defaut {RM_SEUIL_RSI2:.0f})" if seuil_rsi2 is not None else ""),
         "",
     ]
     for d, df in resultats.items():
@@ -1485,7 +1504,7 @@ def resume_retour_moyenne(
     return "\n".join(sortie)
 
 
-def resume_validation_croisee(resultats, annees, stop_pct=None):
+def resume_validation_croisee(resultats, annees, stop_pct=None, seuil_rsi2=None):
     """
     Decoupe chaque declencheur en deux moities CHRONOLOGIQUES par date
     d'entree (coupure = date mediane des trades) : 'decouverte' (premiere
@@ -1493,7 +1512,8 @@ def resume_validation_croisee(resultats, annees, stop_pct=None):
     reel doit tenir sur les deux ; s'il ne fonctionne que sur la decouverte,
     c'est un mirage statistique (surapprentissage sur la periode testee).
     """
-    libelles = {"rsi2": f"RSI-2 < {RM_SEUIL_RSI2:.0f}", "ibs": f"IBS < {RM_SEUIL_IBS:.2f}"}
+    seuil_rsi2_effectif = RM_SEUIL_RSI2 if seuil_rsi2 is None else seuil_rsi2
+    libelles = {"rsi2": f"RSI-2 < {seuil_rsi2_effectif:.0f}", "ibs": f"IBS < {RM_SEUIL_IBS:.2f}"}
     sortie = [
         f"Validation croisee (decouverte / validation) — {annees} ans"
         + (f" · Stop loss : {stop_pct:+.1f}%" if stop_pct is not None else ""),
@@ -2522,6 +2542,12 @@ def main():
              "Bollinger haute jusqu'a la fin des donnees",
     )
     parseur.add_argument(
+        "--rsi2-seuil", type=float, metavar="SEUIL", default=None,
+        help="setup retour-moyenne / retour-moyenne-partiel uniquement : seuil RSI-2 pour "
+             "declencher le signal (defaut 10, ex: 5 pour une survente plus extreme). "
+             "N'affecte que le backtest, jamais le scan live/alertes Telegram.",
+    )
+    parseur.add_argument(
         "--validation-croisee", action="store_true",
         help="setup retour-moyenne uniquement : decoupe les trades en decouverte/validation "
              "(coupure = date mediane) pour verifier que l'edge tient hors echantillon",
@@ -2612,14 +2638,16 @@ def main():
                 univers, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct,
                 volume_min_signal=args.volume_min_signal, volume_min_liquidite=args.volume_min_liquidite,
                 entree_lendemain=args.entree_lendemain, prolonger_apres_tp1=args.prolonger_apres_tp1,
+                seuil_rsi2=args.rsi2_seuil,
             )
             print("\n" + resume_retour_moyenne_partiel(
                 resultats, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct,
                 volume_min_signal=args.volume_min_signal, volume_min_liquidite=args.volume_min_liquidite,
                 entree_lendemain=args.entree_lendemain, prolonger_apres_tp1=args.prolonger_apres_tp1,
+                seuil_rsi2=args.rsi2_seuil,
             ))
             if args.validation_croisee:
-                print("\n" + resume_validation_croisee(resultats, args.backtest, stop_pct=args.stop_loss))
+                print("\n" + resume_validation_croisee(resultats, args.backtest, stop_pct=args.stop_loss, seuil_rsi2=args.rsi2_seuil))
             for d, df in resultats.items():
                 if not df.empty:
                     chemin = RACINE / f"backtest_rm_partiel_{d}.csv"
@@ -2631,15 +2659,15 @@ def main():
             resultats = backtest_retour_moyenne(
                 univers, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct,
                 volume_min_signal=args.volume_min_signal, volume_min_liquidite=args.volume_min_liquidite,
-                entree_lendemain=args.entree_lendemain,
+                entree_lendemain=args.entree_lendemain, seuil_rsi2=args.rsi2_seuil,
             )
             print("\n" + resume_retour_moyenne(
                 resultats, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct,
                 volume_min_signal=args.volume_min_signal, volume_min_liquidite=args.volume_min_liquidite,
-                entree_lendemain=args.entree_lendemain,
+                entree_lendemain=args.entree_lendemain, seuil_rsi2=args.rsi2_seuil,
             ))
             if args.validation_croisee:
-                print("\n" + resume_validation_croisee(resultats, args.backtest, stop_pct=args.stop_loss))
+                print("\n" + resume_validation_croisee(resultats, args.backtest, stop_pct=args.stop_loss, seuil_rsi2=args.rsi2_seuil))
             for d, df in resultats.items():
                 if not df.empty:
                     chemin = RACINE / f"backtest_rm_{d}.csv"
