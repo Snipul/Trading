@@ -927,12 +927,16 @@ def resume_backtest(df_stromboli, df_fernanda, annees, volume_min=None, horizons
 # Contrairement au backtest Inchi (horizons fixes), on mesure ici un vrai
 # P&L par trade avec la regle de sortie du setup : c'est la seule facon de
 # comparer honnetement au ~70% publie par Connors pour le RSI-2.
-# Outil d'ANALYSE uniquement : rien de tout ca n'est branche sur le scan live.
+# Le backtest complet (avec IBS, stop, frais, entree lendemain...) reste un
+# outil d'ANALYSE uniquement. Seule la COMBINAISON validee ci-dessous
+# (MM200 + RSI-2<10 + pic volume >=2x) est branchee sur le scan live, dans
+# un message Telegram separe — voir detecter_rsi2() plus bas.
 
 RM_SEUIL_RSI2 = 10.0
 RM_SEUIL_IBS = 0.20
 RM_RSI2_SORTIE = 70.0
 RM_MAX_HOLD = 10
+RSI2_VOLUME_MIN = float(os.getenv("RSI2_VOLUME_MIN", "2.0"))
 
 
 def calcul_rsi(closes, periode=2):
@@ -1038,6 +1042,46 @@ def _liquidite_moyenne(cadre, i, fenetre=60):
     if i <= debut:
         return None
     return float(cadre["Volume"].iloc[debut:i].mean())
+
+
+def detecter_rsi2(cadre, i):
+    """
+    Detecte un signal RSI-2 en direct, sur PRIX REELS (pas Heikin Ashi,
+    contrairement a Stromboli/Fernanda). Combinaison validee par backtest
+    hors echantillon sur US et Euronext, frais et anomalies de cotation
+    exclus : cloture > MM200 ascendante, RSI-2 < RM_SEUIL_RSI2 (10), pic
+    de volume >= RSI2_VOLUME_MIN (2x) sa moyenne 20 jours.
+
+    Aucune gestion de sortie automatisee : comme Fernanda, stop et take
+    profit restent geres manuellement (reference indicative : stop -8%,
+    sortie sur cloture > MM5, RSI-2 > 70, ou 10 seances).
+    """
+    closes = cadre["Close"].to_numpy(dtype=float)
+    n = len(closes)
+    if i < 200 or i >= n:
+        return None
+
+    mm200 = pd.Series(closes[: i + 1]).rolling(200).mean().to_numpy()
+    if np.isnan(mm200[i]) or np.isnan(mm200[i - 1]):
+        return None
+    if not (closes[i] > mm200[i] and mm200[i] > mm200[i - 1]):
+        return None
+
+    rsi2 = calcul_rsi(closes[: i + 1], 2)
+    if np.isnan(rsi2[i]) or rsi2[i] >= RM_SEUIL_RSI2:
+        return None
+
+    ratio = _ratio_volume_signal(cadre, i)
+    if ratio is None or ratio < RSI2_VOLUME_MIN:
+        return None
+
+    return {
+        "type": "rsi2",
+        "date": cadre.index[i],
+        "close": float(closes[i]),
+        "rsi2": float(rsi2[i]),
+        "volume_ratio": float(ratio),
+    }
 
 
 def _trades_retour_moyenne(
@@ -1322,7 +1366,7 @@ def calcul_atr(cadre, periode=RM_CHANDELIER_ATR_PERIODE):
     return atr
 
 
-def _trades_ema_cross(cadre, stop_pct=None, frais_pct=0.0):
+def _trades_ema_cross(cadre, stop_pct=None, frais_pct=0.0, volume_min_signal=None, volume_min_liquidite=None):
     """
     Simule les trades de suivi de tendance EMA8/21 pour un ticker.
     Sortie principale : Chandelier Exit (stop suiveur base sur l'ATR du
@@ -1331,6 +1375,9 @@ def _trades_ema_cross(cadre, stop_pct=None, frais_pct=0.0):
     absolue depuis l'entree), en plus du Chandelier — jamais a la place.
     Aucune limite de duree : le trade court tant qu'aucune des deux
     conditions de sortie n'est declenchee.
+    volume_min_signal / volume_min_liquidite : memes filtres que sur le
+    retour a la moyenne (pic de volume au signal / liquidite generale du
+    titre), reutilisant les memes fonctions. Outil d'ANALYSE uniquement.
     """
     closes = cadre["Close"].to_numpy(dtype=float)
     haut = cadre["High"].to_numpy(dtype=float)
@@ -1354,6 +1401,18 @@ def _trades_ema_cross(cadre, stop_pct=None, frais_pct=0.0):
         if not (croisement_haussier and filtre_ok) or np.isnan(atr[i]):
             i += 1
             continue
+
+        if volume_min_signal is not None:
+            ratio = _ratio_volume_signal(cadre, i)
+            if ratio is None or ratio < volume_min_signal:
+                i += 1
+                continue
+
+        if volume_min_liquidite is not None:
+            liquidite = _liquidite_moyenne(cadre, i)
+            if liquidite is None or liquidite < volume_min_liquidite:
+                i += 1
+                continue
 
         prix_entree = closes[i]
         prix_stop_fixe = prix_entree * (1 + stop_pct / 100) if stop_pct is not None else None
@@ -1394,7 +1453,7 @@ def _trades_ema_cross(cadre, stop_pct=None, frais_pct=0.0):
     return trades
 
 
-def backtest_ema_cross(univers, annees, stop_pct=None, frais_pct=0.0):
+def backtest_ema_cross(univers, annees, stop_pct=None, frais_pct=0.0, volume_min_signal=None, volume_min_liquidite=None):
     """Lance le backtest EMA 8/21 sur tout l'univers. Retourne {'ema_cross': DataFrame}."""
     periode = f"{annees}y"
     lignes = []
@@ -1409,7 +1468,10 @@ def backtest_ema_cross(univers, annees, stop_pct=None, frais_pct=0.0):
             if _donnee_suspecte(cadre):
                 exclus += 1
                 continue
-            for t in _trades_ema_cross(cadre, stop_pct=stop_pct, frais_pct=frais_pct):
+            for t in _trades_ema_cross(
+                cadre, stop_pct=stop_pct, frais_pct=frais_pct,
+                volume_min_signal=volume_min_signal, volume_min_liquidite=volume_min_liquidite,
+            ):
                 lignes.append({"ticker": ticker, "place": place, **t})
 
     if exclus:
@@ -1418,7 +1480,7 @@ def backtest_ema_cross(univers, annees, stop_pct=None, frais_pct=0.0):
     return {"ema_cross": pd.DataFrame(lignes)}
 
 
-def resume_ema_cross(resultats, annees, stop_pct=None, frais_pct=0.0):
+def resume_ema_cross(resultats, annees, stop_pct=None, frais_pct=0.0, volume_min_signal=None, volume_min_liquidite=None):
     entete = f"Backtest suivi de tendance EMA {RM_EMA_RAPIDE}/{RM_EMA_LENTE} — {annees} ans (analyse uniquement, jamais en scan reel)"
     sortie = [
         entete,
@@ -1427,7 +1489,9 @@ def resume_ema_cross(resultats, annees, stop_pct=None, frais_pct=0.0):
         f"Sortie : Chandelier Exit (plus haut - {RM_CHANDELIER_MULTIPLICATEUR:.0f}xATR{RM_CHANDELIER_ATR_PERIODE}) "
         f"ou croisement inverse — aucune limite de duree"
         + (f" · Plancher de securite : {stop_pct:+.1f}%" if stop_pct is not None else "")
-        + (f" · Frais : -{frais_pct:.2f}% par trade" if frais_pct else ""),
+        + (f" · Frais : -{frais_pct:.2f}% par trade" if frais_pct else "")
+        + (f" · Pic volume >= x{volume_min_signal:.1f} au signal" if volume_min_signal is not None else "")
+        + (f" · Liquidite moyenne >= {volume_min_liquidite:,.0f} titres/jour" if volume_min_liquidite is not None else ""),
         "",
     ]
     for d, df in resultats.items():
@@ -1456,7 +1520,10 @@ def resume_ema_cross(resultats, annees, stop_pct=None, frais_pct=0.0):
 RM_SORTIE_PARTIELLE_CIBLE = 5.0
 
 
-def _trades_ema_cross_partiel(cadre, cible_partielle=RM_SORTIE_PARTIELLE_CIBLE, stop_pct=None, frais_pct=0.0):
+def _trades_ema_cross_partiel(
+    cadre, cible_partielle=RM_SORTIE_PARTIELLE_CIBLE, stop_pct=None, frais_pct=0.0,
+    volume_min_signal=None, volume_min_liquidite=None,
+):
     """Simule les trades de la variante 'sortie partielle'. Meme structure que _trades_ema_cross."""
     closes = cadre["Close"].to_numpy(dtype=float)
     haut = cadre["High"].to_numpy(dtype=float)
@@ -1480,6 +1547,18 @@ def _trades_ema_cross_partiel(cadre, cible_partielle=RM_SORTIE_PARTIELLE_CIBLE, 
         if not (croisement_haussier and filtre_ok) or np.isnan(atr[i]):
             i += 1
             continue
+
+        if volume_min_signal is not None:
+            ratio = _ratio_volume_signal(cadre, i)
+            if ratio is None or ratio < volume_min_signal:
+                i += 1
+                continue
+
+        if volume_min_liquidite is not None:
+            liquidite = _liquidite_moyenne(cadre, i)
+            if liquidite is None or liquidite < volume_min_liquidite:
+                i += 1
+                continue
 
         prix_entree = closes[i]
         prix_cible = prix_entree * (1 + cible_partielle / 100)
@@ -1534,7 +1613,10 @@ def _trades_ema_cross_partiel(cadre, cible_partielle=RM_SORTIE_PARTIELLE_CIBLE, 
     return trades
 
 
-def backtest_ema_cross_partiel(univers, annees, cible_partielle=RM_SORTIE_PARTIELLE_CIBLE, stop_pct=None, frais_pct=0.0):
+def backtest_ema_cross_partiel(
+    univers, annees, cible_partielle=RM_SORTIE_PARTIELLE_CIBLE, stop_pct=None, frais_pct=0.0,
+    volume_min_signal=None, volume_min_liquidite=None,
+):
     """Lance le backtest 'sortie partielle' sur tout l'univers. Retourne {'ema_cross_partiel': DataFrame}."""
     periode = f"{annees}y"
     lignes = []
@@ -1549,7 +1631,10 @@ def backtest_ema_cross_partiel(univers, annees, cible_partielle=RM_SORTIE_PARTIE
             if _donnee_suspecte(cadre):
                 exclus += 1
                 continue
-            for t in _trades_ema_cross_partiel(cadre, cible_partielle=cible_partielle, stop_pct=stop_pct, frais_pct=frais_pct):
+            for t in _trades_ema_cross_partiel(
+                cadre, cible_partielle=cible_partielle, stop_pct=stop_pct, frais_pct=frais_pct,
+                volume_min_signal=volume_min_signal, volume_min_liquidite=volume_min_liquidite,
+            ):
                 lignes.append({"ticker": ticker, "place": place, **t})
 
     if exclus:
@@ -1558,7 +1643,10 @@ def backtest_ema_cross_partiel(univers, annees, cible_partielle=RM_SORTIE_PARTIE
     return {"ema_cross_partiel": pd.DataFrame(lignes)}
 
 
-def resume_ema_cross_partiel(resultats, annees, cible_partielle=RM_SORTIE_PARTIELLE_CIBLE, stop_pct=None, frais_pct=0.0):
+def resume_ema_cross_partiel(
+    resultats, annees, cible_partielle=RM_SORTIE_PARTIELLE_CIBLE, stop_pct=None, frais_pct=0.0,
+    volume_min_signal=None, volume_min_liquidite=None,
+):
     entete = f"Backtest suivi de tendance — sortie partielle — {annees} ans (analyse uniquement, jamais en scan reel)"
     sortie = [
         entete,
@@ -1566,7 +1654,9 @@ def resume_ema_cross_partiel(resultats, annees, cible_partielle=RM_SORTIE_PARTIE
         f"si atteint avant). Moitie B : Chandelier Exit pur, aucune limite de duree. "
         f"Rendement = moyenne 50/50 des deux moities."
         + (f" · Plancher de securite : {stop_pct:+.1f}%" if stop_pct is not None else "")
-        + (f" · Frais : -{frais_pct:.2f}% par trade" if frais_pct else ""),
+        + (f" · Frais : -{frais_pct:.2f}% par trade" if frais_pct else "")
+        + (f" · Pic volume >= x{volume_min_signal:.1f} au signal" if volume_min_signal is not None else "")
+        + (f" · Liquidite moyenne >= {volume_min_liquidite:,.0f} titres/jour" if volume_min_liquidite is not None else ""),
         "",
     ]
     for d, df in resultats.items():
@@ -1921,6 +2011,18 @@ def scanner(univers, timeframes, periode=PERIODE_DAILY):
                     signaux.append(signal_fern)
                     print(f"  >> {fern['type'].upper()} {tf} : {ticker}")
 
+                # RSI-2 (retour a la moyenne) : uniquement en Daily, sur
+                # prix reels, restreint aux marches ou la combinaison a ete
+                # validee par backtest hors echantillon (US + Euronext).
+                if tf == "D" and place in ("US", "Paris", "Amsterdam", "Bruxelles"):
+                    rsi2_trouve = detecter_rsi2(cadre, len(cadre) - 1)
+                    if rsi2_trouve:
+                        rsi2_trouve["ticker"] = ticker
+                        rsi2_trouve["place"] = place
+                        rsi2_trouve["tf"] = tf
+                        signaux.append(rsi2_trouve)
+                        print(f"  >> RSI-2 {tf} : {ticker}")
+
     return signaux
 
 
@@ -2085,6 +2187,39 @@ def formater(signaux, timeframes, titre="STROMBOLI"):
     return "\n".join(lignes)
 
 
+def formater_rsi2(signaux, titre="RSI-2"):
+    """
+    Message Telegram dedie au RSI-2 (retour a la moyenne), separe de
+    Stromboli/Fernanda. Gestion de sortie NON automatisee : stop -8%,
+    sortie sur cloture > MM5, RSI-2 > 70, ou 10 seances -- a gerer
+    manuellement, exactement comme pour Fernanda.
+    """
+    horodatage = datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M UTC")
+
+    if not signaux:
+        return f"<b>{titre}</b> — {horodatage}\n\nAucun signal aujourd'hui."
+
+    lignes = [
+        f"<b>{titre}</b> — {horodatage}", "",
+        f"<b>▲ RSI-2 &lt; {RM_SEUIL_RSI2:.0f}</b> ({len(signaux)})",
+    ]
+
+    for signal in sorted(signaux, key=lambda s: s["ticker"]):
+        date = signal["date"].strftime("%d/%m")
+        lignes.append(
+            f"  <code>{signal['ticker']}</code> — {signal['close']:.2f} ({date})\n"
+            f"     RSI-2 {signal['rsi2']:.1f} · vol x{signal['volume_ratio']:.1f}"
+        )
+
+    lignes.append("")
+    lignes.append(
+        f"<i>Reference : stop -8% · sortie sur cloture &gt; MM5, RSI-2 &gt; "
+        f"{RM_RSI2_SORTIE:.0f}, ou {RM_MAX_HOLD} seances. Entree indicative a "
+        f"l'ouverture du lendemain — gestion manuelle, comme Fernanda.</i>"
+    )
+    return "\n".join(lignes)
+
+
 def resume_historique(lignes, annees):
     if not lignes:
         return "Aucun Stromboli sur la periode."
@@ -2220,10 +2355,12 @@ def main():
     if args.backtest:
         if args.setup == "ema-cross":
             resultats = backtest_ema_cross(
-                univers, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct
+                univers, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct,
+                volume_min_signal=args.volume_min_signal, volume_min_liquidite=args.volume_min_liquidite,
             )
             print("\n" + resume_ema_cross(
-                resultats, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct
+                resultats, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct,
+                volume_min_signal=args.volume_min_signal, volume_min_liquidite=args.volume_min_liquidite,
             ))
             if args.validation_croisee:
                 print("\n" + resume_validation_croisee(resultats, args.backtest, stop_pct=args.stop_loss))
@@ -2236,10 +2373,12 @@ def main():
 
         if args.setup == "ema-cross-partiel":
             resultats = backtest_ema_cross_partiel(
-                univers, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct
+                univers, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct,
+                volume_min_signal=args.volume_min_signal, volume_min_liquidite=args.volume_min_liquidite,
             )
             print("\n" + resume_ema_cross_partiel(
-                resultats, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct
+                resultats, args.backtest, stop_pct=args.stop_loss, frais_pct=args.frais_pct,
+                volume_min_signal=args.volume_min_signal, volume_min_liquidite=args.volume_min_liquidite,
             ))
             if args.validation_croisee:
                 print("\n" + resume_validation_croisee(resultats, args.backtest, stop_pct=args.stop_loss))
@@ -2318,6 +2457,19 @@ def main():
         signaux_actions = [s for s in signaux if s["place"] != "Crypto"]
         envoyer_telegram(
             formater(signaux_actions, timeframes, titre="STROMBOLI ACTIONS"),
+            dry_run=args.dry_run,
+        )
+
+    # Troisieme notification, separee : RSI-2 (retour a la moyenne), sur
+    # US + Euronext uniquement (seuls marches valides par backtest hors
+    # echantillon pour cette combinaison precise). N'envoie que si l'un de
+    # ces marches faisait bien partie du scan demande.
+    places_rsi2 = ("US", "Paris", "Amsterdam", "Bruxelles")
+    a_rsi2 = any(place in places_rsi2 for place in univers)
+    if a_rsi2:
+        signaux_rsi2 = [s for s in signaux if s.get("type") == "rsi2"]
+        envoyer_telegram(
+            formater_rsi2(signaux_rsi2, titre="RSI-2 ACTIONS"),
             dry_run=args.dry_run,
         )
 
