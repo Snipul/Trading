@@ -1007,6 +1007,50 @@ _cadre_hausse = pd.DataFrame(
 verifier("forte hausse progressive et legitime jamais exclue a tort", not S._donnee_suspecte(_cadre_hausse))
 
 
+# --- 14. Detection RSI-2 en direct (scan live) ------------------------------
+print("\n14. Detection RSI-2 en direct (scan live)")
+
+_n_live = 250
+_idx_live = pd.bdate_range("2024-01-01", periods=_n_live)
+_closes_live = np.linspace(80, 120, _n_live)
+_closes_live[-1] -= 15
+_volumes_live = np.full(_n_live, 1_000_000.0)
+_volumes_live[-1] = 3_000_000.0
+_cadre_live = pd.DataFrame(
+    {"Open": _closes_live, "High": _closes_live + 1, "Low": _closes_live - 1,
+     "Close": _closes_live, "Volume": _volumes_live},
+    index=_idx_live,
+)
+_signal_live = S.detecter_rsi2(_cadre_live, len(_cadre_live) - 1)
+verifier("signal RSI-2 detecte (tendance haussiere + repli + pic volume)", _signal_live is not None)
+verifier("signal correctement etiquete", _signal_live and _signal_live["type"] == "rsi2")
+verifier("pic de volume >= 2.0 confirme dans le signal", _signal_live and _signal_live["volume_ratio"] >= 2.0)
+
+_cadre_sans_pic = _cadre_live.assign(Volume=np.full(_n_live, 1_000_000.0))
+verifier(
+    "aucun signal sans pic de volume suffisant",
+    S.detecter_rsi2(_cadre_sans_pic, len(_cadre_sans_pic) - 1) is None,
+)
+
+_closes_baisse_live = np.linspace(120, 80, _n_live)
+_closes_baisse_live[-1] -= 5
+_cadre_baisse_live = pd.DataFrame(
+    {"Open": _closes_baisse_live, "High": _closes_baisse_live + 1, "Low": _closes_baisse_live - 1,
+     "Close": _closes_baisse_live, "Volume": _volumes_live},
+    index=_idx_live,
+)
+verifier(
+    "aucun signal en tendance baissiere (filtre MM200)",
+    S.detecter_rsi2(_cadre_baisse_live, len(_cadre_baisse_live) - 1) is None,
+)
+
+_msg_rsi2 = S.formater_rsi2([{**_signal_live, "ticker": "TEST", "place": "US"}], titre="RSI-2 ACTIONS")
+verifier("message RSI-2 : ticker present", "TEST" in _msg_rsi2)
+verifier("message RSI-2 : titre present", "RSI-2 ACTIONS" in _msg_rsi2)
+verifier("message RSI-2 : reference de gestion manuelle presente", "gestion manuelle" in _msg_rsi2)
+verifier("message RSI-2 vide gere", "Aucun signal" in S.formater_rsi2([], titre="RSI-2 ACTIONS"))
+
+
 print("\n" + "=" * 50)
 if echecs:
     print(f"{len(echecs)} ECHEC(S) : {echecs}")
