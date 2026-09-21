@@ -939,6 +939,13 @@ RM_MAX_HOLD = 10
 RSI2_VOLUME_MIN = float(os.getenv("RSI2_VOLUME_MIN", "2.0"))
 RM_STOP_REFERENCE_PCT = -8.0  # stop indicatif affiche dans l'alerte live, calcule sur la cloture du signal
 
+# Proximite de la cloture aux MM20/MM50 HEBDOMADAIRES : marqueur visuel
+# uniquement (🎯 MM20, 🛡️ MM50) sur les alertes RSI-2, n'affecte JAMAIS le
+# filtre ni le classement (voir proximite_mm_weekly() et detecter_rsi2()).
+# Seuil choisi pour rester coherent avec le stop de reference (-8%) : un
+# signal marque donne un repere direct entre le stop et un support weekly.
+MM_WEEKLY_PROXIMITE_PCT = float(os.getenv("MM_WEEKLY_PROXIMITE_PCT", "8.0"))
+
 
 def calcul_rsi(closes, periode=2):
     """RSI de Wilder (lissage exponentiel classique). Retourne un ndarray (NaN au debut)."""
@@ -1055,6 +1062,38 @@ def _liquidite_moyenne(cadre, i, fenetre=60):
     return float(cadre["Volume"].iloc[debut:i].mean())
 
 
+def proximite_mm_weekly(cadre, i):
+    """
+    Calcule si la cloture du jour i est a moins de MM_WEEKLY_PROXIMITE_PCT
+    (8% par defaut) de la MM20 et/ou de la MM50 hebdomadaires.
+
+    Les bougies hebdomadaires sont recalculees uniquement a partir des
+    donnees DEJA CONNUES jusqu'au jour i (cadre.iloc[: i + 1]) : aucun
+    lookahead, la semaine en cours (incomplete) est deja exclue par
+    to_weekly(). Marqueur purement informatif (🎯 MM20 / 🛡️ MM50) —
+    n'entre dans aucun filtre ni classement.
+
+    Retourne (proche_mm20, proche_mm50), deux booleens. Les deux peuvent
+    etre vrais en meme temps.
+    """
+    hebdo = to_weekly(cadre.iloc[: i + 1])
+    if len(hebdo) < 20:
+        return False, False
+
+    closes_hebdo = hebdo["Close"].to_numpy(dtype=float)
+    prix = float(cadre["Close"].iloc[i])
+
+    mm20_hebdo = closes_hebdo[-20:].mean()
+    proche_mm20 = abs(prix - mm20_hebdo) / mm20_hebdo <= MM_WEEKLY_PROXIMITE_PCT / 100
+
+    proche_mm50 = False
+    if len(hebdo) >= 50:
+        mm50_hebdo = closes_hebdo[-50:].mean()
+        proche_mm50 = abs(prix - mm50_hebdo) / mm50_hebdo <= MM_WEEKLY_PROXIMITE_PCT / 100
+
+    return proche_mm20, proche_mm50
+
+
 def detecter_rsi2(cadre, i):
     """
     Detecte un signal RSI-2 en direct, sur PRIX REELS (pas Heikin Ashi,
@@ -1062,6 +1101,10 @@ def detecter_rsi2(cadre, i):
     hors echantillon sur US et Euronext, frais et anomalies de cotation
     exclus : cloture > MM200 ascendante, RSI-2 < RM_SEUIL_RSI2 (10), pic
     de volume >= RSI2_VOLUME_MIN (2x) sa moyenne 20 jours.
+
+    Ajoute a titre INFORMATIF la proximite aux MM20/MM50 hebdomadaires
+    (proche_mm20_weekly / proche_mm50_weekly) : n'affecte ni le filtre
+    ci-dessus ni le classement, seulement l'affichage (voir formater_rsi2).
 
     Aucune gestion de sortie automatisee : comme Fernanda, stop et take
     profit restent geres manuellement (reference indicative : stop -8%,
@@ -1087,6 +1130,8 @@ def detecter_rsi2(cadre, i):
         return None
 
     prix_close = float(closes[i])
+    proche_mm20, proche_mm50 = proximite_mm_weekly(cadre, i)
+
     return {
         "type": "rsi2",
         "date": cadre.index[i],
@@ -1094,6 +1139,8 @@ def detecter_rsi2(cadre, i):
         "rsi2": float(rsi2[i]),
         "volume_ratio": float(ratio),
         "stop_reference": prix_close * (1 + RM_STOP_REFERENCE_PCT / 100),
+        "proche_mm20_weekly": proche_mm20,
+        "proche_mm50_weekly": proche_mm50,
     }
 
 
@@ -1111,7 +1158,7 @@ def _trades_retour_moyenne(
     frais_pct : frais de courtage aller-retour, en % de la taille de position
     (ex: 0.2 pour 2€ de frais sur une position de 1000€), deduits directement
     du rendement de chaque trade. 0.0 par defaut = aucun frais (comportement
-    inchange). A calibrer selon TON compte reel — jamais suppose par le code.
+    inchange). A calibrer selon TON compte reel, jamais suppose par le code.
     volume_min_signal : si fourni, ne garde que les signaux dont le volume
     DU JOUR est >= volume_min_signal fois sa moyenne 20 jours (pic de volume
     au signal). Outil d'ANALYSE uniquement, jamais applique en scan reel.
@@ -2426,6 +2473,11 @@ def formater_rsi2(signaux, titre="RSI-2"):
     Stromboli/Fernanda. Gestion de sortie NON automatisee : stop -8%,
     sortie sur cloture > MM5, RSI-2 > 70, ou 10 seances -- a gerer
     manuellement, exactement comme pour Fernanda.
+
+    Chaque ligne affiche en plus un marqueur INFORMATIF de proximite aux
+    MM20/MM50 hebdomadaires (🎯 MM20, 🛡️ MM50, les deux si applicable) :
+    n'affecte ni le filtre RSI-2/MM200 ni l'ordre d'affichage, seulement
+    ce marqueur (voir proximite_mm_weekly() / detecter_rsi2()).
     """
     horodatage = datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M UTC")
 
@@ -2441,12 +2493,24 @@ def formater_rsi2(signaux, titre="RSI-2"):
         date = signal["date"].strftime("%d/%m")
         stop = signal.get("stop_reference")
         detail_stop = f" · SL {RM_STOP_REFERENCE_PCT:.0f}% = {stop:.2f}" if stop is not None else ""
+
+        marqueurs = ""
+        if signal.get("proche_mm20_weekly"):
+            marqueurs += " 🎯"
+        if signal.get("proche_mm50_weekly"):
+            marqueurs += " 🛡️"
+
         lignes.append(
-            f"  <code>{signal['ticker']}</code> — {signal['close']:.2f} ({date})\n"
+            f"  <code>{signal['ticker']}</code> — {signal['close']:.2f} ({date}){marqueurs}\n"
             f"     RSI-2 {signal['rsi2']:.1f} · vol x{signal['volume_ratio']:.1f}{detail_stop}"
         )
 
     lignes.append("")
+    lignes.append(
+        f"<i>🎯 a moins de {MM_WEEKLY_PROXIMITE_PCT:.0f}% de la MM20 weekly · "
+        f"🛡️ a moins de {MM_WEEKLY_PROXIMITE_PCT:.0f}% de la MM50 weekly "
+        f"(information, ne change pas le classement).</i>"
+    )
     lignes.append(
         f"<i>Reference : stop -8% · sortie sur cloture &gt; MM5, RSI-2 &gt; "
         f"{RM_RSI2_SORTIE:.0f}, ou {RM_MAX_HOLD} seances. Entree indicative a "
