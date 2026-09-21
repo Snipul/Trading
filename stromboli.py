@@ -1064,8 +1064,12 @@ def _liquidite_moyenne(cadre, i, fenetre=60):
 
 def proximite_mm_weekly(cadre, i):
     """
-    Calcule si la cloture du jour i est a moins de MM_WEEKLY_PROXIMITE_PCT
-    (8% par defaut) de la MM20 et/ou de la MM50 hebdomadaires.
+    Calcule si la cloture du jour i est un pullback en APPROCHE d'un
+    support hebdomadaire (MM20 et/ou MM50 weekly) : prix ENCORE AU-DESSUS
+    de la MM (pas casse), a moins de MM_WEEKLY_PROXIMITE_PCT (8% par
+    defaut) au-dessus. Un prix deja SOUS la MM n'est pas un test de
+    support mais une cassure (meme logique que le filtre MM200 : on ne
+    marque pas les couteaux qui tombent, ex. type KVUE mais en weekly).
 
     Les bougies hebdomadaires sont recalculees uniquement a partir des
     donnees DEJA CONNUES jusqu'au jour i (cadre.iloc[: i + 1]) : aucun
@@ -1084,12 +1088,12 @@ def proximite_mm_weekly(cadre, i):
     prix = float(cadre["Close"].iloc[i])
 
     mm20_hebdo = closes_hebdo[-20:].mean()
-    proche_mm20 = abs(prix - mm20_hebdo) / mm20_hebdo <= MM_WEEKLY_PROXIMITE_PCT / 100
+    proche_mm20 = mm20_hebdo <= prix <= mm20_hebdo * (1 + MM_WEEKLY_PROXIMITE_PCT / 100)
 
     proche_mm50 = False
     if len(hebdo) >= 50:
         mm50_hebdo = closes_hebdo[-50:].mean()
-        proche_mm50 = abs(prix - mm50_hebdo) / mm50_hebdo <= MM_WEEKLY_PROXIMITE_PCT / 100
+        proche_mm50 = mm50_hebdo <= prix <= mm50_hebdo * (1 + MM_WEEKLY_PROXIMITE_PCT / 100)
 
     return proche_mm20, proche_mm50
 
