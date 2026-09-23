@@ -2,9 +2,22 @@ name: Stromboli
 
 on:
   schedule:
-    # Un seul cron, tous les jours, 21h30 UTC = 23h30 heure d'ete / 22h30 heure d'hiver.
-    # L'univers scanne varie selon le jour (voir etape "Determiner les parametres") :
-    # tout (actions+crypto) en semaine, crypto seul le week-end.
+    # Euronext (Paris/Amsterdam/Bruxelles) : 20h00 UTC, semaine uniquement.
+    # EODHD met a jour chaque bourse (hors NYSE/Nasdaq) 2-3h apres sa
+    # cloture. Euronext cloture 17h30 Paris = 16h30 UTC (hiver, CET) ou
+    # 15h30 UTC (ete, CEST) : le pire cas (hiver) donne des donnees pretes
+    # vers 19h30 UTC. 20h00 UTC garde 30 min de marge dans tous les cas.
+    - cron: "0 20 * * 1-5"
+    # US (Nasdaq100 + S&P500) : 03h00 UTC, du mardi au samedi UTC. Comme ce
+    # cron se declenche apres minuit UTC, la seance US scannee est celle de
+    # la VEILLE (lundi UTC -> seance de vendredi US ne compte pas ici, elle
+    # est couverte par le run du samedi 03h00 UTC qui scanne le vendredi).
+    - cron: "0 3 * * 2-6"
+    # Indices : meme horaire que l'ancien cron unique, mais semaine seulement
+    # (les indices ne bougent pas le week-end).
+    - cron: "30 21 * * 1-5"
+    # Crypto : meme horaire que l'ancien cron unique, tous les jours (marche
+    # continu, l'horaire exact importe peu).
     - cron: "30 21 * * *"
   workflow_dispatch:
     inputs:
@@ -119,28 +132,38 @@ jobs:
       - name: Determiner les parametres
         id: params
         run: |
+          # Date de reference pour le calcul W/M : pour le cron US (declenche
+          # apres minuit UTC), la seance scannee est celle de la VEILLE.
+          if [ "${{ github.event.schedule }}" = "0 3 * * 2-6" ]; then
+            ref=$(date -u -d "-1 day" +%Y-%m-%d)
+          else
+            ref=$(date -u +%Y-%m-%d)
+          fi
+
           if [ -n "${{ github.event.inputs.tf }}" ]; then
             echo "tf=${{ github.event.inputs.tf }}" >> $GITHUB_OUTPUT
           else
             tf="D"
-            if [ "$(date -u +%u)" = "5" ]; then
+            if [ "$(date -u -d "$ref" +%u)" = "5" ]; then
               tf="${tf}W"
             fi
-            demain=$(date -u -d "+1 day" +%d)
-            if [ "$demain" = "01" ]; then
+            lendemain=$(date -u -d "$ref +1 day" +%d)
+            if [ "$lendemain" = "01" ]; then
               tf="${tf}M"
             fi
             echo "tf=$tf" >> $GITHUB_OUTPUT
           fi
 
-          # Week-end (samedi=6, dimanche=7) : crypto seul, les marches actions
-          # sont fermes donc inutile de re-scanner ~1500 tickers pour rien.
-          jour=$(date -u +%u)
-          if [ "$jour" -ge 6 ]; then
-            echo "univers=crypto" >> $GITHUB_OUTPUT
-          else
-            echo "univers=tout" >> $GITHUB_OUTPUT
-          fi
+          # Univers selon le cron declencheur. Un run manuel (workflow_dispatch,
+          # github.event.schedule vide) ignore ce calcul : l'input univers de
+          # l'utilisateur prime toujours (voir etape "Scan Stromboli" plus bas).
+          case "${{ github.event.schedule }}" in
+            "0 20 * * 1-5")  echo "univers=euronext" >> $GITHUB_OUTPUT ;;
+            "0 3 * * 2-6")   echo "univers=us" >> $GITHUB_OUTPUT ;;
+            "30 21 * * 1-5") echo "univers=indices" >> $GITHUB_OUTPUT ;;
+            "30 21 * * *")   echo "univers=crypto" >> $GITHUB_OUTPUT ;;
+            *)               echo "univers=tout" >> $GITHUB_OUTPUT ;;
+          esac
 
       - name: Scan Stromboli
         if: (github.event.inputs.backtest_annees == '0' || github.event.inputs.backtest_annees == '') && (github.event.inputs.diagnostic_ticker == '' || github.event.inputs.diagnostic_ticker == null) && github.event.inputs.valider_univers != 'true'
