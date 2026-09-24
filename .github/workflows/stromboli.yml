@@ -2,23 +2,28 @@ name: Stromboli
 
 on:
   schedule:
-    # Euronext (Paris/Amsterdam/Bruxelles) : 20h00 UTC, semaine uniquement.
+    # Euronext (Paris/Amsterdam/Bruxelles) : ~20h00 UTC, semaine uniquement.
     # EODHD met a jour chaque bourse (hors NYSE/Nasdaq) 2-3h apres sa
     # cloture. Euronext cloture 17h30 Paris = 16h30 UTC (hiver, CET) ou
     # 15h30 UTC (ete, CEST) : le pire cas (hiver) donne des donnees pretes
     # vers 19h30 UTC. 20h00 UTC garde 30 min de marge dans tous les cas.
-    - cron: "0 20 * * 1-5"
-    # US (Nasdaq100 + S&P500) : 03h00 UTC, du mardi au samedi UTC. Comme ce
+    # Minute decalee (17 au lieu de 00) : GitHub deconseille les cron a
+    # l'heure/demi-heure pile, les plus demandes au monde donc les plus
+    # susceptibles d'etre retardes ou completement sautes en cas de forte
+    # charge sur la plateforme.
+    - cron: "17 20 * * 1-5"
+    # US (Nasdaq100 + S&P500) : ~03h00 UTC, du mardi au samedi UTC. Comme ce
     # cron se declenche apres minuit UTC, la seance US scannee est celle de
     # la VEILLE (lundi UTC -> seance de vendredi US ne compte pas ici, elle
     # est couverte par le run du samedi 03h00 UTC qui scanne le vendredi).
-    - cron: "0 3 * * 2-6"
+    # Minute decalee, meme raison que ci-dessus.
+    - cron: "23 3 * * 2-6"
     # Indices : meme horaire que l'ancien cron unique, mais semaine seulement
-    # (les indices ne bougent pas le week-end).
-    - cron: "30 21 * * 1-5"
+    # (les indices ne bougent pas le week-end). Minute decalee.
+    - cron: "41 21 * * 1-5"
     # Crypto : meme horaire que l'ancien cron unique, tous les jours (marche
-    # continu, l'horaire exact importe peu).
-    - cron: "30 21 * * *"
+    # continu, l'horaire exact importe peu). Minute decalee.
+    - cron: "47 21 * * *"
   workflow_dispatch:
     inputs:
       tf:
@@ -134,7 +139,7 @@ jobs:
         run: |
           # Date de reference pour le calcul W/M : pour le cron US (declenche
           # apres minuit UTC), la seance scannee est celle de la VEILLE.
-          if [ "${{ github.event.schedule }}" = "0 3 * * 2-6" ]; then
+          if [ "${{ github.event.schedule }}" = "23 3 * * 2-6" ]; then
             ref=$(date -u -d "-1 day" +%Y-%m-%d)
           else
             ref=$(date -u +%Y-%m-%d)
@@ -158,10 +163,10 @@ jobs:
           # github.event.schedule vide) ignore ce calcul : l'input univers de
           # l'utilisateur prime toujours (voir etape "Scan Stromboli" plus bas).
           case "${{ github.event.schedule }}" in
-            "0 20 * * 1-5")  echo "univers=euronext" >> $GITHUB_OUTPUT ;;
-            "0 3 * * 2-6")   echo "univers=us" >> $GITHUB_OUTPUT ;;
-            "30 21 * * 1-5") echo "univers=indices" >> $GITHUB_OUTPUT ;;
-            "30 21 * * *")   echo "univers=crypto" >> $GITHUB_OUTPUT ;;
+            "17 20 * * 1-5") echo "univers=euronext" >> $GITHUB_OUTPUT ;;
+            "23 3 * * 2-6")  echo "univers=us" >> $GITHUB_OUTPUT ;;
+            "41 21 * * 1-5") echo "univers=indices" >> $GITHUB_OUTPUT ;;
+            "47 21 * * *")   echo "univers=crypto" >> $GITHUB_OUTPUT ;;
             *)               echo "univers=tout" >> $GITHUB_OUTPUT ;;
           esac
 
