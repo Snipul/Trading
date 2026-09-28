@@ -1,0 +1,81 @@
+name: MM50 trimestrielle
+
+on:
+  schedule:
+    # Une fois par nuit, du mardi au samedi UTC : couvre la seance US ET
+    # Euronext de la veille en un seul run. 04h37 UTC pour ne pas tourner
+    # en meme temps que le run US de Stromboli (03h23) et se partager la
+    # limite EODHD par minute. Minute decalee (GitHub saute plus souvent
+    # les crons a l'heure pile).
+    - cron: "37 4 * * 2-6"
+  workflow_dispatch:
+    inputs:
+      univers:
+        description: "tout, us ou euronext"
+        required: false
+        default: "tout"
+      dry_run:
+        description: "Ne pas envoyer sur Telegram ni sauvegarder l'etat"
+        type: boolean
+        required: false
+        default: false
+      diagnostic_ticker:
+        description: "Detail du calcul MM50 pour un ticker (ex: AMZN, MC.PA), vide = scan normal"
+        required: false
+        default: ""
+
+# Ecriture necessaire pour commiter mm50_3m_state.json (memoire anti-retrigger)
+permissions:
+  contents: write
+
+# Jamais deux runs en parallele : ils ecriraient le meme fichier d'etat
+concurrency:
+  group: mm50-3m
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Installer les dependances
+        run: pip install pandas numpy requests lxml
+
+      - name: Scan MM50 3M
+        if: github.event.inputs.diagnostic_ticker == '' || github.event.inputs.diagnostic_ticker == null
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          EODHD_API_KEY: ${{ secrets.EODHD_API_KEY }}
+        run: |
+          python mm50_3m.py \
+            --univers ${{ github.event.inputs.univers || 'tout' }} \
+            ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
+
+      - name: Diagnostic ticker
+        if: github.event.inputs.diagnostic_ticker != '' && github.event.inputs.diagnostic_ticker != null
+        env:
+          EODHD_API_KEY: ${{ secrets.EODHD_API_KEY }}
+        run: python mm50_3m.py --diagnostic ${{ github.event.inputs.diagnostic_ticker }}
+
+      - name: Sauvegarder l'etat
+        if: success() && github.event.inputs.dry_run != 'true' && (github.event.inputs.diagnostic_ticker == '' || github.event.inputs.diagnostic_ticker == null)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add mm50_3m_state.json
+          if git diff --cached --quiet; then
+            echo "Etat inchange, rien a commiter."
+            exit 0
+          fi
+          git commit -m "MM50 3M : mise a jour de l'etat [skip ci]"
+          git pull --rebase
+          git push
