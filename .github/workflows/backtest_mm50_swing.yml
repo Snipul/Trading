@@ -12,9 +12,13 @@ on:
         required: false
         default: "10"
       echantillon:
-        description: "Tickers max par place (0 = tous, 100 pour un test rapide)"
+        description: "Tickers tires AU HASARD par place (0 = tous, 100 pour un test rapide)"
         required: false
         default: "0"
+      graine:
+        description: "Graine du tirage aleatoire (change-la pour un autre echantillon)"
+        required: false
+        default: "42"
 
 permissions:
   contents: read
@@ -45,7 +49,8 @@ jobs:
           python backtest_mm50_swing.py \
             --univers ${{ github.event.inputs.univers || 'tout' }} \
             --annees ${{ github.event.inputs.annees || '10' }} \
-            --echantillon ${{ github.event.inputs.echantillon || '0' }}
+            --echantillon ${{ github.event.inputs.echantillon || '0' }} \
+            --graine ${{ github.event.inputs.graine || '42' }}
 
       - name: Publier les resultats
         uses: actions/upload-artifact@v4
