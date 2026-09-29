@@ -1,0 +1,54 @@
+name: Backtest MM50 swing
+
+on:
+  workflow_dispatch:
+    inputs:
+      univers:
+        description: "tout, us ou euronext"
+        required: false
+        default: "tout"
+      annees:
+        description: "Nombre d'annees de test"
+        required: false
+        default: "10"
+      echantillon:
+        description: "Tickers max par place (0 = tous, 100 pour un test rapide)"
+        required: false
+        default: "0"
+
+permissions:
+  contents: read
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Installer les dependances
+        run: pip install pandas numpy requests lxml tabulate
+
+      - name: Tests unitaires
+        run: pip install pytest && python -m pytest test_backtest_mm50_swing.py -q
+
+      - name: Backtest
+        env:
+          EODHD_API_KEY: ${{ secrets.EODHD_API_KEY }}
+        run: |
+          python backtest_mm50_swing.py \
+            --univers ${{ github.event.inputs.univers || 'tout' }} \
+            --annees ${{ github.event.inputs.annees || '10' }} \
+            --echantillon ${{ github.event.inputs.echantillon || '0' }}
+
+      - name: Publier les resultats
+        uses: actions/upload-artifact@v4
+        with:
+          name: backtest-mm50-swing
+          path: backtest_out/
