@@ -32,6 +32,12 @@ telecharges : aucun etat n'est stocke entre deux executions.
 Le bot signale la figure. Les invalidations et les take-profit sont geres
 manuellement par l'operateur.
 
+Planning des alertes (cron GitHub en UTC, voir stromboli.yml)
+-------------------------------------------------------------
+    SOIR  : Euronext (--univers euronext), Indices EU (--univers indices-eu)
+    MATIN : US (--univers us), Indices US (--univers indices-us),
+            Crypto (--univers crypto)
+
 Utilisation
 -----------
     python stromboli.py                      # scan D + W, envoi Telegram
@@ -39,6 +45,7 @@ Utilisation
     python stromboli.py --tf W               # Weekly uniquement
     python stromboli.py --dry-run            # affichage console, pas d'envoi
     python stromboli.py --univers us         # restreint l'univers
+    python stromboli.py --univers indices-eu # indices europeens seulement
     python stromboli.py --valider-univers    # teste quels tickers repondent
     python stromboli.py --historique 3       # comptage des signaux sur 3 ans
 
@@ -239,26 +246,36 @@ def univers_stockanalysis(slug, suffixe, max_pages=5):
     return sorted(set(tickers))
 
 
-def univers_indices():
+def univers_indices_eu():
     """
-    Petite liste curee d'indices, pas de decouverte automatique (volume
-    trop faible pour justifier une source dynamique).
+    Indices europeens (scannes le SOIR avec Euronext, ils cloturent a 17h30
+    Paris) : DAX, CAC 40, Euro Stoxx 50.
 
     Depuis la migration EODHD, on utilise partout des indices CASH au
-    format EODHD 'CODE.INDX' (ex: GSPC.INDX pour le S&P 500), plutot que
-    des futures. Les futures (US comme ES=F, ou Euronext/Eurex FCE/FDAX)
-    ne sont pas couverts par le palier EOD standard d'EODHD. L'indice cash
-    suit le future de tres pres (arbitrage), donc reste un proxy fiable
-    pour la detection Stromboli/Fernanda.
+    format EODHD 'CODE.INDX' plutot que des futures (non couverts par le
+    palier EOD standard). L'indice cash suit le future de tres pres
+    (arbitrage), donc reste un proxy fiable pour la detection
+    Stromboli/Fernanda.
 
     Format 'CODE.INDX' confirme par EODHD pour GSPC.INDX (S&P 500) ; les
     autres suivent la meme convention documentee mais n'ont pas ete
     verifies individuellement — a confirmer via --valider-univers.
     """
-    return [
-        "GSPC.INDX", "NDX.INDX", "DJI.INDX", "RUT.INDX",   # US : S&P500, Nasdaq100, Dow, Russell2000
-        "GDAXI.INDX", "FCHI.INDX", "STOXX50E.INDX",         # Europe : DAX, CAC40, Euro Stoxx 50
-    ]
+    return ["GDAXI.INDX", "FCHI.INDX", "STOXX50E.INDX"]  # DAX, CAC40, Euro Stoxx 50
+
+
+def univers_indices_us():
+    """
+    Indices americains (scannes le MATIN suivant avec les actions US, apres
+    leur cloture a 22h Paris) : S&P 500, Nasdaq 100, Dow Jones, Russell 2000.
+    Meme format EODHD 'CODE.INDX' que univers_indices_eu().
+    """
+    return ["GSPC.INDX", "NDX.INDX", "DJI.INDX", "RUT.INDX"]
+
+
+def univers_indices():
+    """Tous les indices (US + Europe), pour --univers indices ou tout."""
+    return univers_indices_us() + univers_indices_eu()
 
 
 def univers_kraken_usd():
@@ -288,7 +305,10 @@ def univers_kraken_usd():
 
 
 def construire_univers(selection):
-    """selection : 'tout', 'us', 'euronext', 'paris', 'amsterdam', 'bruxelles', 'indices', 'crypto'."""
+    """
+    selection : 'tout', 'us', 'euronext', 'paris', 'amsterdam', 'bruxelles',
+    'indices' (US + Europe), 'indices-eu', 'indices-us', 'crypto'.
+    """
     univers = {}
 
     if selection in ("tout", "us"):
@@ -312,10 +332,15 @@ def construire_univers(selection):
                 print(f"Univers {place.capitalize()} : {len(tickers)} tickers")
                 univers[place.capitalize()] = tickers
 
-    if selection in ("tout", "indices"):
-        tickers = univers_indices()
-        print(f"Univers Indices : {len(tickers)} tickers")
-        univers["Indices"] = tickers
+    if selection in ("tout", "indices", "indices-us"):
+        tickers = univers_indices_us()
+        print(f"Univers Indices US : {len(tickers)} tickers")
+        univers["Indices US"] = tickers
+
+    if selection in ("tout", "indices", "indices-eu"):
+        tickers = univers_indices_eu()
+        print(f"Univers Indices EU : {len(tickers)} tickers")
+        univers["Indices EU"] = tickers
 
     if selection in ("tout", "crypto"):
         tickers = univers_kraken_usd()
@@ -2029,11 +2054,12 @@ def _exchange_twelvedata(ticker):
 
 def telecharger_twelvedata(tickers, outputsize=700):
     """
-    Filet de secours utilise UNIQUEMENT pour les tickers que yfinance n'a pas
-    reussi a recuperer. Ne remplace jamais Yahoo comme source principale :
-    le plan gratuit de Twelve Data ne couvre que les marches US, pas
-    Euronext (Paris/Amsterdam/Bruxelles necessitent un palier payant chez
-    eux) — donc ce filet n'aidera reellement que sur les echecs US.
+    Filet de secours utilise UNIQUEMENT pour les tickers que la source
+    principale (EODHD) n'a pas reussi a recuperer. Ne remplace jamais EODHD
+    comme source principale : le plan gratuit de Twelve Data ne couvre que
+    les marches US, pas Euronext (Paris/Amsterdam/Bruxelles necessitent un
+    palier payant chez eux) — donc ce filet n'aidera reellement que sur les
+    echecs US.
 
     Retourne {ticker: DataFrame} au meme format que telecharger().
     """
@@ -2195,9 +2221,17 @@ def telecharger_kraken(tickers, periode):
     {ticker: DataFrame} au MEME format (colonnes Open/High/Low/Close/Volume,
     index datetime) que telecharger(), pour rester compatible avec toute
     la chaine de traitement en aval (heikin_ashi, detection, backtest...).
+
+    IMPORTANT : Kraken renvoie toujours la bougie daily du jour EN COURS
+    (incomplete) comme derniere ligne. Le cron crypto tourne le matin
+    (~05h47 UTC), donc cette bougie ne compte que quelques heures : range
+    minuscule, faux doji, volume faible. On l'exclut systematiquement pour
+    ne garder que des bougies daily CLOTUREES (minuit UTC). La derniere
+    bougie utilisee est donc celle de la veille.
     """
     annees = int(periode.rstrip("y")) if periode.endswith("y") else 2
     depuis = int((datetime.now(timezone.utc) - pd.Timedelta(days=annees * 365)).timestamp())
+    aujourdhui = pd.Timestamp(datetime.now(timezone.utc).date())  # minuit UTC du jour, naif
 
     donnees = {}
     for i, ticker in enumerate(tickers, 1):
@@ -2229,6 +2263,12 @@ def telecharger_kraken(tickers, periode):
             )
             cadre["time"] = pd.to_datetime(cadre["time"], unit="s")
             cadre = cadre.set_index("time")[["Open", "High", "Low", "Close", "Volume"]].astype(float)
+
+            # Exclut la bougie du jour en cours (incomplete)
+            cadre = cadre[cadre.index < aujourdhui]
+            if len(cadre) < MIN_BOUGIES + 25:
+                continue
+
             donnees[ticker] = cadre
         except Exception:
             continue
@@ -2554,7 +2594,10 @@ def main():
     parseur.add_argument(
         "--univers",
         default="tout",
-        choices=["tout", "us", "euronext", "paris", "amsterdam", "bruxelles", "indices", "crypto"],
+        choices=[
+            "tout", "us", "euronext", "paris", "amsterdam", "bruxelles",
+            "indices", "indices-eu", "indices-us", "crypto",
+        ],
     )
     parseur.add_argument("--dry-run", action="store_true", help="pas d'envoi Telegram")
     parseur.add_argument("--valider-univers", action="store_true")
