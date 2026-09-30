@@ -2,28 +2,44 @@ name: Stromboli
 
 on:
   schedule:
-    # Euronext (Paris/Amsterdam/Bruxelles) : ~20h00 UTC, semaine uniquement.
-    # EODHD met a jour chaque bourse (hors NYSE/Nasdaq) 2-3h apres sa
-    # cloture. Euronext cloture 17h30 Paris = 16h30 UTC (hiver, CET) ou
-    # 15h30 UTC (ete, CEST) : le pire cas (hiver) donne des donnees pretes
-    # vers 19h30 UTC. 20h00 UTC garde 30 min de marge dans tous les cas.
-    # Minute decalee (17 au lieu de 00) : GitHub deconseille les cron a
+    # ------------------------------------------------------------------
+    # PLANNING (les cron GitHub sont TOUJOURS en UTC)
+    #
+    # SOIR  (Europe, semaine uniquement)
+    #   Euronext      20h17 UTC  ->  22h17 France (ete) / 21h17 (hiver)
+    #   Indices EU    20h41 UTC  ->  22h41 France (ete) / 21h41 (hiver)
+    # MATIN (US + crypto, du mardi au samedi pour les actions/indices US)
+    #   US            05h23 UTC  ->  07h23 France (ete) / 06h23 (hiver)
+    #   Indices US    05h41 UTC  ->  07h41 France (ete) / 06h41 (hiver)
+    #   Crypto        05h47 UTC  ->  07h47 France (ete) / 06h47 (hiver), 7j/7
+    #
+    # Minutes decalees (17, 23, 41, 47) : GitHub deconseille les cron a
     # l'heure/demi-heure pile, les plus demandes au monde donc les plus
     # susceptibles d'etre retardes ou completement sautes en cas de forte
     # charge sur la plateforme.
+    # ------------------------------------------------------------------
+
+    # Euronext (Paris/Amsterdam/Bruxelles) : semaine uniquement.
+    # EODHD met a jour chaque bourse (hors NYSE/Nasdaq) 2-3h apres sa
+    # cloture. Euronext cloture 17h30 Paris = 16h30 UTC (hiver, CET) ou
+    # 15h30 UTC (ete, CEST) : le pire cas (hiver) donne des donnees pretes
+    # vers 19h30 UTC. 20h17 UTC garde de la marge dans tous les cas.
     - cron: "17 20 * * 1-5"
-    # US (Nasdaq100 + S&P500) : ~03h00 UTC, du mardi au samedi UTC. Comme ce
+    # Indices europeens (DAX, CAC40, Euro Stoxx 50) : meme logique que
+    # Euronext, un peu plus tard pour ne pas se marcher dessus.
+    - cron: "41 20 * * 1-5"
+    # US (Nasdaq100 + S&P500) : ~05h23 UTC, du mardi au samedi UTC. Comme ce
     # cron se declenche apres minuit UTC, la seance US scannee est celle de
-    # la VEILLE (lundi UTC -> seance de vendredi US ne compte pas ici, elle
-    # est couverte par le run du samedi 03h00 UTC qui scanne le vendredi).
-    # Minute decalee, meme raison que ci-dessus.
-    - cron: "23 3 * * 2-6"
-    # Indices : meme horaire que l'ancien cron unique, mais semaine seulement
-    # (les indices ne bougent pas le week-end). Minute decalee.
-    - cron: "41 21 * * 1-5"
-    # Crypto : meme horaire que l'ancien cron unique, tous les jours (marche
-    # continu, l'horaire exact importe peu). Minute decalee.
-    - cron: "47 21 * * *"
+    # la VEILLE (run du mardi = seance du lundi ... run du samedi = seance
+    # du vendredi).
+    - cron: "23 5 * * 2-6"
+    # Indices US (S&P500, Nasdaq100, Dow, Russell 2000) : meme logique que
+    # les actions US, seance de la veille, toutes cloturees a ce moment.
+    - cron: "41 5 * * 2-6"
+    # Crypto : tous les jours, ~05h47 UTC. La bougie daily Kraken cloture a
+    # minuit UTC : a cette heure, la bougie de la VEILLE est complete. La
+    # bougie du jour (incomplete) est exclue cote Python (telecharger_kraken).
+    - cron: "47 5 * * *"
   workflow_dispatch:
     inputs:
       tf:
@@ -31,7 +47,7 @@ on:
         required: false
         default: "DW"
       univers:
-        description: "tout, us, euronext, paris, amsterdam, bruxelles, indices, crypto"
+        description: "tout, us, euronext, paris, amsterdam, bruxelles, indices, indices-eu, indices-us, crypto"
         required: false
         default: "tout"
       dry_run:
@@ -137,13 +153,16 @@ jobs:
       - name: Determiner les parametres
         id: params
         run: |
-          # Date de reference pour le calcul W/M : pour le cron US (declenche
-          # apres minuit UTC), la seance scannee est celle de la VEILLE.
-          if [ "${{ github.event.schedule }}" = "23 3 * * 2-6" ]; then
-            ref=$(date -u -d "-1 day" +%Y-%m-%d)
-          else
-            ref=$(date -u +%Y-%m-%d)
-          fi
+          # Date de reference pour le calcul W/M : pour les crons du MATIN
+          # (US, indices US, crypto), declenches apres minuit UTC, la seance
+          # ou la bougie scannee est celle de la VEILLE. Pour les crons du
+          # SOIR (Euronext, indices EU), c'est le jour meme.
+          case "${{ github.event.schedule }}" in
+            "23 5 * * 2-6"|"41 5 * * 2-6"|"47 5 * * *")
+              ref=$(date -u -d "-1 day" +%Y-%m-%d) ;;
+            *)
+              ref=$(date -u +%Y-%m-%d) ;;
+          esac
 
           if [ -n "${{ github.event.inputs.tf }}" ]; then
             echo "tf=${{ github.event.inputs.tf }}" >> $GITHUB_OUTPUT
@@ -162,11 +181,14 @@ jobs:
           # Univers selon le cron declencheur. Un run manuel (workflow_dispatch,
           # github.event.schedule vide) ignore ce calcul : l'input univers de
           # l'utilisateur prime toujours (voir etape "Scan Stromboli" plus bas).
+          # ATTENTION : les chaines ci-dessous doivent etre IDENTIQUES aux cron
+          # declares tout en haut du fichier.
           case "${{ github.event.schedule }}" in
             "17 20 * * 1-5") echo "univers=euronext" >> $GITHUB_OUTPUT ;;
-            "23 3 * * 2-6")  echo "univers=us" >> $GITHUB_OUTPUT ;;
-            "41 21 * * 1-5") echo "univers=indices" >> $GITHUB_OUTPUT ;;
-            "47 21 * * *")   echo "univers=crypto" >> $GITHUB_OUTPUT ;;
+            "41 20 * * 1-5") echo "univers=indices-eu" >> $GITHUB_OUTPUT ;;
+            "23 5 * * 2-6")  echo "univers=us" >> $GITHUB_OUTPUT ;;
+            "41 5 * * 2-6")  echo "univers=indices-us" >> $GITHUB_OUTPUT ;;
+            "47 5 * * *")    echo "univers=crypto" >> $GITHUB_OUTPUT ;;
             *)               echo "univers=tout" >> $GITHUB_OUTPUT ;;
           esac
 
