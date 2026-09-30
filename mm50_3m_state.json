@@ -1,95 +1,95 @@
 {
- "maj": "2026-09-29 11:04 UTC",
+ "maj": "2026-09-30 10:53 UTC",
  "tickers": {
   "74SW.PA": {
    "depuis": "2026-09-28",
-   "dist": 70.39,
+   "dist": 68.66,
    "etat": "loin",
-   "mm50": 22.3018,
+   "mm50": 22.2938,
    "place": "Paris"
   },
   "A": {
    "depuis": "2026-09-25",
-   "dist": 90.28,
+   "dist": 90.09,
    "etat": "loin",
-   "mm50": 92.0813,
+   "mm50": 92.0777,
    "place": "US"
   },
   "AAA.PA": {
    "depuis": "2026-09-28",
-   "dist": -56.12,
+   "dist": -49.52,
    "etat": "contact",
-   "mm50": 4.3527,
+   "mm50": 4.3585,
    "place": "Paris"
   },
   "AALB.AS": {
    "depuis": "2026-09-28",
-   "dist": 44.18,
+   "dist": 47.82,
    "etat": "loin",
-   "mm50": 29.3513,
+   "mm50": 29.3733,
    "place": "Amsterdam"
   },
   "AAPL": {
    "depuis": "2026-09-25",
-   "dist": 195.52,
+   "dist": 188.12,
    "etat": "loin",
-   "mm50": 114.5088,
+   "mm50": 114.3288,
    "place": "US"
   },
   "AB.PA": {
    "depuis": "2026-09-28",
-   "dist": -90.84,
+   "dist": -92.19,
    "etat": "contact",
-   "mm50": 7.5326,
+   "mm50": 7.5306,
    "place": "Paris"
   },
   "ABBV": {
    "depuis": "2026-09-25",
-   "dist": 159.81,
+   "dist": 157.05,
    "etat": "loin",
-   "mm50": 102.4889,
+   "mm50": 102.4291,
    "place": "US"
   },
   "ABCA.PA": {
    "depuis": "2026-09-28",
-   "dist": 38.24,
+   "dist": 40.1,
    "etat": "loin",
-   "mm50": 4.1811,
+   "mm50": 4.1827,
    "place": "Paris"
   },
   "ABI.BR": {
    "depuis": "2026-09-28",
-   "dist": 5.48,
+   "dist": 2.18,
    "etat": "approche",
-   "mm50": 64.0504,
+   "mm50": 64.0072,
    "place": "Bruxelles"
   },
   "ABO.BR": {
    "depuis": "2026-09-28",
-   "dist": -32.2,
+   "dist": -31.47,
    "etat": "contact",
-   "mm50": 5.398,
+   "mm50": 5.3988,
    "place": "Bruxelles"
   },
   "ABT": {
    "depuis": "2026-09-25",
-   "dist": 29.67,
+   "dist": 29.64,
    "etat": "loin",
-   "mm50": 77.8729,
+   "mm50": 77.8723,
    "place": "US"
   },
   "AC.PA": {
    "depuis": "2026-09-28",
-   "dist": 40.73,
+   "dist": 41.47,
    "etat": "loin",
-   "mm50": 32.6164,
+   "mm50": 32.6214,
    "place": "Paris"
   },
   "ACA.PA": {
    "depuis": "2026-09-28",
-   "dist": 111.61,
+   "dist": 110.42,
    "etat": "loin",
-   "mm50": 8.4757,
+   "mm50": 8.4736,
    "place": "Paris"
   },
   "ACAN.PA": {
@@ -108,65 +108,65 @@
   },
   "ACGL": {
    "depuis": "2026-09-25",
-   "dist": 97.88,
+   "dist": 98.32,
    "etat": "loin",
-   "mm50": 47.9588,
+   "mm50": 47.9632,
    "place": "US"
   },
   "ACKB.BR": {
    "depuis": "2026-09-28",
-   "dist": 94.15,
+   "dist": 92.76,
    "etat": "loin",
-   "mm50": 138.9676,
+   "mm50": 138.9276,
    "place": "Bruxelles"
   },
   "ACN": {
    "depuis": "2026-09-25",
-   "dist": -9.39,
+   "dist": -8.04,
    "etat": "contact",
-   "mm50": 192.5422,
+   "mm50": 192.5952,
    "place": "US"
   },
   "ACOMO.AS": {
    "depuis": "2026-09-28",
-   "dist": 45.44,
+   "dist": 45.13,
    "etat": "loin",
-   "mm50": 15.7453,
+   "mm50": 15.7443,
    "place": "Amsterdam"
   },
   "AD.AS": {
    "depuis": "2026-09-28",
-   "dist": 58.67,
+   "dist": 56.91,
    "etat": "loin",
-   "mm50": 20.3879,
+   "mm50": 20.3805,
    "place": "Amsterdam"
   },
   "ADBE": {
    "depuis": "2026-09-25",
-   "dist": -24.02,
+   "dist": -23.32,
    "etat": "contact",
-   "mm50": 304.0546,
+   "mm50": 304.0978,
    "place": "US"
   },
   "ADI": {
    "depuis": "2026-09-25",
-   "dist": 192.31,
+   "dist": 194.26,
    "etat": "loin",
-   "mm50": 135.2755,
+   "mm50": 135.3313,
    "place": "US"
   },
   "ADM": {
    "depuis": "2026-09-25",
-   "dist": 70.8,
+   "dist": 68.79,
    "etat": "loin",
-   "mm50": 47.0596,
+   "mm50": 47.04,
    "place": "US"
   },
   "ADOC.PA": {
    "depuis": "2026-09-28",
-   "dist": -86.18,
+   "dist": -85.93,
    "etat": "contact",
-   "mm50": 19.0141,
+   "mm50": 19.015,
    "place": "Paris"
   },
   "ADP": {
@@ -177,157 +177,157 @@
    "place": "US"
   },
   "ADP.PA": {
-   "depuis": "2026-09-28",
-   "dist": 1.84,
-   "etat": "approche",
-   "mm50": 108.5072,
+   "depuis": "2026-09-29",
+   "dist": 1.11,
+   "etat": "contact",
+   "mm50": 108.4912,
    "place": "Paris"
   },
   "ADSK": {
    "depuis": "2026-09-25",
-   "dist": 17.26,
+   "dist": 15.04,
    "etat": "loin",
-   "mm50": 176.6988,
+   "mm50": 176.6186,
    "place": "US"
   },
   "AED.BR": {
    "depuis": "2026-09-28",
-   "dist": 21.4,
+   "dist": 21.68,
    "etat": "loin",
-   "mm50": 52.8826,
+   "mm50": 52.8856,
    "place": "Bruxelles"
   },
   "AEE": {
    "depuis": "2026-09-25",
-   "dist": 59.05,
+   "dist": 60.38,
    "etat": "loin",
-   "mm50": 62.4889,
+   "mm50": 62.5061,
    "place": "US"
   },
   "AEP": {
    "depuis": "2026-09-25",
-   "dist": 70.69,
+   "dist": 72.23,
    "etat": "loin",
-   "mm50": 69.247,
+   "mm50": 69.269,
    "place": "US"
   },
   "AES": {
    "depuis": "2026-09-25",
-   "dist": 13.47,
+   "dist": 13.39,
    "etat": "loin",
-   "mm50": 13.1048,
+   "mm50": 13.1046,
    "place": "US"
   },
   "AF.PA": {
    "depuis": "2026-09-28",
-   "dist": -57.98,
+   "dist": -57.42,
    "etat": "contact",
-   "mm50": 27.7234,
+   "mm50": 27.7265,
    "place": "Paris"
   },
   "AFL": {
    "depuis": "2026-09-25",
-   "dist": 110.84,
+   "dist": 111.03,
    "etat": "loin",
-   "mm50": 53.8572,
+   "mm50": 53.8594,
    "place": "US"
   },
   "AGFB.BR": {
    "depuis": "2026-09-28",
-   "dist": -83.66,
+   "dist": -82.51,
    "etat": "contact",
-   "mm50": 2.7872,
+   "mm50": 2.7878,
    "place": "Bruxelles"
   },
   "AGN.AS": {
    "depuis": "2026-09-28",
-   "dist": 112.78,
+   "dist": 111.78,
    "etat": "loin",
-   "mm50": 3.6696,
+   "mm50": 3.6688,
    "place": "Amsterdam"
   },
   "AGS.BR": {
    "depuis": "2026-09-28",
-   "dist": 140.7,
+   "dist": 141.93,
    "etat": "loin",
-   "mm50": 30.9102,
+   "mm50": 30.9182,
    "place": "Bruxelles"
   },
   "AI.PA": {
    "depuis": "2026-09-28",
-   "dist": 80.51,
+   "dist": 81.19,
    "etat": "loin",
-   "mm50": 93.1904,
+   "mm50": 93.2036,
    "place": "Paris"
   },
   "AIG": {
    "depuis": "2026-09-25",
-   "dist": 42.56,
+   "dist": 47.3,
    "etat": "loin",
-   "mm50": 51.0511,
+   "mm50": 51.1009,
    "place": "US"
   },
   "AIR.PA": {
    "depuis": "2026-09-28",
-   "dist": 95.64,
+   "dist": 93.08,
    "etat": "loin",
-   "mm50": 98.7035,
+   "mm50": 98.6511,
    "place": "Paris"
   },
   "AIZ": {
    "depuis": "2026-09-25",
-   "dist": 112.92,
+   "dist": 113.01,
    "etat": "loin",
-   "mm50": 123.7717,
+   "mm50": 123.7741,
    "place": "US"
   },
   "AJAX.AS": {
    "depuis": "2026-09-28",
-   "dist": -26.82,
+   "dist": -27.51,
    "etat": "contact",
-   "mm50": 11.4517,
+   "mm50": 11.4501,
    "place": "Amsterdam"
   },
   "AJG": {
    "depuis": "2026-09-25",
-   "dist": 74.01,
+   "dist": 72.76,
    "etat": "loin",
-   "mm50": 131.8624,
+   "mm50": 131.8282,
    "place": "US"
   },
   "AKAM": {
    "depuis": "2026-09-25",
-   "dist": 29.99,
+   "dist": 29.36,
    "etat": "loin",
-   "mm50": 83.8454,
+   "mm50": 83.8346,
    "place": "US"
   },
   "AKE.PA": {
    "depuis": "2026-09-28",
-   "dist": -13.18,
+   "dist": -14.16,
    "etat": "contact",
-   "mm50": 64.9583,
+   "mm50": 64.9453,
    "place": "Paris"
   },
   "AKW.PA": {
    "depuis": "2026-09-28",
-   "dist": -55.49,
+   "dist": -54.8,
    "etat": "contact",
-   "mm50": 14.2904,
+   "mm50": 14.2924,
    "place": "Paris"
   },
   "AKZA.AS": {
    "depuis": "2026-09-28",
-   "dist": -1.09,
+   "dist": -0.57,
    "etat": "contact",
-   "mm50": 57.0819,
+   "mm50": 57.0879,
    "place": "Amsterdam"
   },
   "ALADO.PA": {
    "depuis": "2026-09-28",
    "dist": -100.0,
    "etat": "contact",
-   "mm50": 718932.714,
+   "mm50": 718932.7136,
    "place": "Paris"
   },
   "ALAGR.PA": {
@@ -346,44 +346,44 @@
   },
   "ALAQU.PA": {
    "depuis": "2026-09-28",
-   "dist": -7.46,
+   "dist": -4.98,
    "etat": "contact",
-   "mm50": 3.9552,
+   "mm50": 3.9572,
    "place": "Paris"
   },
   "ALATA.PA": {
    "depuis": "2026-09-28",
-   "dist": -60.96,
+   "dist": -61.83,
    "etat": "contact",
-   "mm50": 47.6379,
+   "mm50": 47.6295,
    "place": "Paris"
   },
   "ALATI.PA": {
    "depuis": "2026-09-28",
-   "dist": 4.96,
+   "dist": 2.67,
    "etat": "approche",
-   "mm50": 3.8588,
+   "mm50": 3.857,
    "place": "Paris"
   },
   "ALAVI.PA": {
    "depuis": "2026-09-28",
-   "dist": -32.31,
+   "dist": -31.45,
    "etat": "contact",
-   "mm50": 22.8975,
+   "mm50": 22.9015,
    "place": "Paris"
   },
   "ALB": {
    "depuis": "2026-09-25",
-   "dist": -1.43,
+   "dist": -1.22,
    "etat": "contact",
-   "mm50": 108.9434,
+   "mm50": 108.948,
    "place": "US"
   },
   "ALBFR.PA": {
    "depuis": "2026-09-28",
-   "dist": 77.9,
+   "dist": 77.37,
    "etat": "loin",
-   "mm50": 109.1621,
+   "mm50": 109.1501,
    "place": "Paris"
   },
   "ALBI.PA": {
@@ -395,30 +395,30 @@
   },
   "ALBIO.PA": {
    "depuis": "2026-09-28",
-   "dist": -82.96,
+   "dist": -83.0,
    "etat": "contact",
    "mm50": 5.2469,
    "place": "Paris"
   },
   "ALBLD.PA": {
    "depuis": "2026-09-28",
-   "dist": -19.84,
+   "dist": -20.56,
    "etat": "contact",
-   "mm50": 12.2884,
+   "mm50": 12.2866,
    "place": "Paris"
   },
   "ALBLU.PA": {
    "depuis": "2026-09-28",
-   "dist": -94.66,
+   "dist": -93.47,
    "etat": "contact",
-   "mm50": 2.4347,
+   "mm50": 2.4353,
    "place": "Paris"
   },
   "ALBON.PA": {
    "depuis": "2026-09-28",
-   "dist": 12.56,
+   "dist": 13.25,
    "etat": "loin",
-   "mm50": 85.2864,
+   "mm50": 85.2984,
    "place": "Paris"
   },
   "ALBOU.PA": {
@@ -430,72 +430,72 @@
   },
   "ALCAF.PA": {
    "depuis": "2026-09-28",
-   "dist": 44.25,
+   "dist": 46.47,
    "etat": "loin",
-   "mm50": 8.7351,
+   "mm50": 8.7391,
    "place": "Paris"
   },
   "ALCAT.PA": {
    "depuis": "2026-09-28",
-   "dist": -36.82,
+   "dist": -36.54,
    "etat": "contact",
-   "mm50": 2.8172,
+   "mm50": 2.8174,
    "place": "Paris"
   },
   "ALCBX.PA": {
    "depuis": "2026-09-28",
-   "dist": -87.35,
+   "dist": -87.25,
    "etat": "contact",
    "mm50": 0.0941,
    "place": "Paris"
   },
   "ALCGM.PA": {
    "depuis": "2026-09-28",
-   "dist": -50.24,
+   "dist": -50.15,
    "etat": "contact",
-   "mm50": 22.7474,
+   "mm50": 22.7478,
    "place": "Paris"
   },
   "ALCIS.PA": {
    "depuis": "2026-09-28",
-   "dist": 71.49,
+   "dist": 69.91,
    "etat": "loin",
-   "mm50": 12.2458,
+   "mm50": 12.2418,
    "place": "Paris"
   },
   "ALCJ.PA": {
    "depuis": "2026-09-28",
-   "dist": -66.3,
+   "dist": -64.25,
    "etat": "contact",
-   "mm50": 3.7749,
+   "mm50": 3.7765,
    "place": "Paris"
   },
   "ALCLA.PA": {
    "depuis": "2026-09-28",
-   "dist": -84.44,
+   "dist": -84.73,
    "etat": "contact",
-   "mm50": 3.7665,
+   "mm50": 3.7663,
    "place": "Paris"
   },
   "ALCLS.PA": {
    "depuis": "2026-09-28",
-   "dist": -89.86,
+   "dist": -89.93,
    "etat": "contact",
-   "mm50": 12.616,
+   "mm50": 12.6158,
    "place": "Paris"
   },
   "ALCOF.PA": {
    "depuis": "2026-09-28",
-   "dist": 5.27,
+   "dist": 4.52,
    "etat": "approche",
-   "mm50": 260.2775,
+   "mm50": 260.2375,
    "place": "Paris"
   },
   "ALCOG.PA": {
    "depuis": "2026-09-28",
-   "dist": -5.43,
+   "dist": -13.22,
    "etat": "contact",
-   "mm50": 7.0638,
+   "mm50": 7.0526,
    "place": "Paris"
   },
   "ALCOI.PA": {
@@ -507,30 +507,30 @@
   },
   "ALCOX.PA": {
    "depuis": "2026-09-28",
-   "dist": -92.94,
+   "dist": -92.82,
    "etat": "contact",
-   "mm50": 4.7366,
+   "mm50": 4.7367,
    "place": "Paris"
   },
   "ALCPB.PA": {
    "depuis": "2026-09-28",
-   "dist": -36.16,
+   "dist": -35.09,
    "etat": "contact",
-   "mm50": 8.6405,
+   "mm50": 8.6424,
    "place": "Paris"
   },
   "ALCRB.PA": {
    "depuis": "2026-09-28",
-   "dist": -65.64,
+   "dist": -61.49,
    "etat": "contact",
-   "mm50": 15.7756,
+   "mm50": 15.7888,
    "place": "Paris"
   },
   "ALDAR.PA": {
    "depuis": "2026-09-28",
-   "dist": -83.24,
+   "dist": -83.1,
    "etat": "contact",
-   "mm50": 14.3169,
+   "mm50": 14.3173,
    "place": "Paris"
   },
   "ALDBL.PA": {
@@ -542,91 +542,91 @@
   },
   "ALDEL.PA": {
    "depuis": "2026-09-28",
-   "dist": 24.54,
+   "dist": 24.16,
    "etat": "loin",
-   "mm50": 26.3379,
+   "mm50": 26.3359,
    "place": "Paris"
   },
   "ALDLS.PA": {
    "depuis": "2026-09-28",
-   "dist": -18.86,
+   "dist": -17.29,
    "etat": "contact",
-   "mm50": 12.5707,
+   "mm50": 12.5747,
    "place": "Paris"
   },
   "ALDLT.PA": {
    "depuis": "2026-09-28",
-   "dist": -38.76,
+   "dist": -36.72,
    "etat": "contact",
-   "mm50": 43.5966,
+   "mm50": 43.6146,
    "place": "Paris"
   },
   "ALDMS.PA": {
    "depuis": "2026-09-28",
-   "dist": -36.93,
+   "dist": -37.48,
    "etat": "contact",
-   "mm50": 1.4556,
+   "mm50": 1.4554,
    "place": "Paris"
   },
   "ALDNX.PA": {
    "depuis": "2026-09-28",
-   "dist": 211.18,
+   "dist": 205.48,
    "etat": "loin",
-   "mm50": 6.5878,
+   "mm50": 6.5798,
    "place": "Paris"
   },
   "ALDOL.PA": {
    "depuis": "2026-09-28",
    "dist": -99.95,
    "etat": "contact",
-   "mm50": 2128.4444,
+   "mm50": 2128.4443,
    "place": "Paris"
   },
   "ALDUB.PA": {
    "depuis": "2026-09-28",
-   "dist": -37.38,
+   "dist": -40.36,
    "etat": "contact",
-   "mm50": 3.3217,
+   "mm50": 3.3197,
    "place": "Paris"
   },
   "ALDUX.PA": {
    "depuis": "2026-09-28",
-   "dist": -80.96,
+   "dist": -81.71,
    "etat": "contact",
-   "mm50": 5.9335,
+   "mm50": 5.9326,
    "place": "Paris"
   },
   "ALDV.PA": {
    "depuis": "2026-09-28",
-   "dist": -33.94,
+   "dist": -22.88,
    "etat": "contact",
-   "mm50": 0.0908,
+   "mm50": 0.091,
    "place": "Paris"
   },
   "ALECP.PA": {
    "depuis": "2026-09-28",
-   "dist": -84.23,
+   "dist": -84.41,
    "etat": "contact",
-   "mm50": 1.6362,
+   "mm50": 1.6361,
    "place": "Paris"
   },
   "ALEMG.PA": {
    "depuis": "2026-09-28",
-   "dist": -26.73,
+   "dist": -28.12,
    "etat": "contact",
-   "mm50": 7.0971,
+   "mm50": 7.0951,
    "place": "Paris"
   },
   "ALEMV.PA": {
    "depuis": "2026-09-28",
-   "dist": -82.8,
+   "dist": -82.23,
    "etat": "contact",
-   "mm50": 3.4879,
+   "mm50": 3.4883,
    "place": "Paris"
   },
   "ALENT.PA": {
    "depuis": "2026-09-28",
-   "dist": -63.44,
+   "dist": -63.49,
    "etat": "contact",
    "mm50": 2.0102,
    "place": "Paris"
@@ -668,65 +668,65 @@
   },
   "ALFLE.PA": {
    "depuis": "2026-09-28",
-   "dist": -16.26,
+   "dist": -17.01,
    "etat": "contact",
-   "mm50": 26.2725,
+   "mm50": 26.2685,
    "place": "Paris"
   },
   "ALFPC.PA": {
    "depuis": "2026-09-28",
-   "dist": 3.31,
+   "dist": 3.95,
    "etat": "approche",
-   "mm50": 76.9537,
+   "mm50": 76.9637,
    "place": "Paris"
   },
   "ALFRE.PA": {
    "depuis": "2026-09-28",
-   "dist": -5.26,
+   "dist": -7.6,
    "etat": "contact",
-   "mm50": 2.5121,
+   "mm50": 2.5109,
    "place": "Paris"
   },
   "ALGAE.PA": {
    "depuis": "2026-09-28",
-   "dist": -81.84,
+   "dist": -81.8,
    "etat": "contact",
    "mm50": 2.4116,
    "place": "Paris"
   },
   "ALGEN.PA": {
    "depuis": "2026-09-28",
-   "dist": -12.41,
+   "dist": -11.67,
    "etat": "contact",
-   "mm50": 2.6714,
+   "mm50": 2.6718,
    "place": "Paris"
   },
   "ALGEV.PA": {
    "depuis": "2026-09-28",
-   "dist": 25.61,
+   "dist": 26.86,
    "etat": "loin",
-   "mm50": 155.2443,
+   "mm50": 155.2843,
    "place": "Paris"
   },
   "ALGID.PA": {
    "depuis": "2026-09-28",
-   "dist": -54.23,
+   "dist": -54.3,
    "etat": "contact",
    "mm50": 1.4726,
    "place": "Paris"
   },
   "ALGIL.PA": {
    "depuis": "2026-09-28",
-   "dist": 2.11,
+   "dist": 3.09,
    "etat": "approche",
-   "mm50": 20.0761,
+   "mm50": 20.0801,
    "place": "Paris"
   },
   "ALGIR.PA": {
    "depuis": "2026-09-28",
-   "dist": 37.07,
+   "dist": 40.03,
    "etat": "loin",
-   "mm50": 11.4904,
+   "mm50": 11.4974,
    "place": "Paris"
   },
   "ALGLD.PA": {
@@ -738,16 +738,16 @@
   },
   "ALGN": {
    "depuis": "2026-09-25",
-   "dist": -39.18,
+   "dist": -39.59,
    "etat": "contact",
-   "mm50": 238.4186,
+   "mm50": 238.3988,
    "place": "US"
   },
   "ALHEX.PA": {
    "depuis": "2026-09-28",
-   "dist": -28.02,
+   "dist": -27.69,
    "etat": "contact",
-   "mm50": 29.8689,
+   "mm50": 29.8709,
    "place": "Paris"
   },
   "ALHF.PA": {
@@ -759,16 +759,16 @@
   },
   "ALHIT.PA": {
    "depuis": "2026-09-28",
-   "dist": 38.48,
+   "dist": 33.53,
    "etat": "loin",
-   "mm50": 9.8206,
+   "mm50": 9.8106,
    "place": "Paris"
   },
   "ALHOP.PA": {
    "depuis": "2026-09-28",
-   "dist": 38.86,
+   "dist": 32.2,
    "etat": "loin",
-   "mm50": 9.506,
+   "mm50": 9.493,
    "place": "Paris"
   },
   "ALHRG.PA": {
@@ -803,112 +803,112 @@
    "depuis": "2026-09-28",
    "dist": -99.3,
    "etat": "contact",
-   "mm50": 23.4058,
+   "mm50": 23.4057,
    "place": "Paris"
   },
   "ALINN.PA": {
    "depuis": "2026-09-28",
-   "dist": -43.86,
+   "dist": -44.69,
    "etat": "contact",
-   "mm50": 3.5805,
+   "mm50": 3.5799,
    "place": "Paris"
   },
   "ALINS.PA": {
    "depuis": "2026-09-28",
-   "dist": -68.48,
+   "dist": -71.02,
    "etat": "contact",
-   "mm50": 0.644,
+   "mm50": 0.6436,
    "place": "Paris"
   },
   "ALINT.PA": {
    "depuis": "2026-09-28",
-   "dist": -96.44,
+   "dist": -96.55,
    "etat": "contact",
-   "mm50": 2.047,
+   "mm50": 2.0469,
    "place": "Paris"
   },
   "ALISP.PA": {
    "depuis": "2026-09-28",
-   "dist": -66.03,
+   "dist": -69.91,
    "etat": "contact",
-   "mm50": 4.357,
+   "mm50": 4.3536,
    "place": "Paris"
   },
   "ALITL.PA": {
    "depuis": "2026-09-28",
-   "dist": -15.56,
+   "dist": -15.88,
    "etat": "contact",
-   "mm50": 15.218,
+   "mm50": 15.217,
    "place": "Paris"
   },
   "ALJXR.PA": {
    "depuis": "2026-09-28",
    "dist": -100.0,
    "etat": "contact",
-   "mm50": 451059.6336,
+   "mm50": 451059.6338,
    "place": "Paris"
   },
   "ALKEY.PA": {
    "depuis": "2026-09-28",
-   "dist": 78.89,
+   "dist": 77.19,
    "etat": "loin",
-   "mm50": 4.5278,
+   "mm50": 4.5262,
    "place": "Paris"
   },
   "ALKLA.PA": {
    "depuis": "2026-09-28",
-   "dist": -76.56,
+   "dist": -79.29,
    "etat": "contact",
-   "mm50": 2.7731,
+   "mm50": 2.7716,
    "place": "Paris"
   },
   "ALL": {
    "depuis": "2026-09-25",
-   "dist": 110.93,
+   "dist": 109.04,
    "etat": "loin",
-   "mm50": 107.8786,
+   "mm50": 107.836,
    "place": "US"
   },
   "ALLAN.PA": {
    "depuis": "2026-09-28",
-   "dist": -6.83,
+   "dist": -8.24,
    "etat": "contact",
-   "mm50": 27.9059,
+   "mm50": 27.8979,
    "place": "Paris"
   },
   "ALLDL.PA": {
    "depuis": "2026-09-28",
-   "dist": -36.68,
+   "dist": -38.01,
    "etat": "contact",
-   "mm50": 19.2668,
+   "mm50": 19.2616,
    "place": "Paris"
   },
   "ALLE": {
    "depuis": "2026-09-25",
-   "dist": 61.87,
+   "dist": 61.92,
    "etat": "loin",
-   "mm50": 95.9892,
+   "mm50": 95.9902,
    "place": "US"
   },
   "ALLEX.PA": {
    "depuis": "2026-09-28",
-   "dist": 196.5,
+   "dist": 201.88,
    "etat": "loin",
-   "mm50": 2.7926,
+   "mm50": 2.7958,
    "place": "Paris"
   },
   "ALLHB.PA": {
    "depuis": "2026-09-28",
-   "dist": 22.98,
+   "dist": 23.82,
    "etat": "loin",
-   "mm50": 58.1385,
+   "mm50": 58.1485,
    "place": "Paris"
   },
   "ALLOG.PA": {
    "depuis": "2026-09-28",
-   "dist": 108.16,
+   "dist": 104.04,
    "etat": "loin",
-   "mm50": 0.8849,
+   "mm50": 0.8841,
    "place": "Paris"
   },
   "ALLUX.PA": {
@@ -920,37 +920,37 @@
   },
   "ALMAS.PA": {
    "depuis": "2026-09-28",
-   "dist": -98.94,
+   "dist": -99.0,
    "etat": "contact",
    "mm50": 0.3789,
    "place": "Paris"
   },
   "ALMDG.PA": {
    "depuis": "2026-09-28",
-   "dist": -73.68,
+   "dist": -73.78,
    "etat": "contact",
-   "mm50": 32.6032,
+   "mm50": 32.6026,
    "place": "Paris"
   },
   "ALMDT.PA": {
    "depuis": "2026-09-28",
-   "dist": -47.51,
+   "dist": -48.2,
    "etat": "contact",
-   "mm50": 7.1344,
+   "mm50": 7.1334,
    "place": "Paris"
   },
   "ALMER.PA": {
    "depuis": "2026-09-28",
-   "dist": -65.72,
+   "dist": -64.01,
    "etat": "contact",
-   "mm50": 12.7769,
+   "mm50": 12.7813,
    "place": "Paris"
   },
   "ALMET.PA": {
    "depuis": "2026-09-28",
-   "dist": -38.72,
+   "dist": -41.69,
    "etat": "contact",
-   "mm50": 3.9814,
+   "mm50": 3.979,
    "place": "Paris"
   },
   "ALMGI.PA": {
@@ -962,51 +962,51 @@
   },
   "ALMIN.PA": {
    "depuis": "2026-09-28",
-   "dist": 18.93,
+   "dist": 18.43,
    "etat": "loin",
-   "mm50": 3.9099,
+   "mm50": 3.9095,
    "place": "Paris"
   },
   "ALMKT.PA": {
    "depuis": "2026-09-28",
-   "dist": -92.03,
+   "dist": -92.28,
    "etat": "contact",
-   "mm50": 1.8268,
+   "mm50": 1.8267,
    "place": "Paris"
   },
   "ALMOU.PA": {
    "depuis": "2026-09-28",
-   "dist": 60.42,
+   "dist": 62.49,
    "etat": "loin",
-   "mm50": 14.0259,
+   "mm50": 14.0319,
    "place": "Paris"
   },
   "ALMRB.PA": {
    "depuis": "2026-09-28",
-   "dist": -63.76,
+   "dist": -65.62,
    "etat": "contact",
-   "mm50": 9.0795,
+   "mm50": 9.0761,
    "place": "Paris"
   },
   "ALNLF.PA": {
    "depuis": "2026-09-28",
-   "dist": -89.76,
+   "dist": -90.31,
    "etat": "contact",
-   "mm50": 0.6112,
+   "mm50": 0.6111,
    "place": "Paris"
   },
   "ALNMG.PA": {
    "depuis": "2026-09-28",
-   "dist": -99.67,
+   "dist": -99.66,
    "etat": "contact",
    "mm50": 104.1785,
    "place": "Paris"
   },
   "ALNOV.PA": {
    "depuis": "2026-09-28",
-   "dist": -73.71,
+   "dist": -74.17,
    "etat": "contact",
-   "mm50": 1.9589,
+   "mm50": 1.9587,
    "place": "Paris"
   },
   "ALNSC.PA": {
@@ -1018,51 +1018,51 @@
   },
   "ALNSE.PA": {
    "depuis": "2026-09-28",
-   "dist": 124.73,
+   "dist": 125.27,
    "etat": "loin",
-   "mm50": 17.7543,
+   "mm50": 17.7563,
    "place": "Paris"
   },
   "ALNTG.PA": {
    "depuis": "2026-09-28",
-   "dist": -6.53,
+   "dist": -7.82,
    "etat": "contact",
-   "mm50": 1.0613,
+   "mm50": 1.061,
    "place": "Paris"
   },
   "ALNXT.PA": {
    "depuis": "2026-09-28",
-   "dist": -56.56,
+   "dist": -55.89,
    "etat": "contact",
-   "mm50": 0.7435,
+   "mm50": 0.7436,
    "place": "Paris"
   },
   "ALNY": {
    "depuis": "2026-09-25",
-   "dist": 61.15,
+   "dist": 60.37,
    "etat": "loin",
-   "mm50": 158.4574,
+   "mm50": 158.4316,
    "place": "US"
   },
   "ALO.PA": {
    "depuis": "2026-09-28",
-   "dist": -37.75,
+   "dist": -37.19,
    "etat": "contact",
-   "mm50": 23.6558,
+   "mm50": 23.6585,
    "place": "Paris"
   },
   "ALORA.PA": {
    "depuis": "2026-09-28",
-   "dist": -72.87,
+   "dist": -73.53,
    "etat": "contact",
-   "mm50": 1.5076,
+   "mm50": 1.5074,
    "place": "Paris"
   },
   "ALPAS.PA": {
    "depuis": "2026-09-28",
-   "dist": -1.35,
+   "dist": -0.94,
    "etat": "contact",
-   "mm50": 4.8049,
+   "mm50": 4.8053,
    "place": "Paris"
   },
   "ALPAT.PA": {
@@ -1081,37 +1081,37 @@
   },
   "ALPJT.PA": {
    "depuis": "2026-09-28",
-   "dist": -45.84,
+   "dist": -44.88,
    "etat": "contact",
-   "mm50": 10.3034,
+   "mm50": 10.3053,
    "place": "Paris"
   },
   "ALPM.PA": {
    "depuis": "2026-09-28",
-   "dist": 11.18,
+   "dist": 9.28,
    "etat": "loin",
-   "mm50": 20.5967,
+   "mm50": 20.5887,
    "place": "Paris"
   },
   "ALPRG.PA": {
    "depuis": "2026-09-28",
-   "dist": -53.26,
+   "dist": -53.92,
    "etat": "contact",
-   "mm50": 0.6034,
+   "mm50": 0.6033,
    "place": "Paris"
   },
   "ALPRI.PA": {
    "depuis": "2026-09-28",
-   "dist": -22.36,
+   "dist": -22.16,
    "etat": "contact",
-   "mm50": 9.84,
+   "mm50": 9.8404,
    "place": "Paris"
   },
   "ALPVL.PA": {
    "depuis": "2026-09-28",
-   "dist": -73.22,
+   "dist": -72.33,
    "etat": "contact",
-   "mm50": 6.6853,
+   "mm50": 6.6865,
    "place": "Paris"
   },
   "ALQGC.PA": {
@@ -1123,9 +1123,9 @@
   },
   "ALQWA.PA": {
    "depuis": "2026-09-28",
-   "dist": -67.75,
+   "dist": -67.97,
    "etat": "contact",
-   "mm50": 4.6828,
+   "mm50": 4.6826,
    "place": "Paris"
   },
   "ALRGR.PA": {
@@ -1137,28 +1137,28 @@
   },
   "ALRIB.PA": {
    "depuis": "2026-09-28",
-   "dist": 324.31,
+   "dist": 342.82,
    "etat": "loin",
-   "mm50": 2.1164,
+   "mm50": 2.125,
    "place": "Paris"
   },
   "ALROC.PA": {
    "depuis": "2026-09-28",
-   "dist": -72.74,
+   "dist": -72.86,
    "etat": "contact",
-   "mm50": 4.2373,
+   "mm50": 4.2372,
    "place": "Paris"
   },
   "ALSAS.PA": {
    "depuis": "2026-09-28",
-   "dist": -24.68,
+   "dist": -25.42,
    "etat": "contact",
-   "mm50": 5.3109,
+   "mm50": 5.3101,
    "place": "Paris"
   },
   "ALSGD.PA": {
    "depuis": "2026-09-28",
-   "dist": -95.09,
+   "dist": -95.04,
    "etat": "contact",
    "mm50": 1.8355,
    "place": "Paris"
@@ -1181,26 +1181,26 @@
    "depuis": "2026-09-28",
    "dist": -99.95,
    "etat": "contact",
-   "mm50": 792.6284,
+   "mm50": 792.6288,
    "place": "Paris"
   },
   "ALSTW.PA": {
    "depuis": "2026-09-28",
-   "dist": 240.29,
+   "dist": 233.46,
    "etat": "loin",
-   "mm50": 21.8638,
+   "mm50": 21.8318,
    "place": "Paris"
   },
   "ALTA.PA": {
    "depuis": "2026-09-28",
-   "dist": -18.45,
+   "dist": -18.84,
    "etat": "contact",
-   "mm50": 101.5321,
+   "mm50": 101.5241,
    "place": "Paris"
   },
   "ALTAO.PA": {
    "depuis": "2026-09-28",
-   "dist": -97.32,
+   "dist": -97.23,
    "etat": "contact",
    "mm50": 0.4397,
    "place": "Paris"
@@ -1214,65 +1214,65 @@
   },
   "ALTHE.PA": {
    "depuis": "2026-09-28",
-   "dist": -74.37,
+   "dist": -74.97,
    "etat": "contact",
-   "mm50": 2.7972,
+   "mm50": 2.7969,
    "place": "Paris"
   },
   "ALTOU.PA": {
    "depuis": "2026-09-28",
-   "dist": -52.98,
+   "dist": -53.79,
    "etat": "contact",
-   "mm50": 7.294,
+   "mm50": 7.2928,
    "place": "Paris"
   },
   "ALTPC.PA": {
    "depuis": "2026-09-28",
-   "dist": 48.63,
+   "dist": 37.16,
    "etat": "loin",
-   "mm50": 16.9545,
+   "mm50": 16.9145,
    "place": "Paris"
   },
   "ALTRA.PA": {
    "depuis": "2026-09-28",
-   "dist": 147.79,
+   "dist": 139.98,
    "etat": "loin",
-   "mm50": 1.1582,
+   "mm50": 1.1563,
    "place": "Paris"
   },
   "ALTRI.PA": {
    "depuis": "2026-09-28",
-   "dist": -31.36,
+   "dist": -32.17,
    "etat": "contact",
-   "mm50": 7.2842,
+   "mm50": 7.283,
    "place": "Paris"
   },
   "ALTXC.PA": {
    "depuis": "2026-09-28",
-   "dist": 30.18,
+   "dist": 31.61,
    "etat": "loin",
-   "mm50": 6.8366,
+   "mm50": 6.8386,
    "place": "Paris"
   },
   "ALU10.PA": {
    "depuis": "2026-09-28",
-   "dist": -40.84,
+   "dist": -41.81,
    "etat": "contact",
-   "mm50": 2.0454,
+   "mm50": 2.045,
    "place": "Paris"
   },
   "ALUPG.PA": {
    "depuis": "2026-09-28",
-   "dist": -56.86,
+   "dist": -55.69,
    "etat": "contact",
-   "mm50": 3.802,
+   "mm50": 3.8029,
    "place": "Paris"
   },
   "ALVDM.PA": {
    "depuis": "2026-09-28",
-   "dist": 102.65,
+   "dist": 102.11,
    "etat": "loin",
-   "mm50": 88.5769,
+   "mm50": 88.5669,
    "place": "Paris"
   },
   "ALVIA.PA": {
@@ -1284,93 +1284,93 @@
   },
   "ALVIO.PA": {
    "depuis": "2026-09-28",
-   "dist": -59.8,
+   "dist": -62.19,
    "etat": "contact",
-   "mm50": 1.4579,
+   "mm50": 1.4572,
    "place": "Paris"
   },
   "ALWEC.PA": {
    "depuis": "2026-09-28",
-   "dist": -22.54,
+   "dist": -22.87,
    "etat": "contact",
-   "mm50": 29.8237,
+   "mm50": 29.8217,
    "place": "Paris"
   },
   "ALX.AS": {
    "depuis": "2026-09-28",
-   "dist": -47.29,
+   "dist": -47.67,
    "etat": "contact",
-   "mm50": 2.542,
+   "mm50": 2.5418,
    "place": "Amsterdam"
   },
   "ALXIL.PA": {
    "depuis": "2026-09-28",
-   "dist": -80.69,
+   "dist": -79.22,
    "etat": "contact",
-   "mm50": 21.6481,
+   "mm50": 21.6545,
    "place": "Paris"
   },
   "AM.PA": {
    "depuis": "2026-09-28",
-   "dist": 105.69,
+   "dist": 103.25,
    "etat": "loin",
-   "mm50": 141.3752,
+   "mm50": 141.3032,
    "place": "Paris"
   },
   "AMAT": {
    "depuis": "2026-09-25",
-   "dist": 336.18,
+   "dist": 356.74,
    "etat": "loin",
-   "mm50": 111.5956,
+   "mm50": 112.1006,
    "place": "US"
   },
   "AMCR": {
    "depuis": "2026-09-25",
-   "dist": 9.58,
+   "dist": 8.75,
    "etat": "loin",
-   "mm50": 39.0502,
+   "mm50": 39.0436,
    "place": "US"
   },
   "AMD": {
    "depuis": "2026-09-25",
-   "dist": 589.37,
+   "dist": 589.08,
    "etat": "loin",
-   "mm50": 88.177,
+   "mm50": 88.171,
    "place": "US"
   },
   "AME": {
    "depuis": "2026-09-25",
-   "dist": 128.76,
+   "dist": 127.99,
    "etat": "loin",
-   "mm50": 110.0149,
+   "mm50": 109.9971,
    "place": "US"
   },
   "AMG.AS": {
    "depuis": "2026-09-28",
-   "dist": 31.24,
+   "dist": 35.21,
    "etat": "loin",
-   "mm50": 21.5486,
+   "mm50": 21.5662,
    "place": "Amsterdam"
   },
   "AMGN": {
    "depuis": "2026-09-25",
-   "dist": 115.3,
+   "dist": 118.01,
    "etat": "loin",
-   "mm50": 194.2079,
+   "mm50": 194.3181,
    "place": "US"
   },
   "AMP": {
    "depuis": "2026-09-25",
-   "dist": 115.91,
+   "dist": 116.39,
    "etat": "loin",
-   "mm50": 229.8028,
+   "mm50": 229.826,
    "place": "US"
   },
   "AMT": {
    "depuis": "2026-09-25",
-   "dist": 9.21,
+   "dist": 8.8,
    "etat": "loin",
-   "mm50": 153.8284,
+   "mm50": 153.8154,
    "place": "US"
   },
   "AMUND.AS": {
@@ -1382,58 +1382,58 @@
   },
   "AMZN": {
    "depuis": "2026-09-25",
-   "dist": 115.48,
+   "dist": 115.92,
    "etat": "loin",
-   "mm50": 114.2328,
+   "mm50": 114.2432,
    "place": "US"
   },
   "ANET": {
    "depuis": "2026-09-25",
-   "dist": 412.07,
+   "dist": 407.44,
    "etat": "loin",
-   "mm50": 40.0183,
+   "mm50": 39.9771,
    "place": "US"
   },
   "AON": {
    "depuis": "2026-09-25",
-   "dist": 29.18,
+   "dist": 30.93,
    "etat": "loin",
-   "mm50": 210.6437,
+   "mm50": 210.7197,
    "place": "US"
   },
   "AOS": {
    "depuis": "2026-09-25",
-   "dist": 13.96,
+   "dist": 13.27,
    "etat": "loin",
-   "mm50": 51.2291,
+   "mm50": 51.2219,
    "place": "US"
   },
   "APA": {
    "depuis": "2026-09-25",
-   "dist": 34.3,
+   "dist": 33.87,
    "etat": "loin",
-   "mm50": 31.518,
+   "mm50": 31.5152,
    "place": "US"
   },
   "APAM.AS": {
    "depuis": "2026-09-28",
-   "dist": 91.26,
+   "dist": 89.37,
    "etat": "loin",
-   "mm50": 23.3818,
+   "mm50": 23.3726,
    "place": "Amsterdam"
   },
   "APD": {
    "depuis": "2026-09-25",
-   "dist": 44.09,
+   "dist": 44.31,
    "etat": "loin",
-   "mm50": 193.4505,
+   "mm50": 193.4593,
    "place": "US"
   },
   "APH": {
    "depuis": "2026-09-25",
-   "dist": 307.23,
+   "dist": 305.99,
    "etat": "loin",
-   "mm50": 20.7794,
+   "mm50": 20.7738,
    "place": "US"
   },
   "APO": {
@@ -1445,23 +1445,23 @@
   },
   "APTV": {
    "depuis": "2026-09-25",
-   "dist": -46.56,
+   "dist": -46.89,
    "etat": "contact",
-   "mm50": 81.6595,
+   "mm50": 81.6541,
    "place": "US"
   },
   "ARCAD.AS": {
    "depuis": "2026-09-28",
-   "dist": 62.78,
+   "dist": 60.45,
    "etat": "loin",
-   "mm50": 25.8024,
+   "mm50": 25.79,
    "place": "Amsterdam"
   },
   "ARE": {
    "depuis": "2026-09-25",
-   "dist": -48.56,
+   "dist": -48.76,
    "etat": "contact",
-   "mm50": 94.6023,
+   "mm50": 94.5985,
    "place": "US"
   },
   "AREIT.PA": {
@@ -1473,16 +1473,16 @@
   },
   "ARES": {
    "depuis": "2026-09-25",
-   "dist": 112.68,
+   "dist": 113.76,
    "etat": "loin",
-   "mm50": 55.6431,
+   "mm50": 55.6557,
    "place": "US"
   },
   "ARG.PA": {
    "depuis": "2026-09-28",
-   "dist": 46.01,
+   "dist": 45.4,
    "etat": "loin",
-   "mm50": 47.8053,
+   "mm50": 47.7993,
    "place": "Paris"
   },
   "ARTE.PA": {
@@ -1501,51 +1501,51 @@
   },
   "ASCE.BR": {
    "depuis": "2026-09-28",
-   "dist": 37.1,
+   "dist": 38.88,
    "etat": "loin",
-   "mm50": 38.2936,
+   "mm50": 38.3076,
    "place": "Bruxelles"
   },
   "ASM.AS": {
    "depuis": "2026-09-28",
-   "dist": 249.75,
+   "dist": 263.51,
    "etat": "loin",
-   "mm50": 242.6857,
+   "mm50": 243.4057,
    "place": "Amsterdam"
   },
   "ASML": {
    "depuis": "2026-09-25",
-   "dist": 269.63,
+   "dist": 281.76,
    "etat": "loin",
-   "mm50": 479.2452,
+   "mm50": 480.5048,
    "place": "US"
   },
   "ASML.AS": {
    "depuis": "2026-09-28",
-   "dist": 261.26,
+   "dist": 275.22,
    "etat": "loin",
-   "mm50": 425.4552,
+   "mm50": 426.7392,
    "place": "Amsterdam"
   },
   "ASY.PA": {
    "depuis": "2026-09-28",
-   "dist": 60.24,
+   "dist": 56.1,
    "etat": "loin",
-   "mm50": 24.5884,
+   "mm50": 24.5674,
    "place": "Paris"
   },
   "ATE.PA": {
    "depuis": "2026-09-28",
-   "dist": 0.74,
+   "dist": 2.53,
    "etat": "contact",
-   "mm50": 79.1654,
+   "mm50": 79.1944,
    "place": "Paris"
   },
   "ATEB.BR": {
    "depuis": "2026-09-28",
-   "dist": -94.23,
+   "dist": -94.38,
    "etat": "contact",
-   "mm50": 18.9618,
+   "mm50": 18.9612,
    "place": "Bruxelles"
   },
   "ATLD.PA": {
@@ -1557,44 +1557,44 @@
   },
   "ATO": {
    "depuis": "2026-09-25",
-   "dist": 71.11,
+   "dist": 71.69,
    "etat": "loin",
-   "mm50": 91.7844,
+   "mm50": 91.7954,
    "place": "US"
   },
   "ATO.PA": {
    "depuis": "2026-09-28",
-   "dist": -99.28,
+   "dist": -99.32,
    "etat": "contact",
-   "mm50": 3009.525,
+   "mm50": 3009.5006,
    "place": "Paris"
   },
   "AUB.PA": {
    "depuis": "2026-09-28",
-   "dist": 59.74,
+   "dist": 58.83,
    "etat": "loin",
-   "mm50": 31.8017,
+   "mm50": 31.7957,
    "place": "Paris"
   },
   "AUGR.PA": {
    "depuis": "2026-09-28",
-   "dist": -12.75,
+   "dist": -6.37,
    "etat": "contact",
-   "mm50": 5.2266,
+   "mm50": 5.2334,
    "place": "Paris"
   },
   "AURE.PA": {
    "depuis": "2026-09-28",
-   "dist": 2.59,
+   "dist": 0.92,
    "etat": "approche",
-   "mm50": 5.8484,
+   "mm50": 5.8464,
    "place": "Paris"
   },
   "AVGO": {
    "depuis": "2026-09-25",
-   "dist": 332.66,
+   "dist": 338.9,
    "etat": "loin",
-   "mm50": 80.7957,
+   "mm50": 80.9063,
    "place": "US"
   },
   "AVT.PA": {
@@ -1606,93 +1606,93 @@
   },
   "AVY": {
    "depuis": "2026-09-25",
-   "dist": 39.67,
+   "dist": 38.79,
    "etat": "loin",
-   "mm50": 123.0716,
+   "mm50": 123.0494,
    "place": "US"
   },
   "AWK": {
    "depuis": "2026-09-25",
-   "dist": 27.19,
+   "dist": 28.03,
    "etat": "loin",
-   "mm50": 101.3673,
+   "mm50": 101.3847,
    "place": "US"
   },
   "AXON": {
    "depuis": "2026-09-25",
-   "dist": 139.07,
+   "dist": 136.29,
    "etat": "loin",
-   "mm50": 177.6712,
+   "mm50": 177.5678,
    "place": "US"
   },
   "AXP": {
    "depuis": "2026-09-25",
-   "dist": 111.53,
+   "dist": 110.92,
    "etat": "loin",
-   "mm50": 144.814,
+   "mm50": 144.7954,
    "place": "US"
   },
   "AXS.AS": {
    "depuis": "2026-09-28",
-   "dist": -25.55,
+   "dist": -26.43,
    "etat": "contact",
-   "mm50": 1.0074,
+   "mm50": 1.0072,
    "place": "Amsterdam"
   },
   "AZO": {
    "depuis": "2026-09-25",
-   "dist": 72.12,
+   "dist": 69.99,
    "etat": "loin",
-   "mm50": 1692.604,
+   "mm50": 1691.8578,
    "place": "US"
   },
   "BA": {
    "depuis": "2026-09-25",
-   "dist": -9.69,
+   "dist": -8.1,
    "etat": "contact",
-   "mm50": 204.1659,
+   "mm50": 204.2317,
    "place": "US"
   },
   "BAC": {
    "depuis": "2026-09-25",
-   "dist": 99.53,
+   "dist": 97.77,
    "etat": "loin",
-   "mm50": 27.8003,
+   "mm50": 27.7901,
    "place": "US"
   },
   "BAIN.PA": {
    "depuis": "2026-09-28",
-   "dist": 117.86,
+   "dist": 116.43,
    "etat": "loin",
-   "mm50": 66.555,
+   "mm50": 66.535,
    "place": "Paris"
   },
   "BALL": {
    "depuis": "2026-09-25",
-   "dist": 10.63,
+   "dist": 9.72,
    "etat": "loin",
-   "mm50": 51.6411,
+   "mm50": 51.6315,
    "place": "US"
   },
   "BAMNB.AS": {
    "depuis": "2026-09-28",
-   "dist": 277.07,
+   "dist": 278.43,
    "etat": "loin",
-   "mm50": 3.4052,
+   "mm50": 3.4062,
    "place": "Amsterdam"
   },
   "BANI.BR": {
    "depuis": "2026-09-28",
-   "dist": -24.77,
+   "dist": -24.28,
    "etat": "contact",
-   "mm50": 4.0675,
+   "mm50": 4.0679,
    "place": "Bruxelles"
   },
   "BAR.BR": {
    "depuis": "2026-09-28",
-   "dist": -41.14,
+   "dist": -41.26,
    "etat": "contact",
-   "mm50": 12.3504,
+   "mm50": 12.3501,
    "place": "Bruxelles"
   },
   "BASS.PA": {
@@ -1704,58 +1704,58 @@
   },
   "BAX": {
    "depuis": "2026-09-25",
-   "dist": -51.1,
+   "dist": -51.12,
    "etat": "contact",
-   "mm50": 48.0339,
+   "mm50": 48.0337,
    "place": "US"
   },
   "BB.PA": {
    "depuis": "2026-09-28",
-   "dist": 17.96,
+   "dist": 16.59,
    "etat": "loin",
-   "mm50": 56.7971,
+   "mm50": 56.7811,
    "place": "Paris"
   },
   "BBY": {
    "depuis": "2026-09-25",
-   "dist": 61.13,
+   "dist": 59.12,
    "etat": "loin",
-   "mm50": 55.7985,
+   "mm50": 55.7753,
    "place": "US"
   },
   "BDX": {
    "depuis": "2026-09-25",
-   "dist": 22.44,
+   "dist": 21.24,
    "etat": "loin",
-   "mm50": 150.1334,
+   "mm50": 150.0962,
    "place": "US"
   },
   "BEKB.BR": {
    "depuis": "2026-09-28",
-   "dist": 35.68,
+   "dist": 36.89,
    "etat": "loin",
-   "mm50": 28.2274,
+   "mm50": 28.2344,
    "place": "Bruxelles"
   },
   "BEN": {
    "depuis": "2026-09-25",
-   "dist": 39.86,
+   "dist": 39.81,
    "etat": "loin",
-   "mm50": 23.3669,
+   "mm50": 23.3667,
    "place": "US"
   },
   "BEN.PA": {
    "depuis": "2026-09-28",
-   "dist": -41.95,
+   "dist": -41.14,
    "etat": "contact",
-   "mm50": 8.5444,
+   "mm50": 8.5458,
    "place": "Paris"
   },
   "BESI.AS": {
    "depuis": "2026-09-28",
-   "dist": 213.31,
+   "dist": 226.26,
    "etat": "loin",
-   "mm50": 58.8388,
+   "mm50": 59.0018,
    "place": "Amsterdam"
   },
   "BEVER.AS": {
@@ -1767,177 +1767,177 @@
   },
   "BF-B": {
    "depuis": "2026-09-25",
-   "dist": -40.63,
+   "dist": -40.04,
    "etat": "contact",
-   "mm50": 43.8443,
+   "mm50": 43.8495,
    "place": "US"
   },
   "BG": {
    "depuis": "2026-09-25",
-   "dist": 61.47,
+   "dist": 60.15,
    "etat": "loin",
-   "mm50": 67.5432,
+   "mm50": 67.5248,
    "place": "US"
   },
   "BIG.PA": {
    "depuis": "2026-09-28",
-   "dist": -98.42,
+   "dist": -98.39,
    "etat": "contact",
-   "mm50": 6.1123,
+   "mm50": 6.1124,
    "place": "Paris"
   },
   "BIIB": {
    "depuis": "2026-09-25",
-   "dist": -13.39,
+   "dist": -13.99,
    "etat": "contact",
-   "mm50": 264.0506,
+   "mm50": 264.0182,
    "place": "US"
   },
   "BIM.PA": {
    "depuis": "2026-09-28",
-   "dist": 4.87,
+   "dist": 3.65,
    "etat": "approche",
-   "mm50": 75.9981,
+   "mm50": 75.9791,
    "place": "Paris"
   },
   "BKNG": {
    "depuis": "2026-09-25",
-   "dist": 69.48,
+   "dist": 67.95,
    "etat": "loin",
-   "mm50": 96.6883,
+   "mm50": 96.6577,
    "place": "US"
   },
   "BKR": {
    "depuis": "2026-09-25",
-   "dist": 94.01,
+   "dist": 90.08,
    "etat": "loin",
-   "mm50": 29.4424,
+   "mm50": 29.4184,
    "place": "US"
   },
   "BLC.PA": {
    "depuis": "2026-09-28",
-   "dist": -34.74,
+   "dist": -35.07,
    "etat": "contact",
-   "mm50": 30.1881,
+   "mm50": 30.1861,
    "place": "Paris"
   },
   "BLDR": {
    "depuis": "2026-09-28",
-   "dist": 4.02,
+   "dist": 3.18,
    "etat": "approche",
-   "mm50": 55.7681,
+   "mm50": 55.7585,
    "place": "US"
   },
   "BLK": {
    "depuis": "2026-09-25",
-   "dist": 91.82,
+   "dist": 91.25,
    "etat": "loin",
-   "mm50": 558.4722,
+   "mm50": 558.406,
    "place": "US"
   },
   "BMY": {
    "depuis": "2026-09-25",
-   "dist": 34.83,
+   "dist": 32.74,
    "etat": "loin",
-   "mm50": 47.3766,
+   "mm50": 47.3562,
    "place": "US"
   },
   "BN.PA": {
    "depuis": "2026-09-28",
-   "dist": 16.65,
+   "dist": 15.24,
    "etat": "loin",
-   "mm50": 51.0053,
+   "mm50": 50.9905,
    "place": "Paris"
   },
   "BNB.BR": {
    "depuis": "2026-09-28",
-   "dist": -76.47,
+   "dist": -76.67,
    "etat": "contact",
-   "mm50": 1508.8252,
+   "mm50": 1508.7652,
    "place": "Bruxelles"
   },
   "BNP.PA": {
    "depuis": "2026-09-28",
-   "dist": 142.42,
+   "dist": 140.4,
    "etat": "loin",
-   "mm50": 40.5333,
+   "mm50": 40.5161,
    "place": "Paris"
   },
   "BOI.PA": {
    "depuis": "2026-09-28",
-   "dist": -39.71,
+   "dist": -39.56,
    "etat": "contact",
-   "mm50": 33.0911,
+   "mm50": 33.0921,
    "place": "Paris"
   },
   "BOL.PA": {
    "depuis": "2026-09-28",
-   "dist": 22.76,
+   "dist": 24.26,
    "etat": "loin",
-   "mm50": 2.9766,
+   "mm50": 2.9776,
    "place": "Paris"
   },
   "BON.PA": {
    "depuis": "2026-09-28",
-   "dist": -51.65,
+   "dist": -52.55,
    "etat": "contact",
-   "mm50": 16.5888,
+   "mm50": 16.5858,
    "place": "Paris"
   },
   "BPOST.BR": {
    "depuis": "2026-09-28",
-   "dist": -84.54,
+   "dist": -84.29,
    "etat": "contact",
-   "mm50": 7.2326,
+   "mm50": 7.233,
    "place": "Bruxelles"
   },
   "BR": {
    "depuis": "2026-09-25",
-   "dist": 35.14,
+   "dist": 33.55,
    "etat": "loin",
-   "mm50": 120.5603,
+   "mm50": 120.5209,
    "place": "US"
   },
   "BREB.BR": {
    "depuis": "2026-09-28",
-   "dist": 42.74,
+   "dist": 41.4,
    "etat": "loin",
-   "mm50": 72.1582,
+   "mm50": 72.1382,
    "place": "Bruxelles"
   },
   "BRK-B": {
    "depuis": "2026-09-25",
-   "dist": 84.42,
+   "dist": 84.16,
    "etat": "loin",
-   "mm50": 272.7954,
+   "mm50": 272.7806,
    "place": "US"
   },
   "BRNL.AS": {
    "depuis": "2026-09-28",
-   "dist": -20.72,
+   "dist": -20.29,
    "etat": "contact",
-   "mm50": 9.0441,
+   "mm50": 9.0449,
    "place": "Amsterdam"
   },
   "BRO": {
    "depuis": "2026-09-25",
-   "dist": 28.5,
+   "dist": 29.25,
    "etat": "loin",
-   "mm50": 46.8791,
+   "mm50": 46.8863,
    "place": "US"
   },
   "BSD.PA": {
    "depuis": "2026-09-28",
-   "dist": 128.25,
+   "dist": 125.85,
    "etat": "loin",
-   "mm50": 2.3922,
+   "mm50": 2.391,
    "place": "Paris"
   },
   "BSX": {
    "depuis": "2026-09-25",
-   "dist": 1.95,
+   "dist": 1.43,
    "etat": "contact",
-   "mm50": 43.2664,
+   "mm50": 43.2618,
    "place": "US"
   },
   "BUI.PA": {
@@ -1949,72 +1949,72 @@
   },
   "BUR.PA": {
    "depuis": "2026-09-28",
-   "dist": -33.58,
+   "dist": -34.3,
    "etat": "contact",
-   "mm50": 551.0415,
+   "mm50": 550.9615,
    "place": "Paris"
   },
   "BVI.PA": {
    "depuis": "2026-09-28",
-   "dist": 34.55,
+   "dist": 37.01,
    "etat": "loin",
-   "mm50": 19.7476,
+   "mm50": 19.7576,
    "place": "Paris"
   },
   "BX": {
    "depuis": "2026-09-25",
-   "dist": 77.02,
+   "dist": 76.19,
    "etat": "loin",
-   "mm50": 64.7144,
+   "mm50": 64.7032,
    "place": "US"
   },
   "BXP": {
    "depuis": "2026-09-25",
-   "dist": -17.02,
+   "dist": -17.96,
    "etat": "contact",
-   "mm50": 75.231,
+   "mm50": 75.2166,
    "place": "US"
   },
   "C": {
    "depuis": "2026-09-25",
-   "dist": 139.26,
+   "dist": 138.37,
    "etat": "loin",
-   "mm50": 54.8818,
+   "mm50": 54.8716,
    "place": "US"
   },
   "CA.PA": {
    "depuis": "2026-09-28",
-   "dist": 23.41,
+   "dist": 21.77,
    "etat": "loin",
-   "mm50": 13.3615,
+   "mm50": 13.357,
    "place": "Paris"
   },
   "CAF.PA": {
    "depuis": "2026-09-28",
-   "dist": 50.95,
+   "dist": 47.86,
    "etat": "loin",
-   "mm50": 64.6651,
+   "mm50": 64.6239,
    "place": "Paris"
   },
   "CAG": {
    "depuis": "2026-09-25",
-   "dist": -39.05,
+   "dist": -39.18,
    "etat": "contact",
-   "mm50": 23.2331,
+   "mm50": 23.2325,
    "place": "US"
   },
   "CAH": {
    "depuis": "2026-09-25",
-   "dist": 181.64,
+   "dist": 186.0,
    "etat": "loin",
-   "mm50": 78.2174,
+   "mm50": 78.2898,
    "place": "US"
   },
   "CAMB.BR": {
    "depuis": "2026-09-28",
-   "dist": 245.92,
+   "dist": 249.4,
    "etat": "loin",
-   "mm50": 53.481,
+   "mm50": 53.521,
    "place": "Bruxelles"
   },
   "CAND.BR": {
@@ -2026,23 +2026,23 @@
   },
   "CAP.PA": {
    "depuis": "2026-09-28",
-   "dist": -6.7,
+   "dist": -6.21,
    "etat": "contact",
-   "mm50": 110.3442,
+   "mm50": 110.3552,
    "place": "Paris"
   },
   "CARM.PA": {
    "depuis": "2026-09-28",
-   "dist": 28.18,
+   "dist": 28.35,
    "etat": "loin",
-   "mm50": 11.4998,
+   "mm50": 11.5002,
    "place": "Paris"
   },
   "CAT": {
    "depuis": "2026-09-25",
-   "dist": 277.49,
+   "dist": 280.33,
    "etat": "loin",
-   "mm50": 217.2128,
+   "mm50": 217.3466,
    "place": "US"
   },
   "CAT31.PA": {
@@ -2054,37 +2054,37 @@
   },
   "CB": {
    "depuis": "2026-09-25",
-   "dist": 97.86,
+   "dist": 98.27,
    "etat": "loin",
-   "mm50": 167.4769,
+   "mm50": 167.4911,
    "place": "US"
   },
   "CBDG.PA": {
    "depuis": "2026-09-28",
-   "dist": 67.4,
+   "dist": 71.98,
    "etat": "loin",
-   "mm50": 63.3207,
+   "mm50": 63.3807,
    "place": "Paris"
   },
   "CBOE": {
    "depuis": "2026-09-25",
-   "dist": 111.83,
+   "dist": 118.62,
    "etat": "loin",
-   "mm50": 119.5601,
+   "mm50": 119.7299,
    "place": "US"
   },
   "CBOT.PA": {
    "depuis": "2026-09-28",
-   "dist": 50.96,
+   "dist": 49.43,
    "etat": "loin",
-   "mm50": 2.5437,
+   "mm50": 2.5429,
    "place": "Paris"
   },
   "CBRE": {
    "depuis": "2026-09-25",
-   "dist": 84.9,
+   "dist": 85.57,
    "etat": "loin",
-   "mm50": 70.4978,
+   "mm50": 70.5076,
    "place": "US"
   },
   "CBSM.PA": {
@@ -2096,233 +2096,233 @@
   },
   "CCEP": {
    "depuis": "2026-09-25",
-   "dist": 117.98,
+   "dist": 116.8,
    "etat": "loin",
-   "mm50": 47.1929,
+   "mm50": 47.1813,
    "place": "US"
   },
   "CCI": {
    "depuis": "2026-09-25",
-   "dist": -25.15,
+   "dist": -25.18,
    "etat": "contact",
-   "mm50": 89.6428,
+   "mm50": 89.6422,
    "place": "US"
   },
   "CCL": {
    "depuis": "2026-09-25",
-   "dist": -30.89,
+   "dist": -21.77,
    "etat": "contact",
-   "mm50": 32.0373,
+   "mm50": 32.0967,
    "place": "US"
   },
   "CCN.PA": {
    "depuis": "2026-09-28",
-   "dist": 72.87,
+   "dist": 75.14,
    "etat": "loin",
-   "mm50": 85.0353,
+   "mm50": 85.0753,
    "place": "Paris"
   },
   "CDA.PA": {
    "depuis": "2026-09-28",
-   "dist": 36.85,
+   "dist": 36.07,
    "etat": "loin",
-   "mm50": 12.5393,
+   "mm50": 12.5373,
    "place": "Paris"
   },
   "CDI.PA": {
    "depuis": "2026-09-28",
-   "dist": 8.4,
+   "dist": 7.8,
    "etat": "loin",
-   "mm50": 387.0746,
+   "mm50": 387.0266,
    "place": "Paris"
   },
   "CDNS": {
    "depuis": "2026-09-25",
-   "dist": 139.52,
+   "dist": 137.75,
    "etat": "loin",
-   "mm50": 136.3988,
+   "mm50": 136.3482,
    "place": "US"
   },
   "CDW": {
    "depuis": "2026-09-25",
-   "dist": 14.44,
+   "dist": 13.9,
    "etat": "loin",
-   "mm50": 113.8894,
+   "mm50": 113.877,
    "place": "US"
   },
   "CEN.PA": {
    "depuis": "2026-09-28",
-   "dist": -4.71,
+   "dist": -5.09,
    "etat": "contact",
-   "mm50": 51.3151,
+   "mm50": 51.3111,
    "place": "Paris"
   },
   "CF": {
    "depuis": "2026-09-25",
-   "dist": 114.68,
+   "dist": 115.04,
    "etat": "loin",
-   "mm50": 53.8054,
+   "mm50": 53.8094,
    "place": "US"
   },
   "CFEB.BR": {
    "depuis": "2026-09-28",
-   "dist": -80.66,
+   "dist": -80.57,
    "etat": "contact",
-   "mm50": 55.0618,
+   "mm50": 55.0628,
    "place": "Bruxelles"
   },
   "CFI.PA": {
    "depuis": "2026-09-28",
-   "dist": -45.5,
+   "dist": -51.74,
    "etat": "contact",
-   "mm50": 2.6974,
+   "mm50": 2.694,
    "place": "Paris"
   },
   "CHD": {
    "depuis": "2026-09-25",
-   "dist": 38.79,
+   "dist": 37.84,
    "etat": "loin",
-   "mm50": 68.8966,
+   "mm50": 68.8832,
    "place": "US"
   },
   "CHRW": {
    "depuis": "2026-09-25",
-   "dist": 80.1,
+   "dist": 81.82,
    "etat": "loin",
-   "mm50": 82.309,
+   "mm50": 82.3384,
    "place": "US"
   },
   "CHTR": {
    "depuis": "2026-09-25",
-   "dist": -68.27,
+   "dist": -68.48,
    "etat": "contact",
-   "mm50": 351.0822,
+   "mm50": 351.0676,
    "place": "US"
   },
   "CI": {
    "depuis": "2026-09-25",
-   "dist": 36.06,
+   "dist": 37.73,
    "etat": "loin",
-   "mm50": 199.7835,
+   "mm50": 199.8521,
    "place": "US"
   },
   "CIEN": {
    "depuis": "2026-09-25",
-   "dist": 406.84,
+   "dist": 421.0,
    "etat": "loin",
-   "mm50": 67.9084,
+   "mm50": 68.123,
    "place": "US"
   },
   "CINF": {
    "depuis": "2026-09-25",
-   "dist": 86.09,
+   "dist": 85.21,
    "etat": "loin",
-   "mm50": 87.0139,
+   "mm50": 86.9981,
    "place": "US"
   },
   "CIV.PA": {
    "depuis": "2026-09-28",
-   "dist": 63.89,
+   "dist": 65.34,
    "etat": "loin",
-   "mm50": 66.5078,
+   "mm50": 66.5278,
    "place": "Paris"
   },
   "CL": {
    "depuis": "2026-09-25",
-   "dist": 29.64,
+   "dist": 29.55,
    "etat": "loin",
-   "mm50": 66.7398,
+   "mm50": 66.7386,
    "place": "US"
   },
   "CLARI.PA": {
    "depuis": "2026-09-28",
-   "dist": -67.75,
+   "dist": -67.46,
    "etat": "contact",
-   "mm50": 11.679,
+   "mm50": 11.6797,
    "place": "Paris"
   },
   "CLX": {
    "depuis": "2026-09-25",
-   "dist": -30.12,
+   "dist": -29.97,
    "etat": "contact",
-   "mm50": 116.5177,
+   "mm50": 116.5213,
    "place": "US"
   },
   "CMBT.BR": {
    "depuis": "2026-09-28",
-   "dist": 180.23,
+   "dist": 175.88,
    "etat": "loin",
-   "mm50": 6.0735,
+   "mm50": 6.0679,
    "place": "Bruxelles"
   },
   "CMCSA": {
    "depuis": "2026-09-25",
-   "dist": -26.53,
+   "dist": -27.17,
    "etat": "contact",
-   "mm50": 29.6599,
+   "mm50": 29.6561,
    "place": "US"
   },
   "CME": {
    "depuis": "2026-09-25",
-   "dist": 79.28,
+   "dist": 79.27,
    "etat": "loin",
-   "mm50": 146.8293,
+   "mm50": 146.8289,
    "place": "US"
   },
   "CMG": {
    "depuis": "2026-09-25",
-   "dist": 26.65,
+   "dist": 26.77,
    "etat": "loin",
-   "mm50": 25.1477,
+   "mm50": 25.1483,
    "place": "US"
   },
   "CMI": {
    "depuis": "2026-09-25",
-   "dist": 152.37,
+   "dist": 154.01,
    "etat": "loin",
-   "mm50": 205.1878,
+   "mm50": 205.2584,
    "place": "US"
   },
   "CMO.PA": {
    "depuis": "2026-09-28",
-   "dist": 89.67,
+   "dist": 82.92,
    "etat": "loin",
-   "mm50": 61.3711,
+   "mm50": 61.2851,
    "place": "Paris"
   },
   "CMS": {
    "depuis": "2026-09-25",
-   "dist": 32.8,
+   "dist": 34.55,
    "etat": "loin",
-   "mm50": 47.1392,
+   "mm50": 47.1562,
    "place": "US"
   },
   "CNC": {
    "depuis": "2026-09-25",
-   "dist": 15.05,
+   "dist": 14.47,
    "etat": "loin",
-   "mm50": 54.3524,
+   "mm50": 54.346,
    "place": "US"
   },
   "CNDF.PA": {
    "depuis": "2026-09-28",
-   "dist": 74.91,
+   "dist": 76.84,
    "etat": "loin",
-   "mm50": 15.0361,
+   "mm50": 15.0421,
    "place": "Paris"
   },
   "CNP": {
    "depuis": "2026-09-25",
-   "dist": 54.37,
+   "dist": 55.68,
    "etat": "loin",
-   "mm50": 23.7221,
+   "mm50": 23.7285,
    "place": "US"
   },
   "CO.PA": {
    "depuis": "2026-09-28",
    "dist": -99.99,
    "etat": "contact",
-   "mm50": 2516.7611,
+   "mm50": 2516.7613,
    "place": "Paris"
   },
   "COBH.BR": {
@@ -2341,65 +2341,65 @@
   },
   "COFA.PA": {
    "depuis": "2026-09-28",
-   "dist": 128.13,
+   "dist": 126.28,
    "etat": "loin",
-   "mm50": 7.2504,
+   "mm50": 7.2476,
    "place": "Paris"
   },
   "COH.PA": {
    "depuis": "2026-09-28",
-   "dist": 123.88,
+   "dist": 126.4,
    "etat": "loin",
-   "mm50": 3.7967,
+   "mm50": 3.7987,
    "place": "Paris"
   },
   "COHR": {
    "depuis": "2026-09-25",
-   "dist": 345.58,
+   "dist": 359.56,
    "etat": "loin",
-   "mm50": 63.389,
+   "mm50": 63.5842,
    "place": "US"
   },
   "COLR.BR": {
    "depuis": "2026-09-28",
-   "dist": 7.4,
+   "dist": 6.7,
    "etat": "loin",
-   "mm50": 36.463,
+   "mm50": 36.4578,
    "place": "Bruxelles"
   },
   "COMB.BR": {
    "depuis": "2026-09-28",
-   "dist": 9.0,
+   "dist": 6.5,
    "etat": "loin",
-   "mm50": 273.3835,
+   "mm50": 273.2435,
    "place": "Bruxelles"
   },
   "COO": {
    "depuis": "2026-09-25",
-   "dist": -20.06,
+   "dist": -19.98,
    "etat": "contact",
-   "mm50": 70.7679,
+   "mm50": 70.7691,
    "place": "US"
   },
   "COP": {
    "depuis": "2026-09-25",
-   "dist": 94.86,
+   "dist": 93.97,
    "etat": "loin",
-   "mm50": 64.6815,
+   "mm50": 64.6695,
    "place": "US"
   },
   "COR": {
    "depuis": "2026-09-25",
-   "dist": 127.95,
+   "dist": 130.66,
    "etat": "loin",
-   "mm50": 133.28,
+   "mm50": 133.3558,
    "place": "US"
   },
   "COST": {
    "depuis": "2026-09-25",
-   "dist": 124.83,
+   "dist": 125.21,
    "etat": "loin",
-   "mm50": 410.5034,
+   "mm50": 410.5368,
    "place": "US"
   },
   "COUR.PA": {
@@ -2411,9 +2411,9 @@
   },
   "COV.PA": {
    "depuis": "2026-09-28",
-   "dist": -10.8,
+   "dist": -11.03,
    "etat": "contact",
-   "mm50": 51.5488,
+   "mm50": 51.5464,
    "place": "Paris"
   },
   "COVH.PA": {
@@ -2425,93 +2425,93 @@
   },
   "CPAY": {
    "depuis": "2026-09-25",
-   "dist": 72.53,
+   "dist": 71.05,
    "etat": "loin",
-   "mm50": 229.6526,
+   "mm50": 229.582,
    "place": "US"
   },
   "CPB": {
    "depuis": "2026-09-25",
-   "dist": -43.31,
+   "dist": -42.77,
    "etat": "contact",
-   "mm50": 35.3471,
+   "mm50": 35.3509,
    "place": "US"
   },
   "CPINV.BR": {
    "depuis": "2026-09-28",
-   "dist": -0.5,
+   "dist": 0.94,
    "etat": "contact",
-   "mm50": 12.2615,
+   "mm50": 12.2651,
    "place": "Bruxelles"
   },
   "CPRT": {
    "depuis": "2026-09-25",
-   "dist": 9.84,
+   "dist": 9.52,
    "etat": "loin",
-   "mm50": 24.7824,
+   "mm50": 24.7808,
    "place": "US"
   },
   "CPT": {
    "depuis": "2026-09-25",
-   "dist": 17.23,
+   "dist": 17.3,
    "etat": "loin",
-   "mm50": 83.9389,
+   "mm50": 83.9401,
    "place": "US"
   },
   "CRAP.PA": {
    "depuis": "2026-09-28",
-   "dist": 75.82,
+   "dist": 75.14,
    "etat": "loin",
-   "mm50": 70.8095,
+   "mm50": 70.7995,
    "place": "Paris"
   },
   "CRAV.PA": {
    "depuis": "2026-09-28",
-   "dist": 19.14,
+   "dist": 19.05,
    "etat": "loin",
-   "mm50": 104.9983,
+   "mm50": 104.9963,
    "place": "Paris"
   },
   "CRBN.AS": {
    "depuis": "2026-09-28",
-   "dist": 1.98,
+   "dist": 0.82,
    "etat": "approche",
-   "mm50": 22.1031,
+   "mm50": 22.0979,
    "place": "Amsterdam"
   },
   "CRBP2.PA": {
    "depuis": "2026-09-28",
-   "dist": 90.89,
+   "dist": 90.48,
    "etat": "loin",
-   "mm50": 16.6589,
+   "mm50": 16.6575,
    "place": "Paris"
   },
   "CRH": {
    "depuis": "2026-09-25",
-   "dist": 84.22,
+   "dist": 85.87,
    "etat": "loin",
-   "mm50": 45.4627,
+   "mm50": 45.4783,
    "place": "US"
   },
   "CRI.PA": {
    "depuis": "2026-09-28",
-   "dist": -20.6,
+   "dist": -22.75,
    "etat": "contact",
-   "mm50": 10.0499,
+   "mm50": 10.0455,
    "place": "Paris"
   },
   "CRL": {
    "depuis": "2026-09-25",
-   "dist": 74.72,
+   "dist": 75.51,
    "etat": "loin",
-   "mm50": 168.605,
+   "mm50": 168.6324,
    "place": "US"
   },
   "CRLA.PA": {
    "depuis": "2026-09-28",
-   "dist": 65.57,
+   "dist": 63.57,
    "etat": "loin",
-   "mm50": 48.3168,
+   "mm50": 48.2968,
    "place": "Paris"
   },
   "CRLO.PA": {
@@ -2523,9 +2523,9 @@
   },
   "CRM": {
    "depuis": "2026-09-25",
-   "dist": 37.75,
+   "dist": 36.59,
    "etat": "loin",
-   "mm50": 164.9873,
+   "mm50": 164.9481,
    "place": "US"
   },
   "CROS.PA": {
@@ -2537,128 +2537,128 @@
   },
   "CRSU.PA": {
    "depuis": "2026-09-28",
-   "dist": 35.68,
+   "dist": 35.0,
    "etat": "loin",
-   "mm50": 157.064,
+   "mm50": 157.042,
    "place": "Paris"
   },
   "CRTO.PA": {
    "depuis": "2026-09-28",
-   "dist": 71.02,
+   "dist": 70.37,
    "etat": "loin",
-   "mm50": 74.2591,
+   "mm50": 74.2491,
    "place": "Paris"
   },
   "CS.PA": {
    "depuis": "2026-09-28",
-   "dist": 124.2,
+   "dist": 121.81,
    "etat": "loin",
-   "mm50": 19.6165,
+   "mm50": 19.6067,
    "place": "Paris"
   },
   "CSCO": {
    "depuis": "2026-09-25",
-   "dist": 154.5,
+   "dist": 154.96,
    "etat": "loin",
-   "mm50": 41.9402,
+   "mm50": 41.9442,
    "place": "US"
   },
   "CSGP": {
    "depuis": "2026-09-25",
-   "dist": -48.92,
+   "dist": -49.05,
    "etat": "contact",
-   "mm50": 52.8978,
+   "mm50": 52.8964,
    "place": "US"
   },
   "CSX": {
    "depuis": "2026-09-25",
-   "dist": 98.53,
+   "dist": 99.22,
    "etat": "loin",
-   "mm50": 23.5536,
+   "mm50": 23.557,
    "place": "US"
   },
   "CTAC.AS": {
    "depuis": "2026-09-28",
-   "dist": 7.95,
+   "dist": 10.31,
    "etat": "loin",
-   "mm50": 2.4827,
+   "mm50": 2.4839,
    "place": "Amsterdam"
   },
   "CTAS": {
    "depuis": "2026-09-25",
-   "dist": 131.29,
+   "dist": 128.16,
    "etat": "loin",
-   "mm50": 86.7225,
+   "mm50": 86.6657,
    "place": "US"
   },
   "CTSH": {
    "depuis": "2026-09-25",
-   "dist": -6.23,
+   "dist": -6.08,
    "etat": "contact",
-   "mm50": 60.5209,
+   "mm50": 60.5227,
    "place": "US"
   },
   "CVS": {
    "depuis": "2026-09-25",
-   "dist": 35.75,
+   "dist": 34.62,
    "etat": "loin",
-   "mm50": 64.7139,
+   "mm50": 64.6989,
    "place": "US"
   },
   "CVX": {
    "depuis": "2026-09-25",
-   "dist": 101.18,
+   "dist": 99.32,
    "etat": "loin",
-   "mm50": 102.5803,
+   "mm50": 102.5405,
    "place": "US"
   },
   "CYAD.BR": {
    "depuis": "2026-09-28",
-   "dist": -98.47,
+   "dist": -98.45,
    "etat": "contact",
    "mm50": 14.6712,
    "place": "Bruxelles"
   },
   "D": {
    "depuis": "2026-09-25",
-   "dist": 14.75,
+   "dist": 15.42,
    "etat": "loin",
-   "mm50": 52.5306,
+   "mm50": 52.5378,
    "place": "US"
   },
   "DAL": {
    "depuis": "2026-09-25",
-   "dist": 87.2,
+   "dist": 89.0,
    "etat": "loin",
-   "mm50": 44.8886,
+   "mm50": 44.9054,
    "place": "US"
   },
   "DBG.PA": {
    "depuis": "2026-09-28",
-   "dist": 86.41,
+   "dist": 84.49,
    "etat": "loin",
-   "mm50": 4.5168,
+   "mm50": 4.515,
    "place": "Paris"
   },
   "DBV.PA": {
    "depuis": "2026-09-28",
-   "dist": -90.52,
+   "dist": -90.77,
    "etat": "contact",
-   "mm50": 21.8678,
+   "mm50": 21.8667,
    "place": "Paris"
   },
   "DD": {
    "depuis": "2026-09-25",
-   "dist": 54.77,
+   "dist": 53.78,
    "etat": "loin",
-   "mm50": 84.6304,
+   "mm50": 84.6132,
    "place": "US"
   },
   "DE": {
    "depuis": "2026-09-25",
-   "dist": 171.21,
+   "dist": 167.83,
    "etat": "loin",
-   "mm50": 254.2606,
+   "mm50": 253.474,
    "place": "US"
   },
   "DEC.PA": {
@@ -2670,58 +2670,58 @@
   },
   "DECB.BR": {
    "depuis": "2026-09-28",
-   "dist": 19.95,
+   "dist": 20.89,
    "etat": "loin",
-   "mm50": 2.0758,
+   "mm50": 2.0762,
    "place": "Bruxelles"
   },
   "DECK": {
    "depuis": "2026-09-25",
-   "dist": 46.27,
+   "dist": 45.04,
    "etat": "loin",
-   "mm50": 53.5717,
+   "mm50": 53.5581,
    "place": "US"
   },
   "DG": {
-   "depuis": "2026-09-25",
-   "dist": 3.08,
-   "etat": "approche",
-   "mm50": 120.6549,
+   "depuis": "2026-09-29",
+   "dist": 1.67,
+   "etat": "contact",
+   "mm50": 120.6203,
    "place": "US"
   },
   "DG.PA": {
    "depuis": "2026-09-28",
-   "dist": 53.04,
+   "dist": 49.5,
    "etat": "loin",
-   "mm50": 72.6283,
+   "mm50": 72.5753,
    "place": "Paris"
   },
   "DGX": {
    "depuis": "2026-09-25",
-   "dist": 117.04,
+   "dist": 112.1,
    "etat": "loin",
-   "mm50": 109.481,
+   "mm50": 109.368,
    "place": "US"
   },
   "DHI": {
    "depuis": "2026-09-25",
-   "dist": 89.31,
+   "dist": 89.29,
    "etat": "loin",
-   "mm50": 73.6452,
+   "mm50": 73.6448,
    "place": "US"
   },
   "DHR": {
    "depuis": "2026-09-25",
-   "dist": 49.2,
+   "dist": 48.17,
    "etat": "loin",
-   "mm50": 152.369,
+   "mm50": 152.0669,
    "place": "US"
   },
   "DIE.BR": {
    "depuis": "2026-09-28",
-   "dist": 152.78,
+   "dist": 150.6,
    "etat": "loin",
-   "mm50": 65.5914,
+   "mm50": 65.5614,
    "place": "Bruxelles"
   },
   "DIEG.BR": {
@@ -2733,51 +2733,51 @@
   },
   "DIM.PA": {
    "depuis": "2026-09-28",
-   "dist": 25.98,
+   "dist": 26.32,
    "etat": "loin",
-   "mm50": 171.9304,
+   "mm50": 171.9424,
    "place": "Paris"
   },
   "DIS": {
    "depuis": "2026-09-25",
-   "dist": -1.81,
+   "dist": -1.97,
    "etat": "contact",
-   "mm50": 107.5318,
+   "mm50": 107.5282,
    "place": "US"
   },
   "DKUPL.PA": {
    "depuis": "2026-09-28",
-   "dist": 40.3,
+   "dist": 42.53,
    "etat": "loin",
-   "mm50": 17.3914,
+   "mm50": 17.3994,
    "place": "Paris"
   },
   "DLR": {
    "depuis": "2026-09-25",
-   "dist": 70.49,
+   "dist": 69.92,
    "etat": "loin",
-   "mm50": 103.9217,
+   "mm50": 103.9093,
    "place": "US"
   },
   "DLTR": {
    "depuis": "2026-09-25",
-   "dist": 16.01,
+   "dist": 13.35,
    "etat": "loin",
-   "mm50": 100.0125,
+   "mm50": 99.9581,
    "place": "US"
   },
   "DOC": {
    "depuis": "2026-09-25",
-   "dist": 18.4,
+   "dist": 17.9,
    "etat": "loin",
-   "mm50": 16.9765,
+   "mm50": 17.0733,
    "place": "US"
   },
   "DOV": {
    "depuis": "2026-09-25",
-   "dist": 73.26,
+   "dist": 71.71,
    "etat": "loin",
-   "mm50": 110.5139,
+   "mm50": 110.4783,
    "place": "US"
   },
   "DPAM.PA": {
@@ -2796,86 +2796,86 @@
   },
   "DPZ": {
    "depuis": "2026-09-25",
-   "dist": 3.95,
+   "dist": 7.27,
    "etat": "approche",
-   "mm50": 281.1518,
+   "mm50": 281.3426,
    "place": "US"
   },
   "DRI": {
    "depuis": "2026-09-25",
-   "dist": 87.66,
+   "dist": 85.91,
    "etat": "loin",
-   "mm50": 104.9857,
+   "mm50": 104.9475,
    "place": "US"
   },
   "DSY.PA": {
    "depuis": "2026-09-28",
-   "dist": -18.13,
+   "dist": -19.77,
    "etat": "contact",
-   "mm50": 25.7352,
+   "mm50": 25.7266,
    "place": "Paris"
   },
   "DTE": {
    "depuis": "2026-09-25",
-   "dist": 39.72,
+   "dist": 41.48,
    "etat": "loin",
-   "mm50": 86.478,
+   "mm50": 86.5092,
    "place": "US"
   },
   "DUK": {
    "depuis": "2026-09-25",
-   "dist": 49.95,
+   "dist": 50.97,
    "etat": "loin",
-   "mm50": 75.6329,
+   "mm50": 75.6489,
    "place": "US"
   },
   "DVA": {
    "depuis": "2026-09-25",
-   "dist": 85.31,
+   "dist": 82.43,
    "etat": "loin",
-   "mm50": 96.0908,
+   "mm50": 96.0332,
    "place": "US"
   },
   "DVN": {
    "depuis": "2026-09-25",
-   "dist": 46.58,
+   "dist": 46.18,
    "etat": "loin",
-   "mm50": 31.8812,
+   "mm50": 31.8786,
    "place": "US"
   },
   "DXCM": {
    "depuis": "2026-09-25",
-   "dist": 39.31,
+   "dist": 39.25,
    "etat": "loin",
-   "mm50": 62.2215,
+   "mm50": 62.2207,
    "place": "US"
   },
   "EAS2P.AS": {
    "depuis": "2026-09-28",
-   "dist": -70.57,
+   "dist": -71.37,
    "etat": "contact",
-   "mm50": 1.9909,
+   "mm50": 1.9906,
    "place": "Amsterdam"
   },
   "EBAY": {
    "depuis": "2026-09-25",
-   "dist": 141.0,
+   "dist": 136.49,
    "etat": "loin",
-   "mm50": 44.5305,
+   "mm50": 44.4883,
    "place": "US"
   },
   "EC.PA": {
    "depuis": "2026-09-28",
-   "dist": 257.54,
+   "dist": 261.26,
    "etat": "loin",
-   "mm50": 62.3703,
+   "mm50": 62.4203,
    "place": "Paris"
   },
   "ECL": {
    "depuis": "2026-09-25",
-   "dist": 65.68,
+   "dist": 64.33,
    "etat": "loin",
-   "mm50": 169.1423,
+   "mm50": 169.0951,
    "place": "US"
   },
   "ECMPA.AS": {
@@ -2887,23 +2887,23 @@
   },
   "ECONB.BR": {
    "depuis": "2026-09-28",
-   "dist": -52.45,
+   "dist": -53.89,
    "etat": "contact",
-   "mm50": 2.7551,
+   "mm50": 2.7543,
    "place": "Bruxelles"
   },
   "ED": {
    "depuis": "2026-09-25",
-   "dist": 48.97,
+   "dist": 49.68,
    "etat": "loin",
-   "mm50": 69.0262,
+   "mm50": 69.0362,
    "place": "US"
   },
   "EDEN.PA": {
    "depuis": "2026-09-28",
-   "dist": -0.11,
+   "dist": 0.09,
    "etat": "contact",
-   "mm50": 28.192,
+   "mm50": 28.1932,
    "place": "Paris"
   },
   "EEM.PA": {
@@ -2915,9 +2915,9 @@
   },
   "EFG.PA": {
    "depuis": "2026-09-28",
-   "dist": -32.56,
+   "dist": -36.55,
    "etat": "contact",
-   "mm50": 2.4762,
+   "mm50": 2.4742,
    "place": "Paris"
   },
   "EFI.PA": {
@@ -2929,282 +2929,282 @@
   },
   "EFX": {
    "depuis": "2026-09-25",
-   "dist": -9.31,
+   "dist": -12.34,
    "etat": "contact",
-   "mm50": 160.7505,
+   "mm50": 160.6515,
    "place": "US"
   },
   "EG": {
    "depuis": "2026-09-25",
-   "dist": 55.96,
+   "dist": 55.56,
    "etat": "loin",
-   "mm50": 237.1046,
+   "mm50": 237.0848,
    "place": "US"
   },
   "EIX": {
    "depuis": "2026-09-25",
-   "dist": 1.78,
+   "dist": 5.82,
    "etat": "approche",
-   "mm50": 50.5717,
+   "mm50": 50.6135,
    "place": "US"
   },
   "EKI.PA": {
    "depuis": "2026-09-28",
-   "dist": -54.74,
+   "dist": -55.24,
    "etat": "contact",
-   "mm50": 4.9823,
+   "mm50": 4.9818,
    "place": "Paris"
   },
   "EL": {
    "depuis": "2026-09-25",
-   "dist": -31.03,
+   "dist": -31.89,
    "etat": "contact",
-   "mm50": 138.5731,
+   "mm50": 138.5491,
    "place": "US"
   },
   "EL.PA": {
    "depuis": "2026-09-28",
-   "dist": 8.25,
+   "dist": 7.16,
    "etat": "loin",
-   "mm50": 134.9677,
+   "mm50": 134.9377,
    "place": "Paris"
   },
   "ELEC.PA": {
    "depuis": "2026-09-28",
-   "dist": 90.7,
+   "dist": 91.82,
    "etat": "loin",
-   "mm50": 85.7895,
+   "mm50": 85.8095,
    "place": "Paris"
   },
   "ELI.BR": {
    "depuis": "2026-09-28",
-   "dist": 70.97,
+   "dist": 71.53,
    "etat": "loin",
-   "mm50": 68.7835,
+   "mm50": 68.7915,
    "place": "Bruxelles"
   },
   "ELIOR.PA": {
    "depuis": "2026-09-28",
-   "dist": -79.15,
+   "dist": -78.79,
    "etat": "contact",
-   "mm50": 8.6513,
+   "mm50": 8.6519,
    "place": "Paris"
   },
   "ELV": {
    "depuis": "2026-09-25",
-   "dist": 38.43,
+   "dist": 37.8,
    "etat": "loin",
-   "mm50": 285.0463,
+   "mm50": 285.0091,
    "place": "US"
   },
   "EME": {
    "depuis": "2026-09-25",
-   "dist": 304.03,
+   "dist": 302.34,
    "etat": "loin",
-   "mm50": 189.469,
+   "mm50": 189.3992,
    "place": "US"
   },
   "EMEIS.PA": {
    "depuis": "2026-09-28",
    "dist": -99.69,
    "etat": "contact",
-   "mm50": 3549.037,
+   "mm50": 3549.0334,
    "place": "Paris"
   },
   "EMR": {
    "depuis": "2026-09-25",
-   "dist": 113.25,
+   "dist": 110.49,
    "etat": "loin",
-   "mm50": 74.744,
+   "mm50": 74.701,
    "place": "US"
   },
   "EN.PA": {
    "depuis": "2026-09-28",
-   "dist": 67.3,
+   "dist": 65.83,
    "etat": "loin",
-   "mm50": 25.7028,
+   "mm50": 25.695,
    "place": "Paris"
   },
   "ENGI.PA": {
    "depuis": "2026-09-28",
-   "dist": 119.58,
+   "dist": 117.95,
    "etat": "loin",
-   "mm50": 10.5658,
+   "mm50": 10.5622,
    "place": "Paris"
   },
   "ENVI.AS": {
    "depuis": "2026-09-28",
-   "dist": -42.18,
+   "dist": -40.96,
    "etat": "contact",
-   "mm50": 6.0879,
+   "mm50": 6.0894,
    "place": "Amsterdam"
   },
   "ENX.PA": {
    "depuis": "2026-09-28",
-   "dist": 150.72,
+   "dist": 150.87,
    "etat": "loin",
-   "mm50": 64.0562,
+   "mm50": 64.0582,
    "place": "Paris"
   },
   "EOG": {
    "depuis": "2026-09-25",
-   "dist": 69.89,
+   "dist": 68.76,
    "etat": "loin",
-   "mm50": 82.777,
+   "mm50": 82.7576,
    "place": "US"
   },
   "EOS.PA": {
    "depuis": "2026-09-28",
-   "dist": -53.69,
+   "dist": -54.25,
    "etat": "contact",
-   "mm50": 1.7705,
+   "mm50": 1.7703,
    "place": "Paris"
   },
   "EPAM": {
    "depuis": "2026-09-25",
-   "dist": -45.25,
+   "dist": -45.46,
    "etat": "contact",
-   "mm50": 196.4504,
+   "mm50": 196.4422,
    "place": "US"
   },
   "EQIX": {
    "depuis": "2026-09-25",
-   "dist": 86.34,
+   "dist": 87.08,
    "etat": "loin",
-   "mm50": 542.5986,
+   "mm50": 542.6826,
    "place": "US"
   },
   "EQS.PA": {
    "depuis": "2026-09-28",
-   "dist": -29.23,
+   "dist": -33.34,
    "etat": "contact",
-   "mm50": 46.7683,
+   "mm50": 46.7293,
    "place": "Paris"
   },
   "EQT": {
    "depuis": "2026-09-25",
-   "dist": 54.45,
+   "dist": 51.47,
    "etat": "loin",
-   "mm50": 32.2896,
+   "mm50": 32.2698,
    "place": "US"
   },
   "ERA.PA": {
    "depuis": "2026-09-28",
-   "dist": -24.06,
+   "dist": -23.86,
    "etat": "contact",
-   "mm50": 58.4425,
+   "mm50": 58.4449,
    "place": "Paris"
   },
   "ERF.PA": {
    "depuis": "2026-09-28",
-   "dist": 55.96,
+   "dist": 51.12,
    "etat": "loin",
-   "mm50": 50.4733,
+   "mm50": 50.4229,
    "place": "Paris"
   },
   "ERIE": {
    "depuis": "2026-09-25",
-   "dist": 20.54,
+   "dist": 20.81,
    "etat": "loin",
-   "mm50": 184.1104,
+   "mm50": 184.1206,
    "place": "US"
   },
   "ES": {
    "depuis": "2026-09-25",
-   "dist": 16.55,
+   "dist": 17.66,
    "etat": "loin",
-   "mm50": 54.2964,
+   "mm50": 54.3088,
    "place": "US"
   },
   "ESS": {
    "depuis": "2026-09-25",
-   "dist": 30.06,
+   "dist": 30.48,
    "etat": "loin",
-   "mm50": 209.9189,
+   "mm50": 209.9373,
    "place": "US"
   },
   "ETL.PA": {
    "depuis": "2026-09-28",
-   "dist": -76.88,
+   "dist": -77.62,
    "etat": "contact",
-   "mm50": 7.1493,
+   "mm50": 7.1483,
    "place": "Paris"
   },
   "ETN": {
    "depuis": "2026-09-25",
-   "dist": 192.53,
+   "dist": 193.72,
    "etat": "loin",
-   "mm50": 147.4731,
+   "mm50": 147.5103,
    "place": "US"
   },
   "ETR": {
    "depuis": "2026-09-25",
-   "dist": 115.12,
+   "dist": 118.6,
    "etat": "loin",
-   "mm50": 45.6029,
+   "mm50": 45.6361,
    "place": "US"
   },
   "EVRG": {
    "depuis": "2026-09-25",
-   "dist": 65.4,
+   "dist": 67.09,
    "etat": "loin",
-   "mm50": 47.1033,
+   "mm50": 47.1197,
    "place": "US"
   },
   "EVS.BR": {
    "depuis": "2026-09-28",
-   "dist": 29.94,
+   "dist": 30.42,
    "etat": "loin",
-   "mm50": 20.278,
+   "mm50": 20.28,
    "place": "Bruxelles"
   },
   "EW": {
    "depuis": "2026-09-25",
-   "dist": 34.24,
+   "dist": 36.12,
    "etat": "loin",
-   "mm50": 64.6825,
+   "mm50": 64.7075,
    "place": "US"
   },
   "EXA.PA": {
    "depuis": "2026-09-28",
-   "dist": 386.19,
+   "dist": 387.24,
    "etat": "loin",
-   "mm50": 25.7102,
+   "mm50": 25.7162,
    "place": "Paris"
   },
   "EXC": {
    "depuis": "2026-09-25",
-   "dist": 45.11,
+   "dist": 46.26,
    "etat": "loin",
-   "mm50": 27.7855,
+   "mm50": 27.7921,
    "place": "US"
   },
   "EXE.PA": {
    "depuis": "2026-09-28",
-   "dist": -66.96,
+   "dist": -66.67,
    "etat": "contact",
-   "mm50": 52.6583,
+   "mm50": 52.6613,
    "place": "Paris"
   },
   "EXM.BR": {
    "depuis": "2026-09-28",
-   "dist": 412.01,
+   "dist": 419.99,
    "etat": "loin",
-   "mm50": 2.246,
+   "mm50": 2.25,
    "place": "Bruxelles"
   },
   "EXPD": {
    "depuis": "2026-09-25",
-   "dist": 120.83,
+   "dist": 120.36,
    "etat": "loin",
-   "mm50": 85.3944,
+   "mm50": 85.386,
    "place": "US"
   },
   "EXPE": {
    "depuis": "2026-09-25",
-   "dist": 98.63,
+   "dist": 100.14,
    "etat": "loin",
-   "mm50": 133.0267,
+   "mm50": 133.0687,
    "place": "US"
   },
   "EXPL.PA": {
@@ -3216,37 +3216,37 @@
   },
   "EXR": {
    "depuis": "2026-09-25",
-   "dist": 35.51,
+   "dist": 37.32,
    "etat": "loin",
-   "mm50": 97.1766,
+   "mm50": 97.2128,
    "place": "US"
   },
   "F": {
    "depuis": "2026-09-25",
-   "dist": 41.85,
+   "dist": 40.96,
    "etat": "loin",
-   "mm50": 8.7278,
+   "mm50": 8.7262,
    "place": "US"
   },
   "FAGR.BR": {
    "depuis": "2026-09-28",
-   "dist": 39.48,
+   "dist": 37.72,
    "etat": "loin",
-   "mm50": 16.597,
+   "mm50": 16.591,
    "place": "Bruxelles"
   },
   "FANG": {
    "depuis": "2026-09-25",
-   "dist": 91.3,
+   "dist": 90.03,
    "etat": "loin",
-   "mm50": 96.8277,
+   "mm50": 96.8021,
    "place": "US"
   },
   "FAST": {
    "depuis": "2026-09-25",
-   "dist": 142.12,
+   "dist": 139.7,
    "etat": "loin",
-   "mm50": 20.8529,
+   "mm50": 20.8423,
    "place": "US"
   },
   "FCMC.PA": {
@@ -3258,72 +3258,72 @@
   },
   "FCX": {
    "depuis": "2026-09-25",
-   "dist": 168.39,
+   "dist": 164.26,
    "etat": "loin",
-   "mm50": 26.8113,
+   "mm50": 26.7879,
    "place": "US"
   },
   "FDS": {
    "depuis": "2026-09-25",
-   "dist": -1.51,
+   "dist": -4.29,
    "etat": "contact",
-   "mm50": 271.771,
+   "mm50": 271.617,
    "place": "US"
   },
   "FDX": {
    "depuis": "2026-09-25",
-   "dist": 78.53,
+   "dist": 77.23,
    "etat": "loin",
-   "mm50": 162.2443,
+   "mm50": 162.2007,
    "place": "US"
   },
   "FE": {
    "depuis": "2026-09-25",
-   "dist": 42.67,
+   "dist": 44.67,
    "etat": "loin",
-   "mm50": 30.1534,
+   "mm50": 30.1658,
    "place": "US"
   },
   "FER": {
    "depuis": "2026-09-25",
-   "dist": 102.6,
+   "dist": 98.41,
    "etat": "loin",
-   "mm50": 27.5276,
+   "mm50": 27.5036,
    "place": "US"
   },
   "FFIV": {
    "depuis": "2026-09-25",
-   "dist": 145.81,
+   "dist": 147.16,
    "etat": "loin",
-   "mm50": 177.1913,
+   "mm50": 177.2415,
    "place": "US"
   },
   "FGA.PA": {
    "depuis": "2026-09-28",
-   "dist": -1.06,
+   "dist": 0.0,
    "etat": "contact",
-   "mm50": 11.1176,
+   "mm50": 11.12,
    "place": "Paris"
   },
   "FGR.PA": {
    "depuis": "2026-09-28",
-   "dist": 47.89,
+   "dist": 43.49,
    "etat": "loin",
-   "mm50": 71.6745,
+   "mm50": 71.6095,
    "place": "Paris"
   },
   "FICO": {
    "depuis": "2026-09-25",
-   "dist": 44.21,
+   "dist": 6.78,
    "etat": "loin",
-   "mm50": 583.1093,
+   "mm50": 578.6489,
    "place": "US"
   },
   "FII.PA": {
    "depuis": "2026-09-28",
-   "dist": 129.16,
+   "dist": 130.92,
    "etat": "loin",
-   "mm50": 27.0118,
+   "mm50": 27.0218,
    "place": "Paris"
   },
   "FINM.PA": {
@@ -3342,58 +3342,58 @@
   },
   "FIS": {
    "depuis": "2026-09-25",
-   "dist": -54.35,
+   "dist": -55.62,
    "etat": "contact",
-   "mm50": 75.1633,
+   "mm50": 75.1441,
    "place": "US"
   },
   "FISV": {
    "depuis": "2026-09-25",
-   "dist": -49.65,
+   "dist": -50.36,
    "etat": "contact",
-   "mm50": 91.398,
+   "mm50": 91.3848,
    "place": "US"
   },
   "FITB": {
    "depuis": "2026-09-25",
-   "dist": 99.18,
+   "dist": 96.95,
    "etat": "loin",
-   "mm50": 25.8911,
+   "mm50": 25.8791,
    "place": "US"
   },
   "FIX": {
    "depuis": "2026-09-25",
-   "dist": 628.83,
+   "dist": 631.36,
    "etat": "loin",
-   "mm50": 227.5301,
+   "mm50": 227.6651,
    "place": "US"
   },
   "FLOB.BR": {
    "depuis": "2026-09-28",
-   "dist": -84.74,
+   "dist": -84.19,
    "etat": "contact",
-   "mm50": 360.462,
+   "mm50": 360.502,
    "place": "Bruxelles"
   },
   "FLSP.BR": {
    "depuis": "2026-09-28",
-   "dist": 98.02,
+   "dist": 104.57,
    "etat": "loin",
-   "mm50": 9.7465,
+   "mm50": 9.7767,
    "place": "Bruxelles"
   },
   "FLUX.BR": {
    "depuis": "2026-09-28",
-   "dist": 9.46,
+   "dist": 8.49,
    "etat": "loin",
-   "mm50": 20.19,
+   "mm50": 20.186,
    "place": "Bruxelles"
   },
   "FMONC.PA": {
    "depuis": "2026-09-28",
-   "dist": 67.71,
+   "dist": 66.33,
    "etat": "loin",
-   "mm50": 70.36,
+   "mm50": 70.34,
    "place": "Paris"
   },
   "FNAC.PA": {
@@ -3419,107 +3419,107 @@
   },
   "FR.PA": {
    "depuis": "2026-09-28",
-   "dist": -37.81,
+   "dist": -38.02,
    "etat": "contact",
-   "mm50": 23.515,
+   "mm50": 23.514,
    "place": "Paris"
   },
   "FREY.PA": {
    "depuis": "2026-09-28",
-   "dist": 56.47,
+   "dist": 57.36,
    "etat": "loin",
-   "mm50": 21.8574,
+   "mm50": 21.8614,
    "place": "Paris"
   },
   "FRT": {
    "depuis": "2026-09-25",
-   "dist": 19.8,
+   "dist": 19.33,
    "etat": "loin",
-   "mm50": 91.6803,
+   "mm50": 91.6715,
    "place": "US"
   },
   "FRVIA.PA": {
    "depuis": "2026-09-28",
-   "dist": -66.01,
+   "dist": -66.77,
    "etat": "contact",
-   "mm50": 25.9627,
+   "mm50": 25.9587,
    "place": "Paris"
   },
   "FSDV.PA": {
    "depuis": "2026-09-28",
-   "dist": -43.2,
+   "dist": -44.46,
    "etat": "contact",
-   "mm50": 31.3384,
+   "mm50": 31.3304,
    "place": "Paris"
   },
   "FSLR": {
    "depuis": "2026-09-25",
-   "dist": 66.34,
+   "dist": 70.02,
    "etat": "loin",
-   "mm50": 103.985,
+   "mm50": 104.0642,
    "place": "US"
   },
   "FTNT": {
    "depuis": "2026-09-25",
-   "dist": 319.15,
+   "dist": 318.34,
    "etat": "loin",
-   "mm50": 42.0689,
+   "mm50": 42.0615,
    "place": "US"
   },
   "FUR.AS": {
    "depuis": "2026-09-28",
-   "dist": -46.02,
+   "dist": -45.72,
    "etat": "contact",
-   "mm50": 15.1256,
+   "mm50": 15.1265,
    "place": "Amsterdam"
   },
   "GAM.PA": {
    "depuis": "2026-09-28",
-   "dist": 11.32,
+   "dist": 13.48,
    "etat": "loin",
-   "mm50": 90.7276,
+   "mm50": 90.7676,
    "place": "Paris"
   },
   "GBLB.BR": {
    "depuis": "2026-09-28",
-   "dist": 20.67,
+   "dist": 20.18,
    "etat": "loin",
-   "mm50": 60.2491,
+   "mm50": 60.2431,
    "place": "Bruxelles"
   },
   "GBT.PA": {
    "depuis": "2026-09-28",
-   "dist": -79.55,
+   "dist": -79.75,
    "etat": "contact",
-   "mm50": 34.4676,
+   "mm50": 34.4662,
    "place": "Paris"
   },
   "GD": {
    "depuis": "2026-09-25",
-   "dist": 78.75,
+   "dist": 77.81,
    "etat": "loin",
-   "mm50": 186.9442,
+   "mm50": 186.9078,
    "place": "US"
   },
   "GDS.PA": {
    "depuis": "2026-09-28",
-   "dist": -39.06,
+   "dist": -39.18,
    "etat": "contact",
-   "mm50": 15.9161,
+   "mm50": 15.9157,
    "place": "Paris"
   },
   "GE": {
    "depuis": "2026-09-25",
-   "dist": 176.18,
+   "dist": 175.9,
    "etat": "loin",
-   "mm50": 115.2273,
+   "mm50": 115.2203,
    "place": "US"
   },
   "GEA.PA": {
    "depuis": "2026-09-28",
-   "dist": 2.5,
+   "dist": 1.79,
    "etat": "contact",
-   "mm50": 69.2688,
+   "mm50": 69.2588,
    "place": "Paris"
   },
   "GEN": {
@@ -3531,338 +3531,338 @@
   },
   "GET.PA": {
    "depuis": "2026-09-28",
-   "dist": 60.08,
+   "dist": 59.66,
    "etat": "loin",
-   "mm50": 11.6818,
+   "mm50": 11.6808,
    "place": "Paris"
   },
   "GFC.PA": {
    "depuis": "2026-09-28",
-   "dist": -19.62,
+   "dist": -19.5,
    "etat": "contact",
-   "mm50": 78.6927,
+   "mm50": 78.6947,
    "place": "Paris"
   },
   "GILD": {
    "depuis": "2026-09-25",
-   "dist": 120.2,
+   "dist": 118.91,
    "etat": "loin",
-   "mm50": 69.1241,
+   "mm50": 69.1055,
    "place": "US"
   },
   "GIMB.BR": {
    "depuis": "2026-09-28",
-   "dist": 34.87,
+   "dist": 34.59,
    "etat": "loin",
-   "mm50": 34.7379,
+   "mm50": 34.7359,
    "place": "Bruxelles"
   },
   "GIS": {
    "depuis": "2026-09-25",
-   "dist": -27.5,
+   "dist": -27.03,
    "etat": "contact",
-   "mm50": 46.3442,
+   "mm50": 46.3486,
    "place": "US"
   },
   "GL": {
    "depuis": "2026-09-25",
-   "dist": 86.23,
+   "dist": 85.57,
    "etat": "loin",
-   "mm50": 89.5083,
+   "mm50": 89.4961,
    "place": "US"
   },
   "GLE.PA": {
    "depuis": "2026-09-28",
-   "dist": 162.65,
+   "dist": 159.75,
    "etat": "loin",
-   "mm50": 27.2077,
+   "mm50": 27.1911,
    "place": "Paris"
   },
   "GLO.PA": {
    "depuis": "2026-09-28",
-   "dist": 154.47,
+   "dist": 152.55,
    "etat": "loin",
-   "mm50": 9.9227,
+   "mm50": 9.9187,
    "place": "Paris"
   },
   "GLW": {
    "depuis": "2026-09-25",
-   "dist": 295.82,
+   "dist": 312.88,
    "etat": "loin",
-   "mm50": 38.2975,
+   "mm50": 38.4399,
    "place": "US"
   },
   "GM": {
    "depuis": "2026-09-25",
-   "dist": 107.13,
+   "dist": 106.71,
    "etat": "loin",
-   "mm50": 38.9329,
+   "mm50": 38.9295,
    "place": "US"
   },
   "GNFT.PA": {
    "depuis": "2026-09-28",
-   "dist": -32.22,
+   "dist": -34.67,
    "etat": "contact",
-   "mm50": 14.5181,
+   "mm50": 14.5109,
    "place": "Paris"
   },
   "GNRC": {
    "depuis": "2026-09-25",
-   "dist": 61.17,
+   "dist": 66.49,
    "etat": "loin",
-   "mm50": 127.327,
+   "mm50": 127.4672,
    "place": "US"
   },
   "GOOG": {
    "depuis": "2026-09-25",
-   "dist": 222.45,
+   "dist": 220.81,
    "etat": "loin",
-   "mm50": 105.1826,
+   "mm50": 105.1458,
    "place": "US"
   },
   "GOOGL": {
    "depuis": "2026-09-25",
-   "dist": 225.54,
+   "dist": 223.91,
    "etat": "loin",
-   "mm50": 105.2866,
+   "mm50": 105.25,
    "place": "US"
   },
   "GPC": {
    "depuis": "2026-09-25",
-   "dist": 32.93,
+   "dist": 31.74,
    "etat": "loin",
-   "mm50": 96.3862,
+   "mm50": 96.3626,
    "place": "US"
   },
   "GPE.PA": {
    "depuis": "2026-09-28",
-   "dist": 112.38,
+   "dist": 113.52,
    "etat": "loin",
-   "mm50": 29.1935,
+   "mm50": 29.2005,
    "place": "Paris"
   },
   "GPN": {
    "depuis": "2026-09-25",
-   "dist": -17.41,
+   "dist": -18.72,
    "etat": "contact",
-   "mm50": 102.5517,
+   "mm50": 102.5243,
    "place": "US"
   },
   "GRMN": {
    "depuis": "2026-09-25",
-   "dist": 195.7,
+   "dist": 192.08,
    "etat": "loin",
-   "mm50": 99.4427,
+   "mm50": 99.3663,
    "place": "US"
   },
   "GRVO.PA": {
    "depuis": "2026-09-28",
-   "dist": -63.13,
+   "dist": -63.02,
    "etat": "contact",
-   "mm50": 43.6701,
+   "mm50": 43.6711,
    "place": "Paris"
   },
   "GS": {
    "depuis": "2026-09-25",
-   "dist": 191.65,
+   "dist": 191.63,
    "etat": "loin",
-   "mm50": 314.1763,
+   "mm50": 314.1755,
    "place": "US"
   },
   "GTT.PA": {
    "depuis": "2026-09-28",
-   "dist": 198.31,
+   "dist": 194.47,
    "etat": "loin",
-   "mm50": 73.413,
+   "mm50": 73.353,
    "place": "Paris"
   },
   "GUI.PA": {
    "depuis": "2026-09-28",
-   "dist": -16.73,
+   "dist": -16.13,
    "etat": "contact",
-   "mm50": 4.8879,
+   "mm50": 4.8885,
    "place": "Paris"
   },
   "GWW": {
    "depuis": "2026-09-25",
-   "dist": 156.55,
+   "dist": 155.18,
    "etat": "loin",
-   "mm50": 489.4601,
+   "mm50": 489.3197,
    "place": "US"
   },
   "HAL": {
-   "depuis": "2026-09-25",
-   "dist": 8.73,
-   "etat": "loin",
-   "mm50": 29.826,
+   "depuis": "2026-09-29",
+   "dist": 5.81,
+   "etat": "approche",
+   "mm50": 29.8082,
    "place": "US"
   },
   "HAL.AS": {
    "depuis": "2026-09-28",
-   "dist": 44.23,
+   "dist": 44.06,
    "etat": "loin",
-   "mm50": 114.3982,
+   "mm50": 114.3942,
    "place": "Amsterdam"
   },
   "HAS": {
    "depuis": "2026-09-25",
-   "dist": 39.64,
+   "dist": 37.84,
    "etat": "loin",
-   "mm50": 64.0568,
+   "mm50": 64.033,
    "place": "US"
   },
   "HBAN": {
    "depuis": "2026-09-25",
-   "dist": 47.53,
+   "dist": 47.25,
    "etat": "loin",
-   "mm50": 10.3707,
+   "mm50": 10.3701,
    "place": "US"
   },
   "HCA": {
    "depuis": "2026-09-25",
-   "dist": 129.3,
+   "dist": 128.81,
    "etat": "loin",
-   "mm50": 188.6592,
+   "mm50": 188.6398,
    "place": "US"
   },
   "HCO.PA": {
    "depuis": "2026-09-28",
-   "dist": 37.2,
+   "dist": 35.65,
    "etat": "loin",
-   "mm50": 2.5109,
+   "mm50": 2.5101,
    "place": "Paris"
   },
   "HD": {
    "depuis": "2026-09-25",
-   "dist": 32.68,
+   "dist": 31.86,
    "etat": "loin",
-   "mm50": 218.4863,
+   "mm50": 218.4493,
    "place": "US"
   },
   "HDP.PA": {
    "depuis": "2026-09-28",
-   "dist": -18.96,
+   "dist": -18.11,
    "etat": "contact",
-   "mm50": 2.3198,
+   "mm50": 2.3202,
    "place": "Paris"
   },
   "HEIA.AS": {
    "depuis": "2026-09-28",
-   "dist": -2.61,
+   "dist": -3.83,
    "etat": "contact",
-   "mm50": 72.2645,
+   "mm50": 72.2465,
    "place": "Amsterdam"
   },
   "HEIJM.AS": {
    "depuis": "2026-09-28",
-   "dist": 426.52,
+   "dist": 422.1,
    "etat": "loin",
-   "mm50": 17.1882,
+   "mm50": 17.1712,
    "place": "Amsterdam"
   },
   "HEIO.AS": {
    "depuis": "2026-09-28",
-   "dist": 5.47,
+   "dist": 3.99,
    "etat": "approche",
-   "mm50": 62.7669,
+   "mm50": 62.7479,
    "place": "Amsterdam"
   },
   "HIG": {
    "depuis": "2026-09-25",
-   "dist": 100.83,
+   "dist": 100.54,
    "etat": "loin",
-   "mm50": 62.7584,
+   "mm50": 62.7546,
    "place": "US"
   },
   "HII": {
    "depuis": "2026-09-25",
-   "dist": 38.54,
+   "dist": 39.9,
    "etat": "loin",
-   "mm50": 185.5421,
+   "mm50": 185.5939,
    "place": "US"
   },
   "HLT": {
    "depuis": "2026-09-25",
-   "dist": 152.55,
+   "dist": 154.91,
    "etat": "loin",
-   "mm50": 126.8185,
+   "mm50": 126.8817,
    "place": "US"
   },
   "HO.PA": {
    "depuis": "2026-09-28",
-   "dist": 111.61,
+   "dist": 112.15,
    "etat": "loin",
-   "mm50": 106.7997,
+   "mm50": 106.8117,
    "place": "Paris"
   },
   "HOLCO.AS": {
    "depuis": "2026-09-28",
-   "dist": 6.9,
+   "dist": 7.57,
    "etat": "loin",
-   "mm50": 72.9628,
+   "mm50": 72.9728,
    "place": "Amsterdam"
   },
   "HOMI.BR": {
    "depuis": "2026-09-28",
-   "dist": 11.86,
+   "dist": 12.73,
    "etat": "loin",
-   "mm50": 15.6808,
+   "mm50": 15.6836,
    "place": "Bruxelles"
   },
   "HON": {
    "depuis": "2026-09-25",
-   "dist": 42.98,
+   "dist": 42.07,
    "etat": "loin",
-   "mm50": 147.9367,
+   "mm50": 147.9089,
    "place": "US"
   },
   "HPQ": {
    "depuis": "2026-09-25",
-   "dist": 63.95,
+   "dist": 60.96,
    "etat": "loin",
-   "mm50": 19.1037,
+   "mm50": 19.0919,
    "place": "US"
   },
   "HRL": {
    "depuis": "2026-09-25",
-   "dist": -34.85,
+   "dist": -35.24,
    "etat": "contact",
-   "mm50": 30.6543,
+   "mm50": 30.6519,
    "place": "US"
   },
   "HSIC": {
    "depuis": "2026-09-25",
-   "dist": 28.4,
+   "dist": 26.91,
    "etat": "loin",
-   "mm50": 66.972,
+   "mm50": 66.9516,
    "place": "US"
   },
   "HST": {
    "depuis": "2026-09-25",
-   "dist": 65.43,
+   "dist": 63.87,
    "etat": "loin",
-   "mm50": 13.6979,
+   "mm50": 13.5715,
    "place": "US"
   },
   "HSY": {
    "depuis": "2026-09-25",
-   "dist": 24.86,
+   "dist": 22.64,
    "etat": "loin",
-   "mm50": 131.676,
+   "mm50": 131.616,
    "place": "US"
   },
   "HUBB": {
    "depuis": "2026-09-25",
-   "dist": 132.94,
+   "dist": 129.77,
    "etat": "loin",
-   "mm50": 199.9345,
+   "mm50": 199.8019,
    "place": "US"
   },
   "HUM": {
    "depuis": "2026-09-25",
-   "dist": 32.39,
+   "dist": 31.48,
    "etat": "loin",
-   "mm50": 294.2946,
+   "mm50": 294.2394,
    "place": "US"
   },
   "HWK.AS": {
@@ -3874,16 +3874,16 @@
   },
   "HYDRA.AS": {
    "depuis": "2026-09-28",
-   "dist": 313.99,
+   "dist": 317.13,
    "etat": "loin",
-   "mm50": 58.4555,
+   "mm50": 58.4955,
    "place": "Amsterdam"
   },
   "HYSG.BR": {
    "depuis": "2026-09-25",
-   "dist": 11.43,
+   "dist": 12.56,
    "etat": "loin",
-   "mm50": 3.464,
+   "mm50": 3.4648,
    "place": "Bruxelles"
   },
   "IAM.PA": {
@@ -3895,37 +3895,37 @@
   },
   "IBAB.BR": {
    "depuis": "2026-09-28",
-   "dist": -13.36,
+   "dist": -13.91,
    "etat": "contact",
-   "mm50": 18.0294,
+   "mm50": 18.0274,
    "place": "Bruxelles"
   },
   "IBKR": {
    "depuis": "2026-09-25",
-   "dist": 294.41,
+   "dist": 290.65,
    "etat": "loin",
-   "mm50": 22.0786,
+   "mm50": 22.0606,
    "place": "US"
   },
   "IBM": {
    "depuis": "2026-09-25",
-   "dist": 66.78,
+   "dist": 66.28,
    "etat": "loin",
-   "mm50": 132.3157,
+   "mm50": 132.3021,
    "place": "US"
   },
   "ICAD.PA": {
    "depuis": "2026-09-28",
-   "dist": -37.02,
+   "dist": -37.41,
    "etat": "contact",
-   "mm50": 25.867,
+   "mm50": 25.865,
    "place": "Paris"
   },
   "ICE": {
    "depuis": "2026-09-25",
-   "dist": 66.49,
+   "dist": 65.73,
    "etat": "loin",
-   "mm50": 91.8437,
+   "mm50": 91.8293,
    "place": "US"
   },
   "IDIP.PA": {
@@ -3937,16 +3937,16 @@
   },
   "IDL.PA": {
    "depuis": "2026-09-28",
-   "dist": 46.03,
+   "dist": 45.81,
    "etat": "loin",
-   "mm50": 219.1288,
+   "mm50": 219.1188,
    "place": "Paris"
   },
   "IDXX": {
    "depuis": "2026-09-25",
-   "dist": 58.19,
+   "dist": 59.46,
    "etat": "loin",
-   "mm50": 334.4427,
+   "mm50": 334.5303,
    "place": "US"
   },
   "IEP.BR": {
@@ -3958,16 +3958,16 @@
   },
   "IEX": {
    "depuis": "2026-09-25",
-   "dist": 54.18,
+   "dist": 53.71,
    "etat": "loin",
-   "mm50": 149.9229,
+   "mm50": 149.9085,
    "place": "US"
   },
   "IFF": {
    "depuis": "2026-09-25",
-   "dist": -9.42,
+   "dist": -9.91,
    "etat": "contact",
-   "mm50": 94.633,
+   "mm50": 94.6236,
    "place": "US"
   },
   "IMCD.AS": {
@@ -3979,30 +3979,30 @@
   },
   "IMDA.PA": {
    "depuis": "2026-09-28",
-   "dist": 2.33,
+   "dist": 1.62,
    "etat": "contact",
-   "mm50": 41.4364,
+   "mm50": 41.4304,
    "place": "Paris"
   },
   "IMMO.BR": {
    "depuis": "2026-09-28",
-   "dist": -52.66,
+   "dist": -53.52,
    "etat": "contact",
-   "mm50": 40.1313,
+   "mm50": 40.1243,
    "place": "Bruxelles"
   },
   "IMMOU.BR": {
    "depuis": "2026-09-28",
-   "dist": -7.3,
+   "dist": -12.72,
    "etat": "contact",
-   "mm50": 36.2453,
+   "mm50": 36.2053,
    "place": "Bruxelles"
   },
   "INCY": {
    "depuis": "2026-09-25",
-   "dist": 50.64,
+   "dist": 48.74,
    "etat": "loin",
-   "mm50": 82.8606,
+   "mm50": 82.8282,
    "place": "US"
   },
   "INEA.PA": {
@@ -4014,135 +4014,135 @@
   },
   "INF.PA": {
    "depuis": "2026-09-28",
-   "dist": 16.33,
+   "dist": 20.0,
    "etat": "loin",
-   "mm50": 33.3091,
+   "mm50": 33.3341,
    "place": "Paris"
   },
   "INGA.AS": {
    "depuis": "2026-09-28",
-   "dist": 224.77,
+   "dist": 223.3,
    "etat": "loin",
-   "mm50": 9.8161,
+   "mm50": 9.813,
    "place": "Amsterdam"
   },
   "INSM": {
    "depuis": "2026-09-25",
-   "dist": 197.47,
+   "dist": 192.61,
    "etat": "loin",
-   "mm50": 39.5574,
+   "mm50": 39.5166,
    "place": "US"
   },
   "INTC": {
    "depuis": "2026-09-25",
-   "dist": 192.45,
+   "dist": 192.22,
    "etat": "loin",
-   "mm50": 39.6747,
+   "mm50": 39.6727,
    "place": "US"
   },
   "INTU": {
    "depuis": "2026-09-25",
-   "dist": -16.77,
+   "dist": -17.19,
    "etat": "contact",
-   "mm50": 323.6979,
+   "mm50": 323.6705,
    "place": "US"
   },
   "IP": {
-   "depuis": "2026-09-25",
-   "dist": 2.57,
-   "etat": "approche",
-   "mm50": 33.1495,
+   "depuis": "2026-09-29",
+   "dist": 0.56,
+   "etat": "contact",
+   "mm50": 33.1359,
    "place": "US"
   },
   "IPH.PA": {
    "depuis": "2026-09-28",
-   "dist": -74.72,
+   "dist": -75.64,
    "etat": "contact",
-   "mm50": 5.6169,
+   "mm50": 5.6159,
    "place": "Paris"
   },
   "IPN.PA": {
    "depuis": "2026-09-28",
-   "dist": 61.54,
+   "dist": 61.21,
    "etat": "loin",
-   "mm50": 88.8318,
+   "mm50": 88.8258,
    "place": "Paris"
   },
   "IPS.PA": {
    "depuis": "2026-09-28",
-   "dist": 23.92,
+   "dist": 25.36,
    "etat": "loin",
-   "mm50": 28.4384,
+   "mm50": 28.4468,
    "place": "Paris"
   },
   "IQV": {
    "depuis": "2026-09-25",
-   "dist": 76.87,
+   "dist": 75.62,
    "etat": "loin",
-   "mm50": 153.2048,
+   "mm50": 153.1652,
    "place": "US"
   },
   "IRM": {
    "depuis": "2026-09-25",
-   "dist": 159.03,
+   "dist": 160.03,
    "etat": "loin",
-   "mm50": 42.8709,
+   "mm50": 42.8799,
    "place": "US"
   },
   "ISRG": {
    "depuis": "2026-09-25",
-   "dist": 73.42,
+   "dist": 72.37,
    "etat": "loin",
-   "mm50": 239.1763,
+   "mm50": 239.1241,
    "place": "US"
   },
   "IT": {
    "depuis": "2026-09-25",
-   "dist": -11.52,
+   "dist": -11.47,
    "etat": "contact",
-   "mm50": 209.9208,
+   "mm50": 209.9232,
    "place": "US"
   },
   "ITP.PA": {
    "depuis": "2026-09-28",
-   "dist": 41.09,
+   "dist": 40.81,
    "etat": "loin",
-   "mm50": 21.4764,
+   "mm50": 21.4752,
    "place": "Paris"
   },
   "ITW": {
    "depuis": "2026-09-25",
-   "dist": 68.09,
+   "dist": 64.07,
    "etat": "loin",
-   "mm50": 162.9107,
+   "mm50": 162.7755,
    "place": "US"
   },
   "IVZ": {
    "depuis": "2026-09-25",
-   "dist": 69.78,
+   "dist": 69.73,
    "etat": "loin",
-   "mm50": 17.9229,
+   "mm50": 17.9227,
    "place": "US"
   },
   "J": {
    "depuis": "2026-09-25",
-   "dist": 74.98,
+   "dist": 72.67,
    "etat": "loin",
-   "mm50": 79.0797,
+   "mm50": 79.0419,
    "place": "US"
   },
   "JBHT": {
    "depuis": "2026-09-25",
-   "dist": 73.22,
+   "dist": 75.59,
    "etat": "loin",
-   "mm50": 130.5091,
+   "mm50": 130.5733,
    "place": "US"
   },
   "JBL": {
    "depuis": "2026-09-25",
-   "dist": 310.82,
+   "dist": 310.71,
    "etat": "loin",
-   "mm50": 77.6326,
+   "mm50": 77.6308,
    "place": "US"
   },
   "JBOG.PA": {
@@ -4154,44 +4154,44 @@
   },
   "JCI": {
    "depuis": "2026-09-25",
-   "dist": 185.99,
+   "dist": 186.95,
    "etat": "loin",
-   "mm50": 52.0604,
+   "mm50": 52.071,
    "place": "US"
   },
   "JCQ.PA": {
    "depuis": "2026-09-28",
-   "dist": 31.69,
+   "dist": 30.42,
    "etat": "loin",
-   "mm50": 15.3391,
+   "mm50": 15.3351,
    "place": "Paris"
   },
   "JEN.BR": {
    "depuis": "2026-09-28",
-   "dist": 133.16,
+   "dist": 131.42,
    "etat": "loin",
-   "mm50": 32.9392,
+   "mm50": 32.9272,
    "place": "Bruxelles"
   },
   "JKHY": {
    "depuis": "2026-09-25",
-   "dist": 15.53,
+   "dist": 14.31,
    "etat": "loin",
-   "mm50": 127.9464,
+   "mm50": 127.9144,
    "place": "US"
   },
   "JNJ": {
    "depuis": "2026-09-25",
-   "dist": 110.96,
+   "dist": 107.71,
    "etat": "loin",
-   "mm50": 128.9087,
+   "mm50": 128.8211,
    "place": "US"
   },
   "JPM": {
    "depuis": "2026-09-25",
-   "dist": 163.98,
+   "dist": 162.78,
    "etat": "loin",
-   "mm50": 127.5071,
+   "mm50": 127.4749,
    "place": "US"
   },
   "KBC.BR": {
@@ -4203,16 +4203,16 @@
   },
   "KBCA.BR": {
    "depuis": "2026-09-28",
-   "dist": 226.33,
+   "dist": 229.12,
    "etat": "loin",
-   "mm50": 30.1841,
+   "mm50": 30.2021,
    "place": "Bruxelles"
   },
   "KDP": {
    "depuis": "2026-09-25",
-   "dist": 40.12,
+   "dist": 38.26,
    "etat": "loin",
-   "mm50": 22.4518,
+   "mm50": 22.4432,
    "place": "US"
   },
   "KENDR.AS": {
@@ -4224,128 +4224,128 @@
   },
   "KER.PA": {
    "depuis": "2026-09-28",
-   "dist": -28.56,
+   "dist": -29.99,
    "etat": "contact",
-   "mm50": 319.4186,
+   "mm50": 319.3256,
    "place": "Paris"
   },
   "KEY": {
    "depuis": "2026-09-25",
-   "dist": 58.64,
+   "dist": 56.54,
    "etat": "loin",
-   "mm50": 12.8589,
+   "mm50": 12.8533,
    "place": "US"
   },
   "KHC": {
    "depuis": "2026-09-25",
-   "dist": -30.55,
+   "dist": -30.87,
    "etat": "contact",
-   "mm50": 33.9221,
+   "mm50": 33.9199,
    "place": "US"
   },
   "KIM": {
    "depuis": "2026-09-25",
-   "dist": 43.38,
+   "dist": 42.94,
    "etat": "loin",
-   "mm50": 15.6861,
+   "mm50": 15.6847,
    "place": "US"
   },
   "KIN.BR": {
    "depuis": "2026-09-28",
-   "dist": 21.96,
+   "dist": 22.79,
    "etat": "loin",
-   "mm50": 40.875,
+   "mm50": 40.882,
    "place": "Bruxelles"
   },
   "KKR": {
    "depuis": "2026-09-25",
-   "dist": 89.45,
+   "dist": 89.33,
    "etat": "loin",
-   "mm50": 49.2161,
+   "mm50": 49.2149,
    "place": "US"
   },
   "KLAC": {
    "depuis": "2026-09-25",
-   "dist": 367.83,
+   "dist": 384.27,
    "etat": "loin",
-   "mm50": 40.4358,
+   "mm50": 40.583,
    "place": "US"
   },
   "KMB": {
    "depuis": "2026-09-25",
-   "dist": -1.46,
+   "dist": -1.25,
    "etat": "contact",
-   "mm50": 100.2354,
+   "mm50": 100.2398,
    "place": "US"
   },
   "KMI": {
    "depuis": "2026-09-25",
-   "dist": 87.31,
+   "dist": 86.25,
    "etat": "loin",
-   "mm50": 16.3527,
+   "mm50": 16.3491,
    "place": "US"
   },
   "KO": {
    "depuis": "2026-09-25",
-   "dist": 88.3,
+   "dist": 87.6,
    "etat": "loin",
-   "mm50": 46.2978,
+   "mm50": 46.291,
    "place": "US"
   },
   "KOF.PA": {
    "depuis": "2026-09-28",
-   "dist": 3.61,
+   "dist": 1.69,
    "etat": "approche",
-   "mm50": 20.3158,
+   "mm50": 20.3078,
    "place": "Paris"
   },
   "KPN.AS": {
    "depuis": "2026-09-28",
-   "dist": 69.66,
+   "dist": 68.48,
    "etat": "loin",
-   "mm50": 2.3688,
+   "mm50": 2.3682,
    "place": "Amsterdam"
   },
   "KR": {
    "depuis": "2026-09-25",
-   "dist": 77.85,
+   "dist": 81.01,
    "etat": "loin",
-   "mm50": 33.5624,
+   "mm50": 33.5844,
    "place": "US"
   },
   "L": {
    "depuis": "2026-09-25",
-   "dist": 83.23,
+   "dist": 84.88,
    "etat": "loin",
-   "mm50": 57.2765,
+   "mm50": 57.2961,
    "place": "US"
   },
   "LACR.PA": {
    "depuis": "2026-09-28",
-   "dist": -20.51,
+   "dist": -20.28,
    "etat": "contact",
-   "mm50": 21.1356,
+   "mm50": 21.1366,
    "place": "Paris"
   },
   "LAT.PA": {
    "depuis": "2026-09-28",
-   "dist": -97.23,
+   "dist": -97.33,
    "etat": "contact",
    "mm50": 0.4303,
    "place": "Paris"
   },
   "LBIRD.PA": {
    "depuis": "2026-09-28",
-   "dist": 102.63,
+   "dist": 103.04,
    "etat": "loin",
-   "mm50": 11.6962,
+   "mm50": 11.6972,
    "place": "Paris"
   },
   "LDOS": {
    "depuis": "2026-09-25",
-   "dist": 49.27,
+   "dist": 50.16,
    "etat": "loin",
-   "mm50": 81.9664,
+   "mm50": 81.9814,
    "place": "US"
   },
   "LEBL.PA": {
@@ -4357,44 +4357,44 @@
   },
   "LEN": {
    "depuis": "2026-09-25",
-   "dist": 21.13,
+   "dist": 22.54,
    "etat": "loin",
-   "mm50": 67.7218,
+   "mm50": 67.7414,
    "place": "US"
   },
   "LH": {
    "depuis": "2026-09-25",
-   "dist": 84.33,
+   "dist": 83.89,
    "etat": "loin",
-   "mm50": 167.9445,
+   "mm50": 167.9293,
    "place": "US"
   },
   "LHX": {
    "depuis": "2026-09-25",
-   "dist": 47.84,
+   "dist": 47.1,
    "etat": "loin",
-   "mm50": 160.781,
+   "mm50": 160.7564,
    "place": "US"
   },
   "LI.PA": {
    "depuis": "2026-09-28",
-   "dist": 76.2,
+   "dist": 74.89,
    "etat": "loin",
-   "mm50": 20.6929,
+   "mm50": 20.6873,
    "place": "Paris"
   },
   "LII": {
    "depuis": "2026-09-25",
-   "dist": 35.29,
+   "dist": 32.34,
    "etat": "loin",
-   "mm50": 272.3209,
+   "mm50": 272.1559,
    "place": "US"
   },
   "LIN": {
    "depuis": "2026-09-25",
-   "dist": 90.58,
+   "dist": 91.1,
    "etat": "loin",
-   "mm50": 247.6828,
+   "mm50": 247.7094,
    "place": "US"
   },
   "LIN.PA": {
@@ -4406,149 +4406,149 @@
   },
   "LLY": {
    "depuis": "2026-09-25",
-   "dist": 261.31,
+   "dist": 261.27,
    "etat": "loin",
-   "mm50": 327.9135,
+   "mm50": 327.9104,
    "place": "US"
   },
   "LMT": {
    "depuis": "2026-09-25",
-   "dist": 63.02,
+   "dist": 61.22,
    "etat": "loin",
-   "mm50": 317.8213,
+   "mm50": 317.7035,
    "place": "US"
   },
   "LNA.PA": {
    "depuis": "2026-09-28",
-   "dist": -13.45,
+   "dist": -10.39,
    "etat": "contact",
-   "mm50": 32.0063,
+   "mm50": 32.0263,
    "place": "Paris"
   },
   "LNT": {
    "depuis": "2026-09-25",
-   "dist": 51.8,
+   "dist": 54.43,
    "etat": "loin",
-   "mm50": 41.6392,
+   "mm50": 41.6618,
    "place": "US"
   },
   "LOCAL.PA": {
    "depuis": "2026-09-28",
    "dist": -99.84,
    "etat": "contact",
-   "mm50": 2402.3805,
+   "mm50": 2402.3808,
    "place": "Paris"
   },
   "LOTB.BR": {
    "depuis": "2026-09-28",
-   "dist": 169.52,
+   "dist": 167.88,
    "etat": "loin",
-   "mm50": 4615.6367,
+   "mm50": 4614.0367,
    "place": "Bruxelles"
   },
   "LOUP.PA": {
    "depuis": "2026-09-28",
-   "dist": 102.51,
+   "dist": 101.77,
    "etat": "loin",
-   "mm50": 52.1457,
+   "mm50": 52.1377,
    "place": "Paris"
   },
   "LOW": {
    "depuis": "2026-09-25",
-   "dist": 35.98,
+   "dist": 35.7,
    "etat": "loin",
-   "mm50": 138.0062,
+   "mm50": 137.9982,
    "place": "US"
   },
   "LPE.PA": {
    "depuis": "2026-09-28",
-   "dist": -9.14,
+   "dist": -8.66,
    "etat": "contact",
-   "mm50": 81.668,
+   "mm50": 81.676,
    "place": "Paris"
   },
   "LR.PA": {
    "depuis": "2026-09-28",
-   "dist": 93.21,
+   "dist": 104.48,
    "etat": "loin",
-   "mm50": 69.7939,
+   "mm50": 69.9579,
    "place": "Paris"
   },
   "LRCX": {
    "depuis": "2026-09-25",
-   "dist": 451.92,
+   "dist": 466.53,
    "etat": "loin",
-   "mm50": 56.9778,
+   "mm50": 57.1656,
    "place": "US"
   },
   "LSS.PA": {
    "depuis": "2026-09-28",
-   "dist": 0.17,
+   "dist": 0.64,
    "etat": "contact",
-   "mm50": 20.8652,
+   "mm50": 20.8672,
    "place": "Paris"
   },
   "LTA.PA": {
    "depuis": "2026-09-25",
-   "dist": 45.17,
+   "dist": 44.57,
    "etat": "loin",
-   "mm50": 15.9809,
+   "mm50": 15.9789,
    "place": "Paris"
   },
   "LULU": {
    "depuis": "2026-09-25",
-   "dist": -51.17,
+   "dist": -52.95,
    "etat": "contact",
-   "mm50": 205.97,
+   "mm50": 205.8958,
    "place": "US"
   },
   "LUV": {
    "depuis": "2026-09-25",
-   "dist": 8.68,
+   "dist": 8.18,
    "etat": "loin",
-   "mm50": 38.9033,
+   "mm50": 38.8993,
    "place": "US"
   },
   "LVIDE.AS": {
    "depuis": "2026-09-28",
-   "dist": -33.89,
+   "dist": -31.54,
    "etat": "contact",
-   "mm50": 0.6716,
+   "mm50": 0.6719,
    "place": "Amsterdam"
   },
   "LVS": {
    "depuis": "2026-09-25",
-   "dist": -16.57,
+   "dist": -17.55,
    "etat": "contact",
-   "mm50": 46.4848,
+   "mm50": 46.4756,
    "place": "US"
   },
   "LYB": {
    "depuis": "2026-09-25",
-   "dist": -2.09,
+   "dist": -2.24,
    "etat": "contact",
-   "mm50": 59.5123,
+   "mm50": 59.5105,
    "place": "US"
   },
   "LYV": {
    "depuis": "2026-09-25",
-   "dist": 131.84,
+   "dist": 130.81,
    "etat": "loin",
-   "mm50": 74.1428,
+   "mm50": 74.1268,
    "place": "US"
   },
   "MA": {
    "depuis": "2026-09-25",
-   "dist": 98.26,
+   "dist": 96.69,
    "etat": "loin",
-   "mm50": 286.6275,
+   "mm50": 286.5339,
    "place": "US"
   },
   "MAA": {
    "depuis": "2026-09-25",
-   "dist": 15.59,
+   "dist": 15.68,
    "etat": "loin",
-   "mm50": 102.3764,
+   "mm50": 102.3782,
    "place": "US"
   },
   "MALT.PA": {
@@ -4560,23 +4560,23 @@
   },
   "MAR": {
    "depuis": "2026-09-25",
-   "dist": 138.95,
+   "dist": 140.88,
    "etat": "loin",
-   "mm50": 150.0631,
+   "mm50": 150.1241,
    "place": "US"
   },
   "MAS": {
    "depuis": "2026-09-25",
-   "dist": 54.5,
+   "dist": 54.52,
    "etat": "loin",
-   "mm50": 44.2452,
+   "mm50": 44.2454,
    "place": "US"
   },
   "MAU.PA": {
    "depuis": "2026-09-28",
-   "dist": 115.3,
+   "dist": 110.99,
    "etat": "loin",
-   "mm50": 3.7714,
+   "mm50": 3.768,
    "place": "Paris"
   },
   "MBWS.PA": {
@@ -4588,142 +4588,142 @@
   },
   "MC.PA": {
    "depuis": "2026-09-28",
-   "dist": 1.51,
+   "dist": 0.46,
    "etat": "contact",
-   "mm50": 392.861,
+   "mm50": 392.777,
    "place": "Paris"
   },
   "MCD": {
    "depuis": "2026-09-25",
-   "dist": 27.27,
+   "dist": 27.47,
    "etat": "loin",
-   "mm50": 183.5452,
+   "mm50": 183.5528,
    "place": "US"
   },
   "MCHP": {
    "depuis": "2026-09-25",
-   "dist": 58.51,
+   "dist": 60.1,
    "etat": "loin",
-   "mm50": 49.1894,
+   "mm50": 49.2056,
    "place": "US"
   },
   "MCK": {
    "depuis": "2026-09-25",
-   "dist": 176.47,
+   "dist": 179.07,
    "etat": "loin",
-   "mm50": 309.7193,
+   "mm50": 309.8899,
    "place": "US"
   },
   "MCO": {
    "depuis": "2026-09-25",
-   "dist": 82.43,
+   "dist": 80.42,
    "etat": "loin",
-   "mm50": 252.1951,
+   "mm50": 252.0899,
    "place": "US"
   },
   "MDLZ": {
    "depuis": "2026-09-25",
-   "dist": 27.52,
+   "dist": 25.74,
    "etat": "loin",
-   "mm50": 47.1923,
+   "mm50": 46.7616,
    "place": "US"
   },
   "MDT": {
    "depuis": "2026-09-25",
-   "dist": 19.38,
+   "dist": 16.25,
    "etat": "loin",
-   "mm50": 74.9675,
+   "mm50": 74.9193,
    "place": "US"
   },
   "MELE.BR": {
    "depuis": "2026-09-28",
-   "dist": 23.73,
+   "dist": 28.32,
    "etat": "loin",
-   "mm50": 54.1503,
+   "mm50": 54.2013,
    "place": "Bruxelles"
   },
   "MELI": {
    "depuis": "2026-09-25",
-   "dist": 85.92,
+   "dist": 87.23,
    "etat": "loin",
-   "mm50": 921.0468,
+   "mm50": 921.2966,
    "place": "US"
   },
   "MEMS.PA": {
    "depuis": "2026-09-28",
-   "dist": 92.15,
+   "dist": 91.41,
    "etat": "loin",
-   "mm50": 2.6178,
+   "mm50": 2.6174,
    "place": "Paris"
   },
   "MERY.PA": {
    "depuis": "2026-09-28",
-   "dist": 37.3,
+   "dist": 36.63,
    "etat": "loin",
-   "mm50": 7.2104,
+   "mm50": 7.2094,
    "place": "Paris"
   },
   "MET": {
    "depuis": "2026-09-25",
-   "dist": 98.57,
+   "dist": 97.33,
    "etat": "loin",
-   "mm50": 48.2552,
+   "mm50": 48.2428,
    "place": "US"
   },
   "META": {
    "depuis": "2026-09-25",
-   "dist": 160.32,
+   "dist": 168.3,
    "etat": "loin",
-   "mm50": 274.9008,
+   "mm50": 275.3642,
    "place": "US"
   },
   "MF.PA": {
    "depuis": "2026-09-28",
-   "dist": 4.65,
+   "dist": 4.52,
    "etat": "approche",
-   "mm50": 78.2633,
+   "mm50": 78.2613,
    "place": "Paris"
   },
   "MGM": {
    "depuis": "2026-09-25",
-   "dist": 2.61,
+   "dist": 1.53,
    "etat": "approche",
-   "mm50": 31.0507,
+   "mm50": 31.0439,
    "place": "US"
   },
   "MHM.PA": {
    "depuis": "2026-09-28",
-   "dist": -96.46,
+   "dist": -96.68,
    "etat": "contact",
-   "mm50": 0.3613,
+   "mm50": 0.3612,
    "place": "Paris"
   },
   "MIKO.BR": {
    "depuis": "2026-09-28",
-   "dist": -13.22,
+   "dist": -12.02,
    "etat": "contact",
-   "mm50": 81.8158,
+   "mm50": 81.8358,
    "place": "Bruxelles"
   },
   "MKC": {
    "depuis": "2026-09-25",
-   "dist": -18.57,
+   "dist": -18.67,
    "etat": "contact",
-   "mm50": 59.5104,
+   "mm50": 59.5092,
    "place": "US"
   },
   "ML.PA": {
    "depuis": "2026-09-28",
-   "dist": 49.71,
+   "dist": 50.23,
    "etat": "loin",
-   "mm50": 22.5698,
+   "mm50": 22.5722,
    "place": "Paris"
   },
   "MLAAH.PA": {
    "depuis": "2026-09-28",
-   "dist": -99.39,
+   "dist": -99.48,
    "etat": "contact",
-   "mm50": 0.5755,
+   "mm50": 0.5754,
    "place": "Paris"
   },
   "MLARD.PA": {
@@ -4791,16 +4791,16 @@
   },
   "MLFTI.PA": {
    "depuis": "2026-09-28",
-   "dist": 54.34,
+   "dist": 46.17,
    "etat": "loin",
-   "mm50": 0.1425,
+   "mm50": 0.1423,
    "place": "Paris"
   },
   "MLFXO.PA": {
-   "depuis": "2026-09-28",
-   "dist": 7.04,
-   "etat": "loin",
-   "mm50": 4.6711,
+   "depuis": "2026-09-29",
+   "dist": -3.46,
+   "etat": "contact",
+   "mm50": 4.6611,
    "place": "Paris"
   },
   "MLGRC.PA": {
@@ -4833,9 +4833,9 @@
   },
   "MLIDS.PA": {
    "depuis": "2026-09-25",
-   "dist": -10.36,
+   "dist": -20.95,
    "etat": "contact",
-   "mm50": 0.5578,
+   "mm50": 0.5566,
    "place": "Paris"
   },
   "MLIML.PA": {
@@ -4861,9 +4861,9 @@
   },
   "MLM": {
    "depuis": "2026-09-25",
-   "dist": 58.67,
+   "dist": 55.01,
    "etat": "loin",
-   "mm50": 309.2962,
+   "mm50": 309.0626,
    "place": "US"
   },
   "MLNEU.BR": {
@@ -4889,9 +4889,9 @@
   },
   "MLODT.PA": {
    "depuis": "2026-09-28",
-   "dist": 593.9,
+   "dist": 565.41,
    "etat": "loin",
-   "mm50": 5.4763,
+   "mm50": 5.4403,
    "place": "Paris"
   },
   "MLONE.PA": {
@@ -4952,219 +4952,219 @@
   },
   "MLZAM.PA": {
    "depuis": "2026-09-28",
-   "dist": 252.38,
+   "dist": 267.0,
    "etat": "loin",
-   "mm50": 1.1408,
+   "mm50": 1.1444,
    "place": "Paris"
   },
   "MMB.PA": {
    "depuis": "2026-09-28",
-   "dist": 2.39,
+   "dist": 2.5,
    "etat": "approche",
-   "mm50": 17.599,
+   "mm50": 17.5994,
    "place": "Paris"
   },
   "MMM": {
    "depuis": "2026-09-25",
-   "dist": 48.96,
+   "dist": 48.11,
    "etat": "loin",
-   "mm50": 113.7788,
+   "mm50": 113.759,
    "place": "US"
   },
   "MMT.PA": {
    "depuis": "2026-09-28",
-   "dist": 16.04,
+   "dist": 15.84,
    "etat": "loin",
-   "mm50": 9.5484,
+   "mm50": 9.548,
    "place": "Paris"
   },
   "MNST": {
    "depuis": "2026-09-25",
-   "dist": 105.34,
+   "dist": 104.78,
    "etat": "loin",
-   "mm50": 20.3853,
+   "mm50": 20.3829,
    "place": "US"
   },
   "MO": {
    "depuis": "2026-09-25",
-   "dist": 95.23,
+   "dist": 94.12,
    "etat": "loin",
-   "mm50": 35.4092,
+   "mm50": 35.401,
    "place": "US"
   },
   "MONT.BR": {
    "depuis": "2026-09-28",
-   "dist": 12.25,
+   "dist": 12.43,
    "etat": "loin",
-   "mm50": 55.4991,
+   "mm50": 55.5011,
    "place": "Bruxelles"
   },
   "MORE.AS": {
    "depuis": "2026-09-28",
-   "dist": -13.33,
+   "dist": -12.9,
    "etat": "contact",
-   "mm50": 1.1422,
+   "mm50": 1.1423,
    "place": "Amsterdam"
   },
   "MOS": {
    "depuis": "2026-09-25",
-   "dist": -18.84,
+   "dist": -18.23,
    "etat": "contact",
-   "mm50": 27.4158,
+   "mm50": 27.4192,
    "place": "US"
   },
   "MOUR.BR": {
    "depuis": "2026-09-28",
-   "dist": 177.44,
+   "dist": 178.15,
    "etat": "loin",
-   "mm50": 266.0026,
+   "mm50": 266.0426,
    "place": "Bruxelles"
   },
   "MPC": {
    "depuis": "2026-09-25",
-   "dist": 350.13,
+   "dist": 352.85,
    "etat": "loin",
-   "mm50": 86.5171,
+   "mm50": 86.5689,
    "place": "US"
   },
   "MPWR": {
    "depuis": "2026-09-25",
-   "dist": 271.08,
+   "dist": 272.3,
    "etat": "loin",
-   "mm50": 364.1267,
+   "mm50": 363.6853,
    "place": "US"
   },
   "MRK": {
    "depuis": "2026-09-25",
-   "dist": 114.1,
+   "dist": 114.92,
    "etat": "loin",
-   "mm50": 69.4477,
+   "mm50": 69.4595,
    "place": "US"
   },
   "MRN.PA": {
    "depuis": "2026-09-28",
-   "dist": 77.75,
+   "dist": 83.13,
    "etat": "loin",
-   "mm50": 22.9308,
+   "mm50": 22.9564,
    "place": "Paris"
   },
   "MRSH": {
    "depuis": "2026-09-25",
-   "dist": 44.72,
+   "dist": 45.87,
    "etat": "loin",
-   "mm50": 116.8019,
+   "mm50": 116.8297,
    "place": "US"
   },
   "MRVL": {
    "depuis": "2026-09-25",
-   "dist": 417.46,
+   "dist": 438.3,
    "etat": "loin",
-   "mm50": 48.6799,
+   "mm50": 48.9073,
    "place": "US"
   },
   "MS": {
    "depuis": "2026-09-25",
-   "dist": 190.69,
+   "dist": 189.45,
    "etat": "loin",
-   "mm50": 66.6131,
+   "mm50": 66.5955,
    "place": "US"
   },
   "MSCI": {
    "depuis": "2026-09-25",
-   "dist": 73.51,
+   "dist": 72.6,
    "etat": "loin",
-   "mm50": 312.7804,
+   "mm50": 312.7212,
    "place": "US"
   },
   "MSFT": {
    "depuis": "2026-09-25",
-   "dist": 141.22,
+   "dist": 141.1,
    "etat": "loin",
-   "mm50": 211.106,
+   "mm50": 211.1008,
    "place": "US"
   },
   "MSI": {
    "depuis": "2026-09-25",
-   "dist": 126.68,
+   "dist": 123.83,
    "etat": "loin",
-   "mm50": 199.4328,
+   "mm50": 199.3136,
    "place": "US"
   },
   "MSTR": {
    "depuis": "2026-09-25",
-   "dist": 141.97,
+   "dist": 138.35,
    "etat": "loin",
-   "mm50": 64.9419,
+   "mm50": 64.8925,
    "place": "US"
   },
   "MT.AS": {
    "depuis": "2026-09-28",
-   "dist": 178.2,
+   "dist": 171.85,
    "etat": "loin",
-   "mm50": 22.0345,
+   "mm50": 22.0049,
    "place": "Amsterdam"
   },
   "MTB": {
    "depuis": "2026-09-25",
-   "dist": 70.53,
+   "dist": 68.33,
    "etat": "loin",
-   "mm50": 129.2681,
+   "mm50": 129.2093,
    "place": "US"
   },
   "MTD": {
    "depuis": "2026-09-25",
-   "dist": 70.55,
+   "dist": 69.71,
    "etat": "loin",
-   "mm50": 906.0202,
+   "mm50": 905.8616,
    "place": "US"
   },
   "MTU.PA": {
    "depuis": "2026-09-28",
-   "dist": 22.01,
+   "dist": 22.59,
    "etat": "loin",
-   "mm50": 16.9248,
+   "mm50": 16.9268,
    "place": "Paris"
   },
   "MU": {
    "depuis": "2026-09-25",
-   "dist": 875.11,
+   "dist": 883.36,
    "etat": "loin",
-   "mm50": 108.0885,
+   "mm50": 108.3105,
    "place": "US"
   },
   "NANO.PA": {
    "depuis": "2026-09-28",
-   "dist": 125.96,
+   "dist": 123.79,
    "etat": "loin",
-   "mm50": 12.3385,
+   "mm50": 12.3329,
    "place": "Paris"
   },
   "NCLH": {
    "depuis": "2026-09-25",
-   "dist": -57.31,
+   "dist": -55.86,
    "etat": "contact",
-   "mm50": 33.5182,
+   "mm50": 33.528,
    "place": "US"
   },
   "NDAQ": {
    "depuis": "2026-09-25",
-   "dist": 117.37,
+   "dist": 115.64,
    "etat": "loin",
-   "mm50": 42.6087,
+   "mm50": 42.5933,
    "place": "US"
   },
   "NDSN": {
    "depuis": "2026-09-25",
-   "dist": 100.2,
+   "dist": 99.16,
    "etat": "loin",
-   "mm50": 165.4959,
+   "mm50": 165.4601,
    "place": "US"
   },
   "NEDAP.AS": {
    "depuis": "2026-09-28",
-   "dist": 123.63,
+   "dist": 128.26,
    "etat": "loin",
-   "mm50": 41.2726,
+   "mm50": 41.3126,
    "place": "Amsterdam"
   },
   "NEDSE.AS": {
@@ -5176,16 +5176,16 @@
   },
   "NEE": {
    "depuis": "2026-09-25",
-   "dist": 50.07,
+   "dist": 50.84,
    "etat": "loin",
-   "mm50": 50.3024,
+   "mm50": 50.3104,
    "place": "US"
   },
   "NEM": {
    "depuis": "2026-09-25",
-   "dist": 175.22,
+   "dist": 177.55,
    "etat": "loin",
-   "mm50": 42.1664,
+   "mm50": 42.1872,
    "place": "US"
   },
   "NEWT.BR": {
@@ -5197,177 +5197,177 @@
   },
   "NEX.PA": {
    "depuis": "2026-09-28",
-   "dist": 119.44,
+   "dist": 119.12,
    "etat": "loin",
-   "mm50": 60.792,
+   "mm50": 60.788,
    "place": "Paris"
   },
   "NEXTA.BR": {
    "depuis": "2026-09-28",
-   "dist": -22.72,
+   "dist": -22.65,
    "etat": "contact",
-   "mm50": 57.1448,
+   "mm50": 57.1456,
    "place": "Bruxelles"
   },
   "NFLX": {
    "depuis": "2026-09-25",
-   "dist": 66.42,
+   "dist": 68.9,
    "etat": "loin",
-   "mm50": 41.6008,
+   "mm50": 41.6222,
    "place": "US"
   },
   "NI": {
    "depuis": "2026-09-25",
-   "dist": 67.26,
+   "dist": 68.17,
    "etat": "loin",
-   "mm50": 23.3762,
+   "mm50": 23.3806,
    "place": "US"
   },
   "NK.PA": {
    "depuis": "2026-09-28",
-   "dist": -28.64,
+   "dist": -28.95,
    "etat": "contact",
-   "mm50": 31.8942,
+   "mm50": 31.8922,
    "place": "Paris"
   },
   "NKE": {
    "depuis": "2026-09-25",
-   "dist": -51.53,
+   "dist": -52.26,
    "etat": "contact",
-   "mm50": 75.0833,
+   "mm50": 75.0723,
    "place": "US"
   },
   "NOC": {
    "depuis": "2026-09-25",
-   "dist": 53.57,
+   "dist": 53.22,
    "etat": "loin",
-   "mm50": 329.3593,
+   "mm50": 329.3355,
    "place": "US"
   },
   "NOW": {
    "depuis": "2026-09-25",
-   "dist": 65.82,
+   "dist": 63.98,
    "etat": "loin",
-   "mm50": 79.2718,
+   "mm50": 79.2416,
    "place": "US"
   },
   "NRG": {
    "depuis": "2026-09-25",
-   "dist": 110.93,
+   "dist": 111.28,
    "etat": "loin",
-   "mm50": 45.9875,
+   "mm50": 45.9909,
    "place": "US"
   },
   "NRG.PA": {
    "depuis": "2026-09-28",
-   "dist": -4.19,
+   "dist": -4.82,
    "etat": "contact",
-   "mm50": 6.1999,
+   "mm50": 6.1991,
    "place": "Paris"
   },
   "NRO.PA": {
    "depuis": "2026-09-28",
-   "dist": 43.73,
+   "dist": 43.15,
    "etat": "loin",
-   "mm50": 25.2561,
+   "mm50": 25.2531,
    "place": "Paris"
   },
   "NSC": {
    "depuis": "2026-09-25",
-   "dist": 80.42,
+   "dist": 80.39,
    "etat": "loin",
-   "mm50": 173.5142,
+   "mm50": 173.5132,
    "place": "US"
   },
   "NSE.AS": {
    "depuis": "2026-09-28",
-   "dist": -87.69,
+   "dist": -85.64,
    "etat": "contact",
-   "mm50": 0.1949,
+   "mm50": 0.195,
    "place": "Amsterdam"
   },
   "NSI.AS": {
    "depuis": "2026-09-28",
-   "dist": -7.84,
+   "dist": -7.95,
    "etat": "contact",
-   "mm50": 17.8612,
+   "mm50": 17.8608,
    "place": "Amsterdam"
   },
   "NTAP": {
    "depuis": "2026-09-25",
-   "dist": 220.76,
+   "dist": 227.76,
    "etat": "loin",
-   "mm50": 63.7258,
+   "mm50": 63.8212,
    "place": "US"
   },
   "NTRS": {
    "depuis": "2026-09-25",
-   "dist": 113.22,
+   "dist": 111.33,
    "etat": "loin",
-   "mm50": 81.8654,
+   "mm50": 81.8332,
    "place": "US"
   },
   "NUE": {
    "depuis": "2026-09-25",
-   "dist": 177.84,
+   "dist": 168.97,
    "etat": "loin",
-   "mm50": 87.9964,
+   "mm50": 87.8314,
    "place": "US"
   },
   "NVDA": {
    "depuis": "2026-09-25",
-   "dist": 436.71,
+   "dist": 433.25,
    "etat": "loin",
-   "mm50": 42.6413,
+   "mm50": 42.6083,
    "place": "US"
   },
   "NVR": {
    "depuis": "2026-09-25",
-   "dist": 48.47,
+   "dist": 47.71,
    "etat": "loin",
-   "mm50": 4221.5954,
+   "mm50": 4220.9302,
    "place": "US"
   },
   "NWS": {
    "depuis": "2026-09-25",
-   "dist": 76.3,
+   "dist": 72.4,
    "etat": "loin",
-   "mm50": 18.2867,
+   "mm50": 18.2719,
    "place": "US"
   },
   "NWSA": {
    "depuis": "2026-09-25",
-   "dist": 65.82,
+   "dist": 62.62,
    "etat": "loin",
-   "mm50": 17.5489,
+   "mm50": 17.5373,
    "place": "US"
   },
   "NXI.PA": {
    "depuis": "2026-09-28",
-   "dist": -78.32,
+   "dist": -78.63,
    "etat": "contact",
-   "mm50": 22.9408,
+   "mm50": 22.9394,
    "place": "Paris"
   },
   "NXPI": {
    "depuis": "2026-09-25",
-   "dist": 69.73,
+   "dist": 69.83,
    "etat": "loin",
-   "mm50": 139.2328,
+   "mm50": 139.2358,
    "place": "US"
   },
   "NYR.BR": {
    "depuis": "2026-09-28",
-   "dist": -98.21,
+   "dist": -98.32,
    "etat": "contact",
-   "mm50": 3.4603,
+   "mm50": 3.4602,
    "place": "Bruxelles"
   },
   "O": {
    "depuis": "2026-09-25",
-   "dist": 25.98,
+   "dist": 25.51,
    "etat": "loin",
-   "mm50": 43.9362,
+   "mm50": 43.7157,
    "place": "US"
   },
   "OBEL.BR": {
@@ -5379,107 +5379,107 @@
   },
   "OCI.AS": {
    "depuis": "2026-09-28",
-   "dist": 28.98,
+   "dist": 29.29,
    "etat": "loin",
-   "mm50": 3.1555,
+   "mm50": 3.1557,
    "place": "Amsterdam"
   },
   "ODET.PA": {
    "depuis": "2026-09-28",
-   "dist": 28.37,
+   "dist": 32.27,
    "etat": "loin",
-   "mm50": 747.8418,
+   "mm50": 748.4418,
    "place": "Paris"
   },
   "ODFL": {
    "depuis": "2026-09-25",
-   "dist": 80.19,
+   "dist": 80.79,
    "etat": "loin",
-   "mm50": 98.1484,
+   "mm50": 98.1606,
    "place": "US"
   },
   "OKE": {
    "depuis": "2026-09-25",
-   "dist": 94.83,
+   "dist": 91.11,
    "etat": "loin",
-   "mm50": 45.4866,
+   "mm50": 45.4514,
    "place": "US"
   },
   "OMC": {
    "depuis": "2026-09-25",
-   "dist": 20.02,
+   "dist": 18.52,
    "etat": "loin",
-   "mm50": 62.5732,
+   "mm50": 62.554,
    "place": "US"
   },
   "ON": {
    "depuis": "2026-09-25",
-   "dist": 96.26,
+   "dist": 97.0,
    "etat": "loin",
-   "mm50": 38.5467,
+   "mm50": 38.5527,
    "place": "US"
   },
   "ONTEX.BR": {
    "depuis": "2026-09-28",
-   "dist": -86.45,
+   "dist": -86.92,
    "etat": "contact",
-   "mm50": 15.2778,
+   "mm50": 15.2764,
    "place": "Bruxelles"
   },
   "OPM.PA": {
    "depuis": "2026-09-28",
-   "dist": -31.87,
+   "dist": -32.44,
    "etat": "contact",
-   "mm50": 17.4235,
+   "mm50": 17.4215,
    "place": "Paris"
   },
   "OPTI.BR": {
    "depuis": "2026-09-28",
-   "dist": -94.68,
+   "dist": -95.06,
    "etat": "contact",
-   "mm50": 78.5478,
+   "mm50": 78.5418,
    "place": "Bruxelles"
   },
   "OR.PA": {
    "depuis": "2026-09-28",
-   "dist": 48.78,
+   "dist": 47.18,
    "etat": "loin",
-   "mm50": 258.7781,
+   "mm50": 258.6931,
    "place": "Paris"
   },
   "ORA.PA": {
    "depuis": "2026-09-28",
-   "dist": 57.24,
+   "dist": 54.95,
    "etat": "loin",
-   "mm50": 8.8653,
+   "mm50": 8.8611,
    "place": "Paris"
   },
   "ORCL": {
    "depuis": "2026-09-25",
-   "dist": 68.33,
+   "dist": 74.69,
    "etat": "loin",
-   "mm50": 78.7753,
+   "mm50": 78.8791,
    "place": "US"
   },
   "OREGE.PA": {
    "depuis": "2026-09-28",
-   "dist": -86.82,
+   "dist": -87.31,
    "etat": "contact",
-   "mm50": 1.8054,
+   "mm50": 1.8052,
    "place": "Paris"
   },
   "ORIA.PA": {
-   "depuis": "2026-09-28",
-   "dist": 7.24,
-   "etat": "loin",
-   "mm50": 151.9942,
+   "depuis": "2026-09-29",
+   "dist": 5.95,
+   "etat": "approche",
+   "mm50": 151.9542,
    "place": "Paris"
   },
   "ORLY": {
    "depuis": "2026-09-25",
-   "dist": 107.93,
+   "dist": 106.91,
    "etat": "loin",
-   "mm50": 41.6057,
+   "mm50": 41.5969,
    "place": "US"
   },
   "OXUR.BR": {
@@ -5491,30 +5491,30 @@
   },
   "OXY": {
    "depuis": "2026-09-25",
-   "dist": 15.74,
+   "dist": 13.4,
    "etat": "loin",
-   "mm50": 48.4713,
+   "mm50": 48.4481,
    "place": "US"
   },
   "PANW": {
    "depuis": "2026-09-25",
-   "dist": 363.28,
+   "dist": 359.33,
    "etat": "loin",
-   "mm50": 84.6333,
+   "mm50": 84.5597,
    "place": "US"
   },
   "PAR.PA": {
    "depuis": "2026-09-28",
-   "dist": -44.87,
+   "dist": -46.66,
    "etat": "contact",
-   "mm50": 44.262,
+   "mm50": 44.246,
    "place": "Paris"
   },
   "PARP.PA": {
    "depuis": "2026-09-28",
-   "dist": -13.49,
+   "dist": -13.73,
    "etat": "contact",
-   "mm50": 20.3448,
+   "mm50": 20.3438,
    "place": "Paris"
   },
   "PARRO.PA": {
@@ -5526,9 +5526,9 @@
   },
   "PAT.PA": {
    "depuis": "2026-09-28",
-   "dist": 61.42,
+   "dist": 63.44,
    "etat": "loin",
-   "mm50": 14.3723,
+   "mm50": 14.3783,
    "place": "Paris"
   },
   "PAY.BR": {
@@ -5540,9 +5540,9 @@
   },
   "PAYX": {
    "depuis": "2026-09-25",
-   "dist": 30.11,
+   "dist": 30.12,
    "etat": "loin",
-   "mm50": 76.3215,
+   "mm50": 76.3217,
    "place": "US"
   },
   "PBH.AS": {
@@ -5554,37 +5554,37 @@
   },
   "PCAR": {
    "depuis": "2026-09-25",
-   "dist": 105.98,
+   "dist": 106.25,
    "etat": "loin",
-   "mm50": 54.204,
+   "mm50": 54.207,
    "place": "US"
   },
   "PCG": {
    "depuis": "2026-09-25",
-   "dist": -56.95,
+   "dist": -56.13,
    "etat": "contact",
-   "mm50": 27.7583,
+   "mm50": 27.7629,
    "place": "US"
   },
   "PEG": {
    "depuis": "2026-09-25",
-   "dist": 36.11,
+   "dist": 38.0,
    "etat": "loin",
-   "mm50": 49.0256,
+   "mm50": 49.0446,
    "place": "US"
   },
   "PEP": {
    "depuis": "2026-09-25",
-   "dist": 14.06,
+   "dist": 14.22,
    "etat": "loin",
-   "mm50": 112.6611,
+   "mm50": 112.6649,
    "place": "US"
   },
   "PEUG.PA": {
    "depuis": "2026-09-28",
-   "dist": -23.55,
+   "dist": -23.12,
    "etat": "contact",
-   "mm50": 69.5859,
+   "mm50": 69.5919,
    "place": "Paris"
   },
   "PFE": {
@@ -5596,128 +5596,128 @@
   },
   "PFG": {
    "depuis": "2026-09-25",
-   "dist": 113.63,
+   "dist": 112.43,
    "etat": "loin",
-   "mm50": 53.6628,
+   "mm50": 53.6494,
    "place": "US"
   },
   "PG": {
    "depuis": "2026-09-25",
-   "dist": 41.17,
+   "dist": 40.52,
    "etat": "loin",
-   "mm50": 105.5685,
+   "mm50": 105.5543,
    "place": "US"
   },
   "PGR": {
    "depuis": "2026-09-25",
-   "dist": 115.62,
+   "dist": 116.66,
    "etat": "loin",
-   "mm50": 97.1458,
+   "mm50": 97.1668,
    "place": "US"
   },
   "PH": {
    "depuis": "2026-09-25",
-   "dist": 215.11,
+   "dist": 215.36,
    "etat": "loin",
-   "mm50": 307.6822,
+   "mm50": 307.6986,
    "place": "US"
   },
   "PHARM.AS": {
-   "depuis": "2026-09-28",
-   "dist": 9.47,
-   "etat": "loin",
-   "mm50": 0.8404,
+   "depuis": "2026-09-29",
+   "dist": 5.53,
+   "etat": "approche",
+   "mm50": 0.8398,
    "place": "Amsterdam"
   },
   "PHIA.AS": {
    "depuis": "2026-09-28",
-   "dist": 1.95,
+   "dist": 0.85,
    "etat": "approche",
-   "mm50": 21.5508,
+   "mm50": 21.546,
    "place": "Amsterdam"
   },
   "PHM": {
    "depuis": "2026-09-25",
-   "dist": 127.69,
+   "dist": 126.54,
    "etat": "loin",
-   "mm50": 52.3219,
+   "mm50": 52.3093,
    "place": "US"
   },
   "PIG.PA": {
    "depuis": "2026-09-28",
-   "dist": -64.85,
+   "dist": -64.53,
    "etat": "contact",
-   "mm50": 6.2026,
+   "mm50": 6.203,
    "place": "Paris"
   },
   "PKG": {
    "depuis": "2026-09-25",
-   "dist": 107.78,
+   "dist": 106.72,
    "etat": "loin",
-   "mm50": 112.8709,
+   "mm50": 112.8461,
    "place": "US"
   },
   "PLD": {
    "depuis": "2026-09-25",
-   "dist": 68.37,
+   "dist": 68.58,
    "etat": "loin",
-   "mm50": 78.6598,
+   "mm50": 78.6632,
    "place": "US"
   },
   "PM": {
    "depuis": "2026-09-25",
-   "dist": 137.76,
+   "dist": 137.93,
    "etat": "loin",
-   "mm50": 81.4933,
+   "mm50": 81.4961,
    "place": "US"
   },
   "PNC": {
    "depuis": "2026-09-25",
-   "dist": 85.51,
+   "dist": 83.9,
    "etat": "loin",
-   "mm50": 120.5695,
+   "mm50": 120.5291,
    "place": "US"
   },
   "PNL.AS": {
    "depuis": "2026-09-28",
-   "dist": -49.56,
+   "dist": -48.91,
    "etat": "contact",
-   "mm50": 1.6585,
+   "mm50": 1.6587,
    "place": "Amsterdam"
   },
   "PNR": {
    "depuis": "2026-09-28",
-   "dist": 0.69,
+   "dist": 1.51,
    "etat": "contact",
-   "mm50": 52.668,
+   "mm50": 52.6768,
    "place": "US"
   },
   "PNW": {
    "depuis": "2026-09-25",
-   "dist": 44.35,
+   "dist": 47.54,
    "etat": "loin",
-   "mm50": 63.2635,
+   "mm50": 63.3051,
    "place": "US"
   },
   "PODD": {
    "depuis": "2026-09-25",
-   "dist": -16.61,
+   "dist": -16.78,
    "etat": "contact",
-   "mm50": 159.6229,
+   "mm50": 159.6175,
    "place": "US"
   },
   "POMRY.PA": {
    "depuis": "2026-09-28",
-   "dist": -33.37,
+   "dist": -34.93,
    "etat": "contact",
-   "mm50": 13.8674,
+   "mm50": 13.863,
    "place": "Paris"
   },
   "POOL": {
    "depuis": "2026-09-25",
-   "dist": -25.39,
+   "dist": -25.75,
    "etat": "contact",
-   "mm50": 218.8839,
+   "mm50": 218.8681,
    "place": "US"
   },
   "PORF.AS": {
@@ -5729,100 +5729,100 @@
   },
   "PPG": {
    "depuis": "2026-09-28",
-   "dist": 1.53,
+   "dist": 0.61,
    "etat": "contact",
-   "mm50": 105.3967,
+   "mm50": 105.3769,
    "place": "US"
   },
   "PPL": {
    "depuis": "2026-09-25",
-   "dist": 30.46,
+   "dist": 32.32,
    "etat": "loin",
-   "mm50": 24.613,
+   "mm50": 24.6224,
    "place": "US"
   },
   "PRC.PA": {
    "depuis": "2026-09-28",
-   "dist": -60.85,
+   "dist": -62.37,
    "etat": "contact",
-   "mm50": 9.1438,
+   "mm50": 9.141,
    "place": "Paris"
   },
   "PROAC.PA": {
    "depuis": "2026-09-28",
-   "dist": -51.27,
+   "dist": -52.07,
    "etat": "contact",
-   "mm50": 0.1242,
+   "mm50": 0.1241,
    "place": "Paris"
   },
   "PROX.BR": {
    "depuis": "2026-09-28",
-   "dist": -35.68,
+   "dist": -36.88,
    "etat": "contact",
-   "mm50": 9.4921,
+   "mm50": 9.4898,
    "place": "Bruxelles"
   },
   "PRU": {
    "depuis": "2026-09-25",
-   "dist": 58.21,
+   "dist": 56.85,
    "etat": "loin",
-   "mm50": 73.3757,
+   "mm50": 73.3551,
    "place": "US"
   },
   "PSA": {
    "depuis": "2026-09-25",
-   "dist": 39.7,
+   "dist": 40.08,
    "etat": "loin",
-   "mm50": 203.8571,
+   "mm50": 203.8729,
    "place": "US"
   },
   "PSKY": {
    "depuis": "2026-09-25",
-   "dist": -66.04,
+   "dist": -66.99,
    "etat": "contact",
-   "mm50": 30.2708,
+   "mm50": 30.265,
    "place": "US"
   },
   "PSX": {
    "depuis": "2026-09-25",
-   "dist": 200.95,
+   "dist": 199.5,
    "etat": "loin",
-   "mm50": 84.2507,
+   "mm50": 84.2247,
    "place": "US"
   },
   "PTC": {
    "depuis": "2026-09-25",
-   "dist": 38.3,
+   "dist": 36.25,
    "etat": "loin",
-   "mm50": 101.0074,
+   "mm50": 100.9648,
    "place": "US"
   },
   "PUB.PA": {
    "depuis": "2026-09-28",
-   "dist": 87.04,
+   "dist": 86.36,
    "etat": "loin",
-   "mm50": 51.401,
+   "mm50": 51.3938,
    "place": "Paris"
   },
   "PWR": {
    "depuis": "2026-09-25",
-   "dist": 352.58,
+   "dist": 357.32,
    "etat": "loin",
-   "mm50": 142.3754,
+   "mm50": 142.524,
    "place": "US"
   },
   "QCOM": {
    "depuis": "2026-09-25",
-   "dist": 96.32,
+   "dist": 92.92,
    "etat": "loin",
-   "mm50": 95.4953,
+   "mm50": 95.4277,
    "place": "US"
   },
   "QDT.PA": {
    "depuis": "2026-09-28",
-   "dist": -25.11,
+   "dist": -18.8,
    "etat": "contact",
-   "mm50": 16.8252,
+   "mm50": 16.8468,
    "place": "Paris"
   },
   "QRF.BR": {
@@ -5834,121 +5834,121 @@
   },
   "RAND.AS": {
    "depuis": "2026-09-28",
-   "dist": 8.92,
+   "dist": 7.4,
    "etat": "loin",
-   "mm50": 32.9792,
+   "mm50": 32.969,
    "place": "Amsterdam"
   },
   "RBT.PA": {
    "depuis": "2026-09-28",
-   "dist": 21.72,
+   "dist": 21.88,
    "etat": "loin",
-   "mm50": 612.0693,
+   "mm50": 612.0893,
    "place": "Paris"
   },
   "RCL": {
    "depuis": "2026-09-25",
-   "dist": 110.74,
+   "dist": 125.74,
    "etat": "loin",
-   "mm50": 115.1111,
+   "mm50": 115.4727,
    "place": "US"
   },
   "RCO.PA": {
    "depuis": "2026-09-28",
-   "dist": -52.88,
+   "dist": -52.68,
    "etat": "contact",
-   "mm50": 90.6577,
+   "mm50": 90.6613,
    "place": "Paris"
   },
   "RECT.BR": {
    "depuis": "2026-09-28",
-   "dist": 50.16,
+   "dist": 52.6,
    "etat": "loin",
-   "mm50": 8.7241,
+   "mm50": 8.7285,
    "place": "Bruxelles"
   },
   "REG": {
    "depuis": "2026-09-25",
-   "dist": 43.2,
+   "dist": 41.93,
    "etat": "loin",
-   "mm50": 51.2083,
+   "mm50": 51.1949,
    "place": "US"
   },
   "REGN": {
    "depuis": "2026-09-25",
-   "dist": 36.3,
+   "dist": 35.99,
    "etat": "loin",
-   "mm50": 551.9247,
+   "mm50": 551.8899,
    "place": "US"
   },
   "REN.AS": {
    "depuis": "2026-09-28",
-   "dist": 33.2,
+   "dist": 34.0,
    "etat": "loin",
-   "mm50": 21.8465,
+   "mm50": 21.8501,
    "place": "Amsterdam"
   },
   "RET.BR": {
    "depuis": "2026-09-28",
-   "dist": 25.19,
+   "dist": 25.38,
    "etat": "loin",
-   "mm50": 50.7244,
+   "mm50": 50.7264,
    "place": "Bruxelles"
   },
   "RF": {
    "depuis": "2026-09-25",
-   "dist": 92.11,
+   "dist": 89.6,
    "etat": "loin",
-   "mm50": 14.1901,
+   "mm50": 14.1827,
    "place": "US"
   },
   "RF.PA": {
    "depuis": "2026-09-28",
-   "dist": -5.34,
+   "dist": -6.74,
    "etat": "contact",
-   "mm50": 48.8672,
+   "mm50": 48.8532,
    "place": "Paris"
   },
   "RI.PA": {
    "depuis": "2026-09-28",
-   "dist": -45.79,
+   "dist": -44.62,
    "etat": "contact",
-   "mm50": 108.3137,
+   "mm50": 108.3393,
    "place": "Paris"
   },
   "RJF": {
    "depuis": "2026-09-25",
-   "dist": 110.45,
+   "dist": 108.81,
    "etat": "loin",
-   "mm50": 76.5799,
+   "mm50": 76.5537,
    "place": "US"
   },
   "RL": {
    "depuis": "2026-09-25",
-   "dist": 163.23,
+   "dist": 162.37,
    "etat": "loin",
-   "mm50": 135.6826,
+   "mm50": 135.6578,
    "place": "US"
   },
   "RMD": {
    "depuis": "2026-09-25",
-   "dist": 50.43,
+   "dist": 50.91,
    "etat": "loin",
-   "mm50": 147.6458,
+   "mm50": 147.6604,
    "place": "US"
   },
   "RMS.PA": {
    "depuis": "2026-09-28",
-   "dist": 35.6,
+   "dist": 32.83,
    "etat": "loin",
-   "mm50": 1018.7716,
+   "mm50": 1018.1916,
    "place": "Paris"
   },
   "RNO.PA": {
    "depuis": "2026-09-28",
-   "dist": -35.45,
+   "dist": -36.11,
    "etat": "contact",
-   "mm50": 40.7929,
+   "mm50": 40.7875,
    "place": "Paris"
   },
   "ROCK.BR": {
@@ -5960,79 +5960,79 @@
   },
   "ROK": {
    "depuis": "2026-09-25",
-   "dist": 107.12,
+   "dist": 107.26,
    "etat": "loin",
-   "mm50": 208.1987,
+   "mm50": 208.2049,
    "place": "US"
   },
   "ROL": {
    "depuis": "2026-09-25",
-   "dist": 6.99,
+   "dist": 6.68,
    "etat": "approche",
-   "mm50": 28.5908,
+   "mm50": 28.589,
    "place": "US"
   },
   "ROP": {
    "depuis": "2026-09-25",
-   "dist": 3.56,
+   "dist": 2.25,
    "etat": "approche",
-   "mm50": 341.847,
+   "mm50": 341.756,
    "place": "US"
   },
   "ROST": {
    "depuis": "2026-09-25",
-   "dist": 141.82,
+   "dist": 139.2,
    "etat": "loin",
-   "mm50": 98.0452,
+   "mm50": 97.9914,
    "place": "US"
   },
   "ROU.BR": {
    "depuis": "2026-09-28",
-   "dist": 9.98,
+   "dist": 6.53,
    "etat": "loin",
-   "mm50": 11.366,
+   "mm50": 11.358,
    "place": "Bruxelles"
   },
   "RSG": {
    "depuis": "2026-09-25",
-   "dist": 98.26,
+   "dist": 97.35,
    "etat": "loin",
-   "mm50": 107.4017,
+   "mm50": 107.3815,
    "place": "US"
   },
   "RTX": {
    "depuis": "2026-09-25",
-   "dist": 130.46,
+   "dist": 129.62,
    "etat": "loin",
-   "mm50": 81.4283,
+   "mm50": 81.4139,
    "place": "US"
   },
   "RUI.PA": {
    "depuis": "2026-09-28",
-   "dist": 47.31,
+   "dist": 46.58,
    "etat": "loin",
-   "mm50": 23.8821,
+   "mm50": 23.8785,
    "place": "Paris"
   },
   "RVTY": {
    "depuis": "2026-09-25",
-   "dist": 57.83,
+   "dist": 59.6,
    "etat": "loin",
-   "mm50": 95.6872,
+   "mm50": 95.7222,
    "place": "US"
   },
   "RXL.PA": {
    "depuis": "2026-09-28",
-   "dist": 134.31,
+   "dist": 142.38,
    "etat": "loin",
-   "mm50": 14.9801,
+   "mm50": 15.0055,
    "place": "Paris"
   },
   "S30.PA": {
    "depuis": "2026-09-28",
-   "dist": -90.47,
+   "dist": -90.36,
    "etat": "contact",
-   "mm50": 4.8779,
+   "mm50": 4.878,
    "place": "Paris"
   },
   "SABE.PA": {
@@ -6051,86 +6051,86 @@
   },
   "SAF.PA": {
    "depuis": "2026-09-28",
-   "dist": 160.76,
+   "dist": 162.32,
    "etat": "loin",
-   "mm50": 127.7032,
+   "mm50": 127.7452,
    "place": "Paris"
   },
   "SAMS.PA": {
    "depuis": "2026-09-28",
-   "dist": 7.52,
+   "dist": 7.96,
    "etat": "loin",
-   "mm50": 109.7494,
+   "mm50": 109.7594,
    "place": "Paris"
   },
   "SAN.PA": {
    "depuis": "2026-09-28",
-   "dist": 9.71,
+   "dist": 8.92,
    "etat": "loin",
-   "mm50": 65.629,
+   "mm50": 65.6184,
    "place": "Paris"
   },
   "SAVE.PA": {
-   "depuis": "2026-09-28",
-   "dist": 1.28,
-   "etat": "approche",
-   "mm50": 54.3069,
+   "depuis": "2026-09-29",
+   "dist": 0.55,
+   "etat": "contact",
+   "mm50": 54.2989,
    "place": "Paris"
   },
   "SBAC": {
    "depuis": "2026-09-25",
-   "dist": -13.54,
+   "dist": -13.86,
    "etat": "contact",
-   "mm50": 189.026,
+   "mm50": 189.0136,
    "place": "US"
   },
   "SBMO.AS": {
    "depuis": "2026-09-28",
-   "dist": 202.34,
+   "dist": 192.97,
    "etat": "loin",
-   "mm50": 12.2576,
+   "mm50": 12.2332,
    "place": "Amsterdam"
   },
   "SBT.PA": {
-   "depuis": "2026-09-28",
-   "dist": 1.71,
-   "etat": "approche",
-   "mm50": 8.947,
+   "depuis": "2026-09-29",
+   "dist": -1.69,
+   "etat": "contact",
+   "mm50": 8.5848,
    "place": "Paris"
   },
   "SBUX": {
    "depuis": "2026-09-25",
-   "dist": 38.09,
+   "dist": 38.31,
    "etat": "loin",
-   "mm50": 68.993,
+   "mm50": 68.9962,
    "place": "US"
   },
   "SCHP.PA": {
    "depuis": "2026-09-28",
-   "dist": 47.07,
+   "dist": 44.78,
    "etat": "loin",
-   "mm50": 50.9975,
+   "mm50": 50.9735,
    "place": "Paris"
   },
   "SCHW": {
    "depuis": "2026-09-25",
-   "dist": 86.91,
+   "dist": 88.37,
    "etat": "loin",
-   "mm50": 52.5933,
+   "mm50": 52.6093,
    "place": "US"
   },
   "SCR.PA": {
    "depuis": "2026-09-28",
-   "dist": 62.25,
+   "dist": 60.55,
    "etat": "loin",
-   "mm50": 20.5121,
+   "mm50": 20.5049,
    "place": "Paris"
   },
   "SDG.PA": {
    "depuis": "2026-09-28",
-   "dist": -0.32,
+   "dist": -1.78,
    "etat": "contact",
-   "mm50": 26.9873,
+   "mm50": 26.9793,
    "place": "Paris"
   },
   "SELER.PA": {
@@ -6142,16 +6142,16 @@
   },
   "SESG.PA": {
    "depuis": "2026-09-28",
-   "dist": -40.45,
+   "dist": -38.7,
    "etat": "contact",
-   "mm50": 7.1943,
+   "mm50": 7.1968,
    "place": "Paris"
   },
   "SFCA.PA": {
    "depuis": "2026-09-28",
-   "dist": 236.06,
+   "dist": 241.28,
    "etat": "loin",
-   "mm50": 1.7854,
+   "mm50": 1.7874,
    "place": "Paris"
   },
   "SFPI.PA": {
@@ -6163,135 +6163,135 @@
   },
   "SGO.PA": {
    "depuis": "2026-09-28",
-   "dist": 56.99,
+   "dist": 55.48,
    "etat": "loin",
-   "mm50": 44.9076,
+   "mm50": 44.8936,
    "place": "Paris"
   },
   "SHELL.AS": {
    "depuis": "2026-09-28",
-   "dist": 107.22,
+   "dist": 104.08,
    "etat": "loin",
-   "mm50": 20.6185,
+   "mm50": 20.605,
    "place": "Amsterdam"
   },
   "SHW": {
    "depuis": "2026-09-25",
-   "dist": 67.8,
+   "dist": 66.66,
    "etat": "loin",
-   "mm50": 198.3235,
+   "mm50": 198.2765,
    "place": "US"
   },
   "SIP.BR": {
    "depuis": "2026-09-28",
-   "dist": 113.74,
+   "dist": 114.11,
    "etat": "loin",
-   "mm50": 50.8104,
+   "mm50": 50.8144,
    "place": "Bruxelles"
   },
   "SJM": {
    "depuis": "2026-09-25",
-   "dist": 23.15,
+   "dist": 23.22,
    "etat": "loin",
-   "mm50": 97.9539,
+   "mm50": 97.9553,
    "place": "US"
   },
   "SK.PA": {
    "depuis": "2026-09-28",
-   "dist": -32.57,
+   "dist": -33.55,
    "etat": "contact",
-   "mm50": 86.2432,
+   "mm50": 86.2262,
    "place": "Paris"
   },
   "SLB": {
    "depuis": "2026-09-25",
-   "dist": 17.64,
+   "dist": 14.02,
    "etat": "loin",
-   "mm50": 43.7685,
+   "mm50": 43.7361,
    "place": "US"
   },
   "SLIGR.AS": {
    "depuis": "2026-09-28",
-   "dist": -43.55,
+   "dist": -43.44,
    "etat": "contact",
-   "mm50": 17.3079,
+   "mm50": 17.3083,
    "place": "Amsterdam"
   },
   "SMCI": {
    "depuis": "2026-09-25",
-   "dist": 196.2,
+   "dist": 191.13,
    "etat": "loin",
-   "mm50": 14.1052,
+   "mm50": 14.09,
    "place": "US"
   },
   "SNA": {
    "depuis": "2026-09-25",
-   "dist": 96.78,
+   "dist": 95.69,
    "etat": "loin",
-   "mm50": 187.6226,
+   "mm50": 187.58,
    "place": "US"
   },
   "SNPS": {
    "depuis": "2026-09-25",
-   "dist": 72.81,
+   "dist": 71.8,
    "etat": "loin",
-   "mm50": 241.6633,
+   "mm50": 241.6129,
    "place": "US"
   },
   "SO": {
    "depuis": "2026-09-25",
-   "dist": 59.91,
+   "dist": 61.97,
    "etat": "loin",
-   "mm50": 51.4983,
+   "mm50": 51.5203,
    "place": "US"
   },
   "SOF.BR": {
    "depuis": "2026-09-28",
-   "dist": 37.73,
+   "dist": 37.63,
    "etat": "loin",
-   "mm50": 178.1688,
+   "mm50": 178.1648,
    "place": "Bruxelles"
   },
   "SOFT.BR": {
    "depuis": "2026-09-28",
-   "dist": -30.34,
+   "dist": -26.77,
    "etat": "contact",
-   "mm50": 1.1053,
+   "mm50": 1.1061,
    "place": "Bruxelles"
   },
   "SOI.PA": {
    "depuis": "2026-09-28",
-   "dist": 67.41,
+   "dist": 82.06,
    "etat": "loin",
-   "mm50": 85.1508,
+   "mm50": 85.4098,
    "place": "Paris"
   },
   "SOLB.BR": {
    "depuis": "2026-09-28",
-   "dist": 119.33,
+   "dist": 118.14,
    "etat": "loin",
-   "mm50": 11.2432,
+   "mm50": 11.2404,
    "place": "Bruxelles"
   },
   "SOLV.BR": {
    "depuis": "2026-09-28",
-   "dist": -1.86,
+   "dist": -3.02,
    "etat": "contact",
-   "mm50": 84.5734,
+   "mm50": 84.5534,
    "place": "Bruxelles"
   },
   "SOP.PA": {
    "depuis": "2026-09-28",
-   "dist": 31.68,
+   "dist": 31.13,
    "etat": "loin",
-   "mm50": 123.1011,
+   "mm50": 123.0871,
    "place": "Paris"
   },
   "SPA.BR": {
    "depuis": "2026-09-28",
-   "dist": 110.6,
+   "dist": 104.83,
    "etat": "loin",
-   "mm50": 166.1913,
+   "mm50": 165.9913,
    "place": "Bruxelles"
   },
   "SPEL.PA": {
@@ -6303,394 +6303,394 @@
   },
   "SPG": {
    "depuis": "2026-09-25",
-   "dist": 79.46,
+   "dist": 79.25,
    "etat": "loin",
-   "mm50": 113.9677,
+   "mm50": 113.9627,
    "place": "US"
   },
   "SPGI": {
    "depuis": "2026-09-25",
-   "dist": 50.38,
+   "dist": 49.1,
    "etat": "loin",
-   "mm50": 263.2815,
+   "mm50": 263.2121,
    "place": "US"
   },
   "SRE": {
    "depuis": "2026-09-25",
-   "dist": 37.19,
+   "dist": 39.43,
    "etat": "loin",
-   "mm50": 56.0465,
+   "mm50": 56.0723,
    "place": "US"
   },
   "STE": {
    "depuis": "2026-09-25",
-   "dist": 43.38,
+   "dist": 43.15,
    "etat": "loin",
-   "mm50": 147.1629,
+   "mm50": 147.1559,
    "place": "US"
   },
   "STF.PA": {
    "depuis": "2026-09-28",
-   "dist": 63.7,
+   "dist": 61.21,
    "etat": "loin",
-   "mm50": 77.8253,
+   "mm50": 77.7853,
    "place": "Paris"
   },
   "STLAP.PA": {
    "depuis": "2026-09-28",
-   "dist": -63.3,
+   "dist": -64.57,
    "etat": "contact",
-   "mm50": 11.0192,
+   "mm50": 11.0164,
    "place": "Paris"
   },
   "STLD": {
    "depuis": "2026-09-25",
-   "dist": 246.53,
+   "dist": 234.61,
    "etat": "loin",
-   "mm50": 66.4855,
+   "mm50": 66.3157,
    "place": "US"
   },
   "STMPA.PA": {
    "depuis": "2026-09-28",
-   "dist": 100.49,
+   "dist": 105.51,
    "etat": "loin",
-   "mm50": 22.8636,
+   "mm50": 22.8875,
    "place": "Paris"
   },
   "STT": {
    "depuis": "2026-09-25",
-   "dist": 152.28,
+   "dist": 149.68,
    "etat": "loin",
-   "mm50": 71.2409,
+   "mm50": 71.2019,
    "place": "US"
   },
   "STX": {
    "depuis": "2026-09-25",
-   "dist": 801.23,
+   "dist": 794.76,
    "etat": "loin",
-   "mm50": 102.2501,
+   "mm50": 102.0889,
    "place": "US"
   },
   "STZ": {
    "depuis": "2026-09-25",
-   "dist": -33.24,
+   "dist": -33.33,
    "etat": "contact",
-   "mm50": 169.1518,
+   "mm50": 169.1488,
    "place": "US"
   },
   "SU.PA": {
    "depuis": "2026-09-28",
-   "dist": 150.73,
+   "dist": 155.52,
    "etat": "loin",
-   "mm50": 115.8603,
+   "mm50": 115.9773,
    "place": "Paris"
   },
   "SW": {
    "depuis": "2026-09-25",
-   "dist": 53.54,
+   "dist": 51.26,
    "etat": "loin",
-   "mm50": 29.3536,
+   "mm50": 29.3398,
    "place": "US"
   },
   "SW.PA": {
    "depuis": "2026-09-28",
-   "dist": 13.86,
+   "dist": 12.78,
    "etat": "loin",
-   "mm50": 49.8872,
+   "mm50": 49.8762,
    "place": "Paris"
   },
   "SWK": {
    "depuis": "2026-09-25",
-   "dist": -8.29,
+   "dist": -8.23,
    "etat": "contact",
-   "mm50": 96.7499,
+   "mm50": 96.7511,
    "place": "US"
   },
   "SWKS": {
    "depuis": "2026-09-25",
-   "dist": 3.62,
+   "dist": 4.14,
    "etat": "approche",
-   "mm50": 84.53,
+   "mm50": 84.539,
    "place": "US"
   },
   "SWP.PA": {
    "depuis": "2026-09-28",
-   "dist": 37.23,
+   "dist": 36.54,
    "etat": "loin",
-   "mm50": 21.2418,
+   "mm50": 21.2388,
    "place": "Paris"
   },
   "SYK": {
    "depuis": "2026-09-25",
-   "dist": 32.31,
+   "dist": 33.93,
    "etat": "loin",
-   "mm50": 208.0767,
+   "mm50": 208.1459,
    "place": "US"
   },
   "SYY": {
    "depuis": "2026-09-25",
-   "dist": 38.62,
+   "dist": 38.48,
    "etat": "loin",
-   "mm50": 56.6811,
+   "mm50": 56.6795,
    "place": "US"
   },
   "T": {
    "depuis": "2026-09-25",
-   "dist": 53.16,
+   "dist": 50.65,
    "etat": "loin",
-   "mm50": 16.2577,
+   "mm50": 16.2493,
    "place": "US"
   },
   "TAP": {
    "depuis": "2026-09-25",
-   "dist": -30.0,
+   "dist": -30.49,
    "etat": "contact",
-   "mm50": 51.8143,
+   "mm50": 51.8091,
    "place": "US"
   },
   "TBSO.PA": {
    "depuis": "2026-09-28",
-   "dist": 131.79,
+   "dist": 127.98,
    "etat": "loin",
-   "mm50": 1.0009,
+   "mm50": 1.0001,
    "place": "Paris"
   },
   "TDG": {
    "depuis": "2026-09-25",
-   "dist": 105.42,
+   "dist": 103.75,
    "etat": "loin",
-   "mm50": 539.9743,
+   "mm50": 539.7857,
    "place": "US"
   },
   "TDY": {
    "depuis": "2026-09-25",
-   "dist": 94.12,
+   "dist": 92.52,
    "etat": "loin",
-   "mm50": 314.671,
+   "mm50": 314.5662,
    "place": "US"
   },
   "TECH": {
    "depuis": "2026-09-25",
-   "dist": 31.77,
+   "dist": 31.54,
    "etat": "loin",
-   "mm50": 55.0278,
+   "mm50": 55.0252,
    "place": "US"
   },
   "TEL": {
    "depuis": "2026-09-25",
-   "dist": 105.79,
+   "dist": 103.84,
    "etat": "loin",
-   "mm50": 104.3328,
+   "mm50": 104.2904,
    "place": "US"
   },
   "TEP.PA": {
    "depuis": "2026-09-28",
-   "dist": -43.28,
+   "dist": -42.88,
    "etat": "contact",
-   "mm50": 125.0615,
+   "mm50": 125.0715,
    "place": "Paris"
   },
   "TER": {
    "depuis": "2026-09-25",
-   "dist": 342.42,
+   "dist": 344.14,
    "etat": "loin",
-   "mm50": 90.7063,
+   "mm50": 90.7407,
    "place": "US"
   },
   "TESB.BR": {
    "depuis": "2026-09-28",
-   "dist": -27.41,
+   "dist": -28.09,
    "etat": "contact",
-   "mm50": 27.6202,
+   "mm50": 27.6164,
    "place": "Bruxelles"
   },
   "TEXF.BR": {
    "depuis": "2026-09-28",
-   "dist": 30.58,
+   "dist": 28.55,
    "etat": "loin",
-   "mm50": 28.7941,
+   "mm50": 28.7821,
    "place": "Bruxelles"
   },
   "TFC": {
    "depuis": "2026-09-25",
-   "dist": 37.68,
+   "dist": 35.83,
    "etat": "loin",
-   "mm50": 34.2029,
+   "mm50": 34.1899,
    "place": "US"
   },
   "TFF.PA": {
    "depuis": "2026-09-28",
-   "dist": -49.2,
+   "dist": -50.37,
    "etat": "contact",
-   "mm50": 27.0059,
+   "mm50": 26.9995,
    "place": "Paris"
   },
   "TFI.PA": {
    "depuis": "2026-09-28",
-   "dist": 8.43,
+   "dist": 6.92,
    "etat": "loin",
-   "mm50": 5.8377,
+   "mm50": 5.8359,
    "place": "Paris"
   },
   "TGT": {
    "depuis": "2026-09-25",
-   "dist": 59.73,
+   "dist": 57.78,
    "etat": "loin",
-   "mm50": 99.1856,
+   "mm50": 99.1456,
    "place": "US"
   },
   "THEP.PA": {
    "depuis": "2026-09-28",
-   "dist": 27.58,
+   "dist": 28.12,
    "etat": "loin",
-   "mm50": 54.2414,
+   "mm50": 54.2474,
    "place": "Paris"
   },
   "TJX": {
    "depuis": "2026-09-25",
-   "dist": 98.26,
+   "dist": 103.44,
    "etat": "loin",
-   "mm50": 65.6974,
+   "mm50": 65.7684,
    "place": "US"
   },
   "TKO": {
    "depuis": "2026-09-25",
-   "dist": 161.25,
+   "dist": 155.79,
    "etat": "loin",
-   "mm50": 69.5054,
+   "mm50": 69.4254,
    "place": "US"
   },
   "TMO": {
    "depuis": "2026-09-25",
-   "dist": 88.41,
+   "dist": 88.68,
    "etat": "loin",
-   "mm50": 360.174,
+   "mm50": 360.1942,
    "place": "US"
   },
   "TMUS": {
    "depuis": "2026-09-25",
-   "dist": 55.66,
+   "dist": 52.51,
    "etat": "loin",
-   "mm50": 106.9344,
+   "mm50": 106.865,
    "place": "US"
   },
   "TNG.PA": {
    "depuis": "2026-09-28",
-   "dist": -69.91,
+   "dist": -69.95,
    "etat": "contact",
    "mm50": 2.4263,
    "place": "Paris"
   },
   "TOM2.AS": {
    "depuis": "2026-09-28",
-   "dist": -53.95,
+   "dist": -54.43,
    "etat": "contact",
-   "mm50": 8.156,
+   "mm50": 8.1552,
    "place": "Amsterdam"
   },
   "TPL": {
    "depuis": "2026-09-25",
-   "dist": 149.36,
+   "dist": 142.73,
    "etat": "loin",
-   "mm50": 135.6076,
+   "mm50": 135.4186,
    "place": "US"
   },
   "TPR": {
    "depuis": "2026-09-25",
-   "dist": 165.8,
+   "dist": 167.29,
    "etat": "loin",
-   "mm50": 42.6825,
+   "mm50": 42.6959,
    "place": "US"
   },
   "TRGP": {
    "depuis": "2026-09-25",
-   "dist": 273.11,
+   "dist": 268.2,
    "etat": "loin",
-   "mm50": 74.3564,
+   "mm50": 74.2776,
    "place": "US"
   },
   "TRI": {
    "depuis": "2026-09-25",
-   "dist": 24.32,
+   "dist": 22.96,
    "etat": "loin",
-   "mm50": 78.2898,
+   "mm50": 78.268,
    "place": "US"
   },
   "TRI.PA": {
    "depuis": "2026-09-28",
-   "dist": 40.22,
+   "dist": 41.17,
    "etat": "loin",
-   "mm50": 93.3534,
+   "mm50": 91.6598,
    "place": "Paris"
   },
   "TRMB": {
    "depuis": "2026-09-25",
-   "dist": 17.71,
+   "dist": 17.37,
    "etat": "loin",
-   "mm50": 48.8562,
+   "mm50": 48.8528,
    "place": "US"
   },
   "TROW": {
    "depuis": "2026-09-25",
-   "dist": 21.45,
+   "dist": 22.25,
    "etat": "loin",
-   "mm50": 85.4758,
+   "mm50": 85.4898,
    "place": "US"
   },
   "TRV": {
    "depuis": "2026-09-25",
-   "dist": 142.58,
+   "dist": 142.61,
    "etat": "loin",
-   "mm50": 149.7053,
+   "mm50": 149.7063,
    "place": "US"
   },
   "TSCO": {
    "depuis": "2026-09-25",
-   "dist": 14.71,
+   "dist": 12.75,
    "etat": "loin",
-   "mm50": 27.9573,
+   "mm50": 27.9461,
    "place": "US"
   },
   "TSLA": {
    "depuis": "2026-09-25",
-   "dist": 136.51,
+   "dist": 133.6,
    "etat": "loin",
-   "mm50": 151.1361,
+   "mm50": 151.0439,
    "place": "US"
   },
   "TSN": {
    "depuis": "2026-09-25",
-   "dist": -3.61,
+   "dist": -3.55,
    "etat": "contact",
-   "mm50": 52.856,
+   "mm50": 52.8566,
    "place": "US"
   },
   "TT": {
    "depuis": "2026-09-25",
-   "dist": 181.73,
+   "dist": 183.81,
    "etat": "loin",
-   "mm50": 160.4578,
+   "mm50": 160.5284,
    "place": "US"
   },
   "TTE.PA": {
    "depuis": "2026-09-28",
-   "dist": 116.46,
+   "dist": 111.54,
    "etat": "loin",
-   "mm50": 36.9575,
+   "mm50": 36.9195,
    "place": "Paris"
   },
   "TTWO": {
    "depuis": "2026-09-25",
-   "dist": 61.95,
+   "dist": 62.28,
    "etat": "loin",
-   "mm50": 124.9458,
+   "mm50": 124.9544,
    "place": "US"
   },
   "TUB.BR": {
    "depuis": "2026-09-28",
-   "dist": 110.47,
+   "dist": 106.31,
    "etat": "loin",
-   "mm50": 85.2378,
+   "mm50": 85.1638,
    "place": "Bruxelles"
   },
   "TVRB.PA": {
@@ -6702,142 +6702,142 @@
   },
   "TWEKA.AS": {
    "depuis": "2026-09-28",
-   "dist": 60.63,
+   "dist": 64.14,
    "etat": "loin",
-   "mm50": 33.0886,
+   "mm50": 33.1126,
    "place": "Amsterdam"
   },
   "TXN": {
    "depuis": "2026-09-25",
-   "dist": 131.79,
+   "dist": 134.48,
    "etat": "loin",
-   "mm50": 120.0679,
+   "mm50": 120.1355,
    "place": "US"
   },
   "TXT": {
    "depuis": "2026-09-25",
-   "dist": 29.94,
+   "dist": 30.37,
    "etat": "loin",
-   "mm50": 59.542,
+   "mm50": 59.5472,
    "place": "US"
   },
   "TYL": {
    "depuis": "2026-09-25",
-   "dist": 4.36,
+   "dist": 1.92,
    "etat": "approche",
-   "mm50": 310.4682,
+   "mm50": 310.313,
    "place": "US"
   },
   "UAL": {
    "depuis": "2026-09-25",
-   "dist": 75.94,
+   "dist": 77.68,
    "etat": "loin",
-   "mm50": 63.378,
+   "mm50": 63.4008,
    "place": "US"
   },
   "UBI.PA": {
    "depuis": "2026-09-28",
-   "dist": -86.46,
+   "dist": -86.17,
    "etat": "contact",
-   "mm50": 38.6526,
+   "mm50": 38.6549,
    "place": "Paris"
   },
   "UCB.BR": {
    "depuis": "2026-09-28",
-   "dist": 116.83,
+   "dist": 111.26,
    "etat": "loin",
-   "mm50": 98.0046,
+   "mm50": 97.8906,
    "place": "Bruxelles"
   },
   "UDR": {
    "depuis": "2026-09-25",
-   "dist": 6.05,
+   "dist": 6.42,
    "etat": "loin",
-   "mm50": 31.8992,
+   "mm50": 31.9016,
    "place": "US"
   },
   "UHS": {
    "depuis": "2026-09-25",
-   "dist": 31.84,
+   "dist": 30.57,
    "etat": "loin",
-   "mm50": 134.6179,
+   "mm50": 134.5829,
    "place": "US"
   },
   "ULTA": {
    "depuis": "2026-09-25",
-   "dist": 69.2,
+   "dist": 68.83,
    "etat": "loin",
-   "mm50": 324.5526,
+   "mm50": 324.5278,
    "place": "US"
   },
   "UMI.BR": {
    "depuis": "2026-09-28",
-   "dist": -11.93,
+   "dist": -11.84,
    "etat": "contact",
-   "mm50": 23.9344,
+   "mm50": 23.9348,
    "place": "Bruxelles"
   },
   "UNH": {
    "depuis": "2026-09-25",
-   "dist": 31.46,
+   "dist": 30.48,
    "etat": "loin",
-   "mm50": 287.4123,
+   "mm50": 287.3545,
    "place": "US"
   },
   "UNP": {
    "depuis": "2026-09-25",
-   "dist": 73.41,
+   "dist": 73.44,
    "etat": "loin",
-   "mm50": 158.0641,
+   "mm50": 158.0651,
    "place": "US"
   },
   "UPS": {
    "depuis": "2026-09-25",
-   "dist": -6.54,
+   "dist": -6.85,
    "etat": "contact",
-   "mm50": 100.8439,
+   "mm50": 100.8375,
    "place": "US"
   },
   "URI": {
    "depuis": "2026-09-25",
-   "dist": 220.9,
+   "dist": 212.43,
    "etat": "loin",
-   "mm50": 325.3102,
+   "mm50": 324.7226,
    "place": "US"
   },
   "URW.PA": {
    "depuis": "2026-09-28",
-   "dist": -5.01,
+   "dist": -6.07,
    "etat": "contact",
-   "mm50": 96.5396,
+   "mm50": 96.5188,
    "place": "Paris"
   },
   "USB": {
    "depuis": "2026-09-25",
-   "dist": 56.07,
+   "dist": 54.42,
    "etat": "loin",
-   "mm50": 37.6629,
+   "mm50": 37.6501,
    "place": "US"
   },
   "V": {
    "depuis": "2026-09-25",
-   "dist": 103.05,
+   "dist": 102.06,
    "etat": "loin",
-   "mm50": 181.109,
+   "mm50": 181.0718,
    "place": "US"
   },
   "VAC.PA": {
    "depuis": "2026-09-28",
-   "dist": -60.02,
+   "dist": -59.9,
    "etat": "contact",
-   "mm50": 4.6528,
+   "mm50": 4.6529,
    "place": "Paris"
   },
   "VALUE.AS": {
    "depuis": "2026-09-28",
-   "dist": 37.23,
+   "dist": 38.22,
    "etat": "loin",
-   "mm50": 4.8824,
+   "mm50": 4.8834,
    "place": "Amsterdam"
   },
   "VAN.BR": {
@@ -6849,408 +6849,408 @@
   },
   "VANTI.PA": {
    "depuis": "2026-09-28",
-   "dist": -99.54,
+   "dist": -99.53,
    "etat": "contact",
    "mm50": 16.7032,
    "place": "Paris"
   },
   "VASTB.BR": {
-   "depuis": "2026-09-28",
-   "dist": 1.05,
-   "etat": "approche",
-   "mm50": 27.9071,
+   "depuis": "2026-09-29",
+   "dist": -0.0,
+   "etat": "contact",
+   "mm50": 27.9011,
    "place": "Bruxelles"
   },
   "VCT.PA": {
    "depuis": "2026-09-28",
-   "dist": 69.95,
+   "dist": 68.33,
    "etat": "loin",
-   "mm50": 35.7756,
+   "mm50": 35.7636,
    "place": "Paris"
   },
   "VETO.PA": {
    "depuis": "2026-09-28",
-   "dist": 12.66,
+   "dist": 15.32,
    "etat": "loin",
-   "mm50": 66.2169,
+   "mm50": 66.2529,
    "place": "Paris"
   },
   "VGP.BR": {
    "depuis": "2026-09-28",
-   "dist": 3.15,
+   "dist": 4.64,
    "etat": "approche",
-   "mm50": 65.8234,
+   "mm50": 65.8434,
    "place": "Bruxelles"
   },
   "VIE.PA": {
    "depuis": "2026-09-28",
-   "dist": 67.6,
+   "dist": 66.76,
    "etat": "loin",
-   "mm50": 18.5503,
+   "mm50": 18.5471,
    "place": "Paris"
   },
   "VIL.PA": {
    "depuis": "2026-09-28",
-   "dist": 213.14,
+   "dist": 210.31,
    "etat": "loin",
-   "mm50": 5.9717,
+   "mm50": 5.9681,
    "place": "Paris"
   },
   "VIO.BR": {
    "depuis": "2026-09-28",
-   "dist": 294.3,
+   "dist": 303.97,
    "etat": "loin",
-   "mm50": 4.3723,
+   "mm50": 4.3815,
    "place": "Bruxelles"
   },
   "VIRI.PA": {
    "depuis": "2026-09-28",
-   "dist": -85.88,
+   "dist": -85.6,
    "etat": "contact",
-   "mm50": 638.6548,
+   "mm50": 638.6908,
    "place": "Paris"
   },
   "VIRP.PA": {
    "depuis": "2026-09-28",
-   "dist": 31.69,
+   "dist": 32.94,
    "etat": "loin",
-   "mm50": 233.5015,
+   "mm50": 233.5615,
    "place": "Paris"
   },
   "VIV.PA": {
    "depuis": "2026-09-28",
-   "dist": -78.96,
+   "dist": -79.16,
    "etat": "contact",
-   "mm50": 6.9644,
+   "mm50": 6.9641,
    "place": "Paris"
   },
   "VK.PA": {
    "depuis": "2026-09-28",
-   "dist": -52.89,
+   "dist": -54.66,
    "etat": "contact",
-   "mm50": 40.6093,
+   "mm50": 40.5948,
    "place": "Paris"
   },
   "VLA.PA": {
    "depuis": "2026-09-28",
-   "dist": -44.97,
+   "dist": -46.61,
    "etat": "contact",
-   "mm50": 5.034,
+   "mm50": 5.0324,
    "place": "Paris"
   },
   "VLK.AS": {
    "depuis": "2026-09-28",
-   "dist": 261.06,
+   "dist": 263.02,
    "etat": "loin",
-   "mm50": 18.9167,
+   "mm50": 18.9247,
    "place": "Amsterdam"
   },
   "VLO": {
    "depuis": "2026-09-25",
-   "dist": 331.82,
+   "dist": 329.95,
    "etat": "loin",
-   "mm50": 90.2155,
+   "mm50": 90.1785,
    "place": "US"
   },
   "VLTSA.PA": {
    "depuis": "2026-09-28",
-   "dist": -60.59,
+   "dist": -59.72,
    "etat": "contact",
-   "mm50": 10.7719,
+   "mm50": 10.7738,
    "place": "Paris"
   },
   "VMC": {
    "depuis": "2026-09-25",
-   "dist": 57.64,
+   "dist": 55.53,
    "etat": "loin",
-   "mm50": 156.1477,
+   "mm50": 156.0797,
    "place": "US"
   },
   "VMX.PA": {
    "depuis": "2026-09-28",
-   "dist": -79.1,
+   "dist": -79.57,
    "etat": "contact",
-   "mm50": 1.4829,
+   "mm50": 1.4828,
    "place": "Paris"
   },
   "VPK.AS": {
    "depuis": "2026-09-28",
-   "dist": 54.12,
+   "dist": 52.95,
    "etat": "loin",
-   "mm50": 31.3386,
+   "mm50": 31.331,
    "place": "Amsterdam"
   },
   "VRSK": {
    "depuis": "2026-09-25",
-   "dist": 8.68,
+   "dist": 7.52,
    "etat": "loin",
-   "mm50": 154.3655,
+   "mm50": 154.3289,
    "place": "US"
   },
   "VRSN": {
    "depuis": "2026-09-25",
-   "dist": 69.93,
+   "dist": 68.63,
    "etat": "loin",
-   "mm50": 165.9924,
+   "mm50": 165.9478,
    "place": "US"
   },
   "VRTX": {
    "depuis": "2026-09-25",
-   "dist": 110.93,
+   "dist": 110.57,
    "etat": "loin",
-   "mm50": 250.164,
+   "mm50": 250.1452,
    "place": "US"
   },
   "VTR": {
    "depuis": "2026-09-25",
-   "dist": 84.6,
+   "dist": 84.33,
    "etat": "loin",
-   "mm50": 47.1513,
+   "mm50": 47.1487,
    "place": "US"
   },
   "VTR.PA": {
    "depuis": "2026-09-28",
-   "dist": -81.68,
+   "dist": -82.87,
    "etat": "contact",
-   "mm50": 23.4706,
+   "mm50": 23.465,
    "place": "Paris"
   },
   "VTRS": {
    "depuis": "2026-09-25",
-   "dist": -11.3,
+   "dist": -12.01,
    "etat": "contact",
-   "mm50": 20.5972,
+   "mm50": 20.5942,
    "place": "US"
   },
   "VU.PA": {
    "depuis": "2026-09-28",
-   "dist": 74.44,
+   "dist": 83.67,
    "etat": "loin",
-   "mm50": 70.9143,
+   "mm50": 71.0503,
    "place": "Paris"
   },
   "VZ": {
    "depuis": "2026-09-25",
-   "dist": 34.85,
+   "dist": 32.88,
    "etat": "loin",
-   "mm50": 34.6164,
+   "mm50": 34.6024,
    "place": "US"
   },
   "WAB": {
    "depuis": "2026-09-25",
-   "dist": 169.66,
+   "dist": 168.67,
    "etat": "loin",
-   "mm50": 108.4201,
+   "mm50": 108.3973,
    "place": "US"
   },
   "WAT": {
    "depuis": "2026-09-25",
-   "dist": 80.41,
+   "dist": 80.53,
    "etat": "loin",
-   "mm50": 245.521,
+   "mm50": 245.5274,
    "place": "US"
   },
   "WAVE.PA": {
    "depuis": "2026-09-28",
-   "dist": -8.46,
+   "dist": -8.31,
    "etat": "contact",
-   "mm50": 32.2268,
+   "mm50": 32.2278,
    "place": "Paris"
   },
   "WBD": {
    "depuis": "2026-09-25",
-   "dist": 31.86,
+   "dist": 31.65,
    "etat": "loin",
-   "mm50": 23.4335,
+   "mm50": 23.4325,
    "place": "US"
   },
   "WDAY": {
    "depuis": "2026-09-25",
-   "dist": 13.34,
+   "dist": 13.68,
    "etat": "loin",
-   "mm50": 166.3992,
+   "mm50": 166.4106,
    "place": "US"
   },
   "WDC": {
    "depuis": "2026-09-25",
-   "dist": 520.87,
+   "dist": 521.17,
    "etat": "loin",
-   "mm50": 72.9993,
+   "mm50": 73.0043,
    "place": "US"
   },
   "WDP.BR": {
    "depuis": "2026-09-28",
-   "dist": 14.29,
+   "dist": 14.62,
    "etat": "loin",
-   "mm50": 17.7613,
+   "mm50": 17.7625,
    "place": "Bruxelles"
   },
   "WEB.BR": {
    "depuis": "2026-09-28",
-   "dist": 12.28,
+   "dist": 11.71,
    "etat": "loin",
-   "mm50": 34.1109,
+   "mm50": 34.1069,
    "place": "Bruxelles"
   },
   "WEC": {
    "depuis": "2026-09-25",
-   "dist": 49.07,
+   "dist": 50.68,
    "etat": "loin",
-   "mm50": 68.0563,
+   "mm50": 68.0789,
    "place": "US"
   },
   "WEHB.BR": {
    "depuis": "2026-09-28",
-   "dist": 24.58,
+   "dist": 22.68,
    "etat": "loin",
-   "mm50": 40.9368,
+   "mm50": 40.9208,
    "place": "Bruxelles"
   },
   "WELL": {
    "depuis": "2026-09-25",
-   "dist": 191.98,
+   "dist": 191.91,
    "etat": "loin",
-   "mm50": 79.7857,
+   "mm50": 79.7845,
    "place": "US"
   },
   "WFC": {
    "depuis": "2026-09-25",
-   "dist": 76.71,
+   "dist": 76.02,
    "etat": "loin",
-   "mm50": 45.7296,
+   "mm50": 45.723,
    "place": "US"
   },
   "WHA.AS": {
    "depuis": "2026-09-28",
-   "dist": 13.61,
+   "dist": 12.98,
    "etat": "loin",
-   "mm50": 15.5098,
+   "mm50": 15.5078,
    "place": "Amsterdam"
   },
   "WKL.AS": {
    "depuis": "2026-09-28",
-   "dist": 0.44,
+   "dist": 1.2,
    "etat": "contact",
-   "mm50": 67.1854,
+   "mm50": 67.1958,
    "place": "Amsterdam"
   },
   "WLN.PA": {
    "depuis": "2026-09-28",
-   "dist": -96.68,
+   "dist": -96.82,
    "etat": "contact",
-   "mm50": 342.9865,
+   "mm50": 342.9768,
    "place": "Paris"
   },
   "WM": {
    "depuis": "2026-09-25",
-   "dist": 73.03,
+   "dist": 73.56,
    "etat": "loin",
-   "mm50": 119.3079,
+   "mm50": 119.3209,
    "place": "US"
   },
   "WMB": {
    "depuis": "2026-09-25",
-   "dist": 141.87,
+   "dist": 140.7,
    "etat": "loin",
-   "mm50": 28.5193,
+   "mm50": 28.5123,
    "place": "US"
   },
   "WMT": {
    "depuis": "2026-09-25",
-   "dist": 136.69,
+   "dist": 132.68,
    "etat": "loin",
-   "mm50": 45.9385,
+   "mm50": 45.8999,
    "place": "US"
   },
   "WRB": {
    "depuis": "2026-09-25",
-   "dist": 108.71,
+   "dist": 110.36,
    "etat": "loin",
-   "mm50": 32.4186,
+   "mm50": 32.4298,
    "place": "US"
   },
   "WSM": {
    "depuis": "2026-09-25",
-   "dist": 231.34,
+   "dist": 229.9,
    "etat": "loin",
-   "mm50": 69.727,
+   "mm50": 69.7056,
    "place": "US"
   },
   "WST": {
    "depuis": "2026-09-25",
-   "dist": 82.49,
+   "dist": 82.95,
    "etat": "loin",
-   "mm50": 205.8457,
+   "mm50": 205.8653,
    "place": "US"
   },
   "WTW": {
    "depuis": "2026-09-25",
-   "dist": 54.25,
+   "dist": 52.44,
    "etat": "loin",
-   "mm50": 189.3763,
+   "mm50": 189.3055,
    "place": "US"
   },
   "WY": {
    "depuis": "2026-09-25",
-   "dist": -18.64,
+   "dist": -19.33,
    "etat": "contact",
-   "mm50": 24.2387,
+   "mm50": 24.2353,
    "place": "US"
   },
   "WYNN": {
    "depuis": "2026-09-25",
-   "dist": -19.88,
+   "dist": -22.12,
    "etat": "contact",
-   "mm50": 100.4905,
+   "mm50": 100.4448,
    "place": "US"
   },
   "XEL": {
    "depuis": "2026-09-25",
-   "dist": 44.02,
+   "dist": 46.63,
    "etat": "loin",
-   "mm50": 48.1823,
+   "mm50": 48.2083,
    "place": "US"
   },
   "XOM": {
    "depuis": "2026-09-25",
-   "dist": 124.04,
+   "dist": 122.5,
    "etat": "loin",
-   "mm50": 72.5416,
+   "mm50": 72.5182,
    "place": "US"
   },
   "XYL": {
    "depuis": "2026-09-25",
-   "dist": 26.07,
+   "dist": 26.09,
    "etat": "loin",
-   "mm50": 80.0425,
+   "mm50": 80.0429,
    "place": "US"
   },
   "YUM": {
    "depuis": "2026-09-25",
-   "dist": 47.33,
+   "dist": 46.76,
    "etat": "loin",
-   "mm50": 93.8564,
+   "mm50": 93.8454,
    "place": "US"
   },
   "ZBH": {
    "depuis": "2026-09-25",
-   "dist": -16.46,
+   "dist": -16.71,
    "etat": "contact",
-   "mm50": 109.6714,
+   "mm50": 109.6658,
    "place": "US"
   },
   "ZBRA": {
    "depuis": "2026-09-25",
-   "dist": 59.6,
+   "dist": 61.3,
    "etat": "loin",
-   "mm50": 233.0005,
+   "mm50": 233.0825,
    "place": "US"
   },
   "ZTS": {
    "depuis": "2026-09-25",
-   "dist": -35.68,
+   "dist": -36.69,
    "etat": "contact",
-   "mm50": 111.0603,
+   "mm50": 111.0377,
    "place": "US"
   }
  }
